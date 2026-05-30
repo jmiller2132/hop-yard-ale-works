@@ -2,6 +2,7 @@ import Link from "next/link";
 import { sanityClient } from "@/lib/sanity/client";
 import { locationsQuery } from "@/lib/sanity/queries";
 import { computeOpenClosed, isLateNight } from "@/lib/hours";
+import { LOCATION_STATIC_DATA } from "@/lib/location-data";
 import OpenClosedBadge from "@/components/ui/OpenClosedBadge";
 import type { Location } from "@/types";
 
@@ -18,11 +19,20 @@ export default async function HomePage() {
     .fetch<Location[]>(locationsQuery)
     .catch(() => [] as Location[]);
 
-  const appleton = locations.find((l) => l.slug?.current === "appleton");
-  const theFalls = locations.find((l) => l.slug?.current === "the-falls");
+  // Fall back to static data while Sanity is being populated
+  const appletonStatic = LOCATION_STATIC_DATA["appleton"];
+  const fallsStatic = LOCATION_STATIC_DATA["the-falls"];
 
-  const appletonStatus = appleton ? computeOpenClosed(appleton) : null;
-  const fallsStatus = theFalls ? computeOpenClosed(theFalls) : null;
+  const appleton = locations.find((l) => l.slug?.current === "appleton") ??
+    (appletonStatic as Location);
+  const theFalls = locations.find((l) => l.slug?.current === "the-falls") ??
+    (fallsStatic as Location);
+
+  const appletonStatus = appleton?.hours ? computeOpenClosed(appleton) : null;
+  const fallsStatus = theFalls?.hours ? computeOpenClosed(theFalls) : null;
+
+  const appletonOrderUrl = appleton?.orderOnlineUrl ?? appletonStatic.orderOnlineUrl!;
+  const fallsOrderUrl = theFalls?.orderOnlineUrl ?? fallsStatic.orderOnlineUrl!;
 
   const lateNight = isLateNight();
 
@@ -60,17 +70,17 @@ export default async function HomePage() {
           <div className="mt-10 grid gap-4 sm:grid-cols-2 sm:gap-6">
             <LocationHeroCard
               name="Appleton"
-              tagline={appleton?.tagline ?? "The flagship taproom"}
+              tagline={appleton?.tagline ?? appletonStatic.tagline ?? "The original taproom"}
               status={appletonStatus}
               href="/appleton/"
-              orderHref={appleton?.orderOnlineUrl ?? "#"}
+              orderHref={appletonOrderUrl}
             />
             <LocationHeroCard
               name="Menomonee Falls"
-              tagline={theFalls?.tagline ?? "Pizza-forward taproom"}
+              tagline={theFalls?.tagline ?? fallsStatic.tagline ?? "Pizza-forward taproom"}
               status={fallsStatus}
               href="/the-falls/"
-              orderHref={theFalls?.orderOnlineUrl ?? "#"}
+              orderHref={fallsOrderUrl}
             />
           </div>
         </div>
@@ -91,20 +101,20 @@ export default async function HomePage() {
           <div className="grid gap-6 sm:grid-cols-2">
             <LocationCard
               name="Appleton"
-              address="300 W College Ave, Appleton WI"
+              address="512 W Northland Ave, Appleton WI"
               status={appletonStatus}
               foodHref="/appleton-food-menu/"
               drinksHref="/appleton-drinks-menu/"
-              orderHref={appleton?.orderOnlineUrl ?? "#"}
+              orderHref={appletonOrderUrl}
               locationHref="/appleton/"
             />
             <LocationCard
               name="Menomonee Falls"
-              address="W156 N9000 Pilgrims Road, Menomonee Falls WI"
+              address="N88W16521 Main St, Menomonee Falls WI"
               status={fallsStatus}
               foodHref="/the-falls-food-menu/"
               drinksHref="/the-falls-drinks-menu/"
-              orderHref={theFalls?.orderOnlineUrl ?? "#"}
+              orderHref={fallsOrderUrl}
               locationHref="/the-falls/"
             />
           </div>
@@ -182,7 +192,7 @@ export default async function HomePage() {
             <NextStepCard
               title="Order Online"
               description="Ready when you are. Pick up or delivery."
-              href={appleton?.orderOnlineUrl ?? "#"}
+              href={appletonOrderUrl}
               cta="Order Now"
               highlight
             />

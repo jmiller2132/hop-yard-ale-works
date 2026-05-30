@@ -163,17 +163,13 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
               Appleton
             </h3>
             <address className="not-italic text-sm leading-relaxed opacity-85">
-              300 W College Ave<br />
+              512 W Northland Ave<br />
               Appleton, WI 54911
             </address>
-            <p className="mt-2 text-sm opacity-85">
-              <a href="tel:+19205550000" className="hover:opacity-100 transition-opacity">
-                (920) 555-0000
-              </a>
-            </p>
-            <p className="mt-2 text-xs opacity-70">
-              Mon–Thu 3–10pm · Fri 2–11pm<br />
-              Sat 12–11pm · Sun 12–9pm
+            <p className="mt-3 text-xs opacity-70 leading-relaxed">
+              Wed–Sat &nbsp;11 AM–10 PM<br />
+              Sun &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;12–6 PM<br />
+              Mon–Tue &nbsp;Closed
             </p>
           </div>
 
@@ -186,17 +182,13 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
               Menomonee Falls
             </h3>
             <address className="not-italic text-sm leading-relaxed opacity-85">
-              W156 N9000 Pilgrims Road<br />
+              N88W16521 Main St<br />
               Menomonee Falls, WI 53051
             </address>
-            <p className="mt-2 text-sm opacity-85">
-              <a href="tel:+12625550000" className="hover:opacity-100 transition-opacity">
-                (262) 555-0000
-              </a>
-            </p>
-            <p className="mt-2 text-xs opacity-70">
-              Mon–Thu 3–10pm · Fri 2–11pm<br />
-              Sat 12–11pm · Sun 12–9pm
+            <p className="mt-3 text-xs opacity-70 leading-relaxed">
+              Tue–Thu &nbsp;4–10 PM<br />
+              Fri–Sat &nbsp;&nbsp;11 AM–10 PM<br />
+              Sun–Mon Closed
             </p>
           </div>
 
