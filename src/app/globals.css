@@ -1,0 +1,166 @@
+@import "tailwindcss";
+
+/* ─── Brand design tokens ─── */
+:root {
+  /* Core brand palette */
+  --color-teal: #2D4F54;
+  --color-green: #5CB82C;
+  --color-orange: #C94B2A;
+  --color-gold: #D4A017;
+  --color-ink: #1A1A1A;
+  --color-warm-white: #F5F2EE;
+  --color-muted: #6B7280;
+
+  /* Semantic aliases */
+  --color-bg: var(--color-warm-white);
+  --color-text: var(--color-ink);
+  --color-cta: var(--color-green);
+  --color-hero-bg: var(--color-teal);
+  --color-footer-bg: var(--color-teal);
+
+  /* Seasonal palette overrides (default = brand) */
+  --color-seasonal-cta: var(--color-green);
+  --color-seasonal-badge: var(--color-green);
+  --color-seasonal-accent: var(--color-gold);
+}
+
+/* Seasonal theme: Oktoberfest */
+[data-theme="oktoberfest"] {
+  --color-seasonal-cta: #0077B6;
+  --color-seasonal-badge: #0077B6;
+  --color-seasonal-accent: var(--color-gold);
+}
+
+/* Seasonal theme: St. Patrick's Day */
+[data-theme="stPatricks"] {
+  --color-seasonal-cta: #1B5E20;
+  --color-seasonal-badge: #1B5E20;
+  --color-seasonal-accent: var(--color-gold);
+}
+
+/* Seasonal theme: 4th of July */
+[data-theme="fourthOfJuly"] {
+  --color-seasonal-cta: #B71C1C;
+  --color-seasonal-badge: #B71C1C;
+  --color-seasonal-accent: #1A237E;
+}
+
+/* Seasonal theme: Halloween */
+[data-theme="halloween"] {
+  --color-seasonal-cta: #E65100;
+  --color-seasonal-badge: #E65100;
+  --color-seasonal-accent: #1A1A1A;
+}
+
+/* Seasonal theme: Christmas */
+[data-theme="christmas"] {
+  --color-seasonal-cta: #C62828;
+  --color-seasonal-badge: #C62828;
+  --color-seasonal-accent: var(--color-gold);
+}
+
+/* ─── Tailwind v4 theme extension ─── */
+@theme inline {
+  /* Colors */
+  --color-teal: #2D4F54;
+  --color-green: #5CB82C;
+  --color-orange: #C94B2A;
+  --color-gold: #D4A017;
+  --color-ink: #1A1A1A;
+  --color-warm-white: #F5F2EE;
+  --color-muted: #6B7280;
+
+  /* Typography */
+  --font-heading: var(--font-zilla-slab), Georgia, serif;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+
+  /* Font size scale */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-2xl: 1.5rem;
+  --text-4xl: 2.25rem;
+  --text-6xl: 3.75rem;
+}
+
+/* ─── Base styles ─── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-warm-white);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+/* ─── Section spacing utility ─── */
+.section-padding {
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
+}
+
+@media (min-width: 768px) {
+  .section-padding {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+}
+
+/* ─── Reduced motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ─── Focus styles ─── */
+:focus-visible {
+  outline: 2px solid var(--color-green);
+  outline-offset: 2px;
+}
+
+/* ─── Footer marquee icon strip ─── */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-33.333%); }
+}
+
+.animate-marquee {
+  animation: marquee 28s linear infinite;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-warm-white);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-muted);
+  border-radius: 3px;
+}

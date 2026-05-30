@@ -1,0 +1,366 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { cn } from "@/lib/cn";
+import type { GlobalConfig } from "@/types";
+
+interface GlobalFooterProps {
+  config?: GlobalConfig | null;
+}
+
+// Footer icon strip — base icons using inline SVG paths
+// All icons use currentColor so they can be tinted
+const FOOTER_ICONS = [
+  {
+    id: "pint",
+    label: "Pint glass",
+    path: "M6 2h12l-2 18H8L6 2zm4 6h4m-4 4h4",
+  },
+  {
+    id: "hops",
+    label: "Hop cone",
+    path: "M12 3C8 3 5 7 5 12s3 9 7 9 7-4 7-9-3-9-7-9zm0 0v18M9 7.5c1 1 2 1.5 3 1.5M15 7.5c-1 1-2 1.5-3 1.5M9 12c1 1 2 1.5 3 1.5M15 12c-1 1-2 1.5-3 1.5M9 16c1 1 2 1.5 3 1.5M15 16c-1 1-2 1.5-3 1.5",
+  },
+  {
+    id: "wheat",
+    label: "Wheat stalk",
+    path: "M12 21V5M9 8l3-3 3 3M9 12l3-3 3 3M9 16l3-3 3 3M6 19l6-6 6 6",
+  },
+  {
+    id: "barrel",
+    label: "Barrel",
+    path: "M7 4h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm0 4h10M7 16h10M12 4v16",
+  },
+  {
+    id: "bottle",
+    label: "Beer bottle",
+    path: "M9 2v5l-2 3v10a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V10L15 7V2H9zm0 0h6m-6 5h6",
+  },
+  {
+    id: "pizza",
+    label: "Pizza slice",
+    path: "M12 2L3 20h18L12 2zm0 0v18M7 14h10",
+  },
+  {
+    id: "pretzel",
+    label: "Pretzel",
+    path: "M12 4C9 4 7 6 7 9c0 2 1 3 2 4l-3 4a4 4 0 0 0 7 0l1-1 1 1a4 4 0 0 0 7 0l-3-4c1-1 2-2 2-4 0-3-2-5-5-5h-4z",
+  },
+  {
+    id: "wisconsin",
+    label: "Wisconsin",
+    path: "M4 6l2-1 1 1h2l1-2 2 1 1-1h3l1 2 1-1 1 1-1 3-1 1v2l1 1-1 2-2 1-1 2-2 1-2-1-1 1-1-1v-2l-2-1V9l1-1-1-2z",
+  },
+];
+
+// Seasonal icons — only shown when a matching theme is active
+const SEASONAL_ICONS: Record<string, { id: string; label: string; path: string }> = {
+  halloween: {
+    id: "snowflake",
+    label: "Snowflake",
+    path: "M12 2v20M2 12h20M5 5l14 14M19 5L5 19",
+  },
+  christmas: {
+    id: "snowflake",
+    label: "Snowflake",
+    path: "M12 2v20M2 12h20M5 5l14 14M19 5L5 19",
+  },
+  summerBright: {
+    id: "sun",
+    label: "Sun",
+    path: "M12 2v2M12 20v2M2 12h2M20 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4l1.4-1.4M17 7l1.4-1.4M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z",
+  },
+  fourthOfJuly: {
+    id: "sun",
+    label: "Sun",
+    path: "M12 2v2M12 20v2M2 12h2M20 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4l1.4-1.4M17 7l1.4-1.4M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z",
+  },
+  oktoberfest: {
+    id: "mapleleaf",
+    label: "Maple leaf",
+    path: "M12 2l2 5h5l-4 3 2 5-5-3-5 3 2-5-4-3h5z",
+  },
+  stPatricks: {
+    id: "raindrop",
+    label: "Raindrop",
+    path: "M12 3C12 3 6 10 6 14a6 6 0 0 0 12 0c0-4-6-11-6-11z",
+  },
+};
+
+const NAV_LINKS = [
+  { label: "Home", href: "/" },
+  { label: "Appleton", href: "/appleton/" },
+  { label: "The Falls", href: "/the-falls/" },
+  { label: "Events", href: "/events/" },
+  { label: "About", href: "/about/" },
+  { label: "Contact", href: "/contact/" },
+  { label: "Apply", href: "/apply/" },
+];
+
+const SOCIAL_LINKS = [
+  { label: "Facebook", href: "https://facebook.com/hopyardaleworks", icon: "facebook" },
+  { label: "Instagram", href: "https://instagram.com/hopyardaleworks", icon: "instagram" },
+  { label: "Untappd", href: "https://untappd.com/HopYardAleWorks", icon: "untappd" },
+];
+
+const DEFAULT_FOOTER_MESSAGES = [
+  "Thanks for supporting local.",
+  "See you at the bar.",
+  "Pizza + Pints = Perfect Night.",
+  "Brewed in Wisconsin. Loved everywhere.",
+  "We'll save you a stool.",
+];
+
+export default function GlobalFooter({ config }: GlobalFooterProps) {
+  const [footerMessage, setFooterMessage] = useState<string | null>(null);
+  const [emailValue, setEmailValue] = useState("");
+  const [emailSubmitted, setEmailSubmitted] = useState(false);
+  const [activeTheme, setActiveTheme] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Pick a random footer message per page load
+    const messages =
+      config?.footerMessages?.map((m) => m.text).filter(Boolean) ??
+      DEFAULT_FOOTER_MESSAGES;
+    const idx = Math.floor(Math.random() * messages.length);
+    setFooterMessage(messages[idx] ?? null);
+
+    // Read theme from DOM data attribute
+    const themeAttr = document.documentElement.getAttribute("data-theme");
+    setActiveTheme(themeAttr);
+  }, [config]);
+
+  const handleEmailSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!emailValue.trim()) return;
+    // TODO: wire to Mailchimp API
+    setEmailSubmitted(true);
+  };
+
+  // Build the icon strip: base icons + seasonal icon at end if applicable
+  const iconStrip = [...FOOTER_ICONS];
+  const seasonalIcon = activeTheme ? SEASONAL_ICONS[activeTheme] : null;
+  if (seasonalIcon) iconStrip.push(seasonalIcon);
+
+  // Triplicate for seamless scroll loop
+  const iconList = [...iconStrip, ...iconStrip, ...iconStrip];
+
+  return (
+    <footer
+      className="mt-auto"
+      style={{ backgroundColor: "var(--color-teal)", color: "var(--color-warm-white)" }}
+    >
+      {/* Main footer content */}
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Appleton */}
+          <div>
+            <h3
+              className="mb-3 font-heading text-base font-semibold tracking-wide uppercase"
+              style={{ color: "var(--color-gold)" }}
+            >
+              Appleton
+            </h3>
+            <address className="not-italic text-sm leading-relaxed opacity-85">
+              300 W College Ave<br />
+              Appleton, WI 54911
+            </address>
+            <p className="mt-2 text-sm opacity-85">
+              <a href="tel:+19205550000" className="hover:opacity-100 transition-opacity">
+                (920) 555-0000
+              </a>
+            </p>
+            <p className="mt-2 text-xs opacity-70">
+              Mon–Thu 3–10pm · Fri 2–11pm<br />
+              Sat 12–11pm · Sun 12–9pm
+            </p>
+          </div>
+
+          {/* Menomonee Falls */}
+          <div>
+            <h3
+              className="mb-3 font-heading text-base font-semibold tracking-wide uppercase"
+              style={{ color: "var(--color-gold)" }}
+            >
+              Menomonee Falls
+            </h3>
+            <address className="not-italic text-sm leading-relaxed opacity-85">
+              W156 N9000 Pilgrims Road<br />
+              Menomonee Falls, WI 53051
+            </address>
+            <p className="mt-2 text-sm opacity-85">
+              <a href="tel:+12625550000" className="hover:opacity-100 transition-opacity">
+                (262) 555-0000
+              </a>
+            </p>
+            <p className="mt-2 text-xs opacity-70">
+              Mon–Thu 3–10pm · Fri 2–11pm<br />
+              Sat 12–11pm · Sun 12–9pm
+            </p>
+          </div>
+
+          {/* Navigation */}
+          <div>
+            <h3
+              className="mb-3 font-heading text-base font-semibold tracking-wide uppercase"
+              style={{ color: "var(--color-gold)" }}
+            >
+              Navigate
+            </h3>
+            <ul className="space-y-2 text-sm">
+              {NAV_LINKS.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="opacity-80 hover:opacity-100 transition-opacity"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Email signup + Social */}
+          <div>
+            <h3
+              className="mb-3 font-heading text-base font-semibold tracking-wide uppercase"
+              style={{ color: "var(--color-gold)" }}
+            >
+              Stay in the Loop
+            </h3>
+            {emailSubmitted ? (
+              <p className="text-sm opacity-85">You're on the list. See you soon.</p>
+            ) : (
+              <form onSubmit={handleEmailSubmit} className="flex flex-col gap-2">
+                <label htmlFor="footer-email" className="text-sm opacity-80">
+                  Get updates on events and new taps
+                </label>
+                <input
+                  id="footer-email"
+                  type="email"
+                  value={emailValue}
+                  onChange={(e) => setEmailValue(e.target.value)}
+                  placeholder="your@email.com"
+                  className="rounded-md px-3 py-2 text-sm min-h-[44px]"
+                  style={{
+                    backgroundColor: "rgba(255,255,255,0.1)",
+                    color: "var(--color-warm-white)",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                  }}
+                />
+                <button
+                  type="submit"
+                  className="rounded-md px-4 py-2 text-sm font-semibold min-h-[44px] transition-opacity hover:opacity-90"
+                  style={{
+                    backgroundColor: "var(--color-gold)",
+                    color: "var(--color-ink)",
+                  }}
+                >
+                  Subscribe
+                </button>
+              </form>
+            )}
+
+            {/* Social links */}
+            <div className="mt-6 flex items-center gap-4">
+              {SOCIAL_LINKS.map((s) => (
+                <a
+                  key={s.icon}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="opacity-70 hover:opacity-100 transition-opacity min-h-[44px] min-w-[44px] flex items-center justify-center"
+                  aria-label={s.label}
+                >
+                  <SocialIcon icon={s.icon} />
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Marquee icon strip */}
+      <div
+        className="border-t overflow-hidden"
+        style={{ borderColor: "rgba(255,255,255,0.1)" }}
+        aria-hidden="true"
+      >
+        <div
+          className="relative flex"
+          style={{
+            maskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
+            WebkitMaskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
+          }}
+        >
+          <div className="flex animate-marquee gap-10 py-4 will-change-transform">
+            {iconList.map((icon, i) => (
+              <span
+                key={`${icon.id}-${i}`}
+                className="flex-shrink-0"
+                style={{ color: "var(--color-gold)", opacity: 0.7 }}
+              >
+                <svg
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-label={icon.label}
+                >
+                  <path d={icon.path} />
+                </svg>
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom bar */}
+      <div
+        className="border-t px-4 py-4 sm:px-6"
+        style={{ borderColor: "rgba(255,255,255,0.1)" }}
+      >
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 text-xs opacity-60 sm:flex-row">
+          {footerMessage && (
+            <p className="italic">{footerMessage}</p>
+          )}
+          <p>&copy; {new Date().getFullYear()} Hop Yard Ale Works. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+function SocialIcon({ icon }: { icon: string }) {
+  const size = 20;
+  if (icon === "facebook") {
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+      </svg>
+    );
+  }
+  if (icon === "instagram") {
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+        <circle cx="12" cy="12" r="4" />
+        <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" />
+      </svg>
+    );
+  }
+  if (icon === "untappd") {
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3l1.5 4.5H18l-3.5 2.5 1.5 4.5L12 14l-4 2.5 1.5-4.5L6 9.5h4.5z" />
+      </svg>
+    );
+  }
+  return null;
+}
