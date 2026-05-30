@@ -9,6 +9,7 @@ export const LOCATION_STATIC_DATA: Record<string, Partial<Location>> = {
     name: "Hop Yard Ale Works — Appleton",
     address: "512 W Northland Ave\nAppleton, WI 54911",
     phone: null as unknown as string,
+    googleMapsUrl: "https://maps.app.goo.gl/9N2389HKdPiMQgzL7",
     orderOnlineUrl:
       "https://order.toasttab.com/online/hop-yard-ale-works-appleton-512-w-northland-ave",
     tagline: "The original taproom.",
@@ -26,6 +27,7 @@ export const LOCATION_STATIC_DATA: Record<string, Partial<Location>> = {
     name: "Hop Yard Ale Works — Menomonee Falls",
     address: "N88W16521 Main St\nMenomonee Falls, WI 53051",
     phone: null as unknown as string,
+    googleMapsUrl: "https://maps.app.goo.gl/DWFo5Du6CZfUqkt7A",
     orderOnlineUrl:
       "https://order.toasttab.com/online/hop-yard-ale-works-menomonee-falls-n88w16521-main-street",
     tagline: "Pizza-forward taproom.",

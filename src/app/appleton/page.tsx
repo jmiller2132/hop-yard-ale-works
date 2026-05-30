@@ -108,7 +108,7 @@ export default async function AppletonPage() {
               </address>
               <p className="mt-3">
                 <a
-                  href="https://maps.google.com/?q=512+W+Northland+Ave+Appleton+WI"
+                  href="https://maps.app.goo.gl/9N2389HKdPiMQgzL7"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm underline underline-offset-2"

@@ -284,7 +284,7 @@ export const APPLETON_CIDERS: WineItemSeed[] = [
   },
 ];
 
-export const APPLETON_NA: WineItemSeed[] = [
+export const APPLETON_NA_WINE: WineItemSeed[] = [
   {
     name: "Non-Alcoholic Sauvignon Blanc",
     producer: "",
@@ -304,3 +304,141 @@ export const APPLETON_NA: WineItemSeed[] = [
     displayOrder: 2,
   },
 ];
+
+// ── Appleton Ciders, Seltzers & Other Drinks ─────────────────────────────────
+// (Appleton uses same brands as The Falls — imported from there in Phase 2)
+
+import type { DrinkItemSeed } from "./menu-the-falls";
+export type { DrinkItemSeed };
+
+export const APPLETON_CIDERS_SELTZERS: DrinkItemSeed[] = [
+  {
+    name: "Untitled Art: Florida Seltzer — Blood Orange Pomegranate",
+    description: "Hard seltzer made with real fruit juice. Rich, fruit-forward flavor. 12 oz can.",
+    price: "$7",
+    section: "Ciders & Seltzers",
+    displayOrder: 1,
+  },
+  {
+    name: "Untitled Art: Florida Seltzer — Blackberry Agave",
+    description: "Hard seltzer made with real fruit juice. Rich, fruit-forward flavor. 12 oz can.",
+    price: "$7",
+    section: "Ciders & Seltzers",
+    displayOrder: 2,
+  },
+  {
+    name: "Humble Forager: Humble Bumble",
+    description:
+      "Gluten-free buzzed seltzer made with 100% real fruit and natural honey. Rotating flavors. 16 oz can.",
+    price: "$7",
+    section: "Ciders & Seltzers",
+    tags: ["glutenFree"],
+    displayOrder: 3,
+  },
+  {
+    name: "Hard Ciders — Rotating Flavors",
+    description: "Ask your bartender what's available. 12 oz can.",
+    price: "$7",
+    section: "Ciders & Seltzers",
+    displayOrder: 4,
+  },
+  {
+    name: "Hinterland: Saving Gracie Vienna Lager",
+    description: "Gluten-free beer. 5% ABV. 12 oz can.",
+    price: "$5",
+    section: "Ciders & Seltzers",
+    tags: ["glutenFree"],
+    displayOrder: 5,
+  },
+];
+
+export const APPLETON_NA: DrinkItemSeed[] = [
+  {
+    name: "Buzzkill N/A Sauvignon Blanc",
+    description: "Non-alcoholic wine. Gluten-free. 250mL can.",
+    price: "$5",
+    section: "Non-Alcoholic",
+    tags: ["glutenFree"],
+    displayOrder: 1,
+  },
+  {
+    name: "Buzzkill N/A Sparkling Sauvignon Blanc",
+    description: "Non-alcoholic sparkling wine. Gluten-free. 250mL can.",
+    price: "$5",
+    section: "Non-Alcoholic",
+    tags: ["glutenFree"],
+    displayOrder: 2,
+  },
+  {
+    name: "Untitled Art — N/A Grapefruit Radler",
+    description: "Non-alcoholic beer. 12 oz can.",
+    price: "$5",
+    section: "Non-Alcoholic",
+    displayOrder: 3,
+  },
+  {
+    name: "Untitled Art — N/A Italian Pilsner",
+    description: "Non-alcoholic beer. 12 oz can.",
+    price: "$5",
+    section: "Non-Alcoholic",
+    displayOrder: 4,
+  },
+  {
+    name: "Untitled Art — N/A Juicy IPA",
+    description: "Non-alcoholic IPA. 12 oz can.",
+    price: "$5",
+    section: "Non-Alcoholic",
+    displayOrder: 5,
+  },
+  {
+    name: "Untitled Art — N/A Mango Dragonfruit Sour",
+    description: "Non-alcoholic sour. 12 oz can.",
+    price: "$5",
+    section: "Non-Alcoholic",
+    displayOrder: 6,
+  },
+  {
+    name: "Liquid Death Canned Water",
+    description:
+      "Sparkling flavored water. Regular · Sparkling · Tangerine · Lime · Cherry · Doctor Death. 16 oz can.",
+    price: "$2",
+    section: "Non-Alcoholic",
+    displayOrder: 7,
+  },
+  {
+    name: "Liquid Death Canned Iced Tea",
+    description: "Arnold Palmer or Peach Tea. 16 oz can.",
+    price: "$3",
+    section: "Non-Alcoholic",
+    displayOrder: 8,
+  },
+  {
+    name: "Potosi Root Beer",
+    description: "Craft root beer from Potosi Brewing Co. 12 oz bottle.",
+    price: "$3.50",
+    section: "Non-Alcoholic",
+    displayOrder: 9,
+  },
+  {
+    name: "Potosi Orange Cream Soda",
+    description: "Craft orange cream soda from Potosi Brewing Co. 12 oz bottle.",
+    price: "$3.50",
+    section: "Non-Alcoholic",
+    displayOrder: 10,
+  },
+  {
+    name: "Mexican Coca-Cola",
+    description: "Classic Coca-Cola in a glass bottle. 12 oz bottle.",
+    price: "$3.50",
+    section: "Non-Alcoholic",
+    displayOrder: 11,
+  },
+  {
+    name: "Can Soda",
+    description: "Diet Coke · Sprite · Lemonade. 12 oz can.",
+    price: "$1",
+    section: "Non-Alcoholic",
+    displayOrder: 12,
+  },
+];
+

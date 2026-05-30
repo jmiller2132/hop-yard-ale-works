@@ -99,7 +99,7 @@ export default async function TheFallsPage() {
               </address>
               <p className="mt-3">
                 <a
-                  href="https://maps.google.com/?q=N88W16521+Main+St+Menomonee+Falls+WI"
+                  href="https://maps.app.goo.gl/DWFo5Du6CZfUqkt7A"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm underline underline-offset-2"
