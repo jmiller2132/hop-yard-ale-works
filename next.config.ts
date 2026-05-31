@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
 
   async redirects() {
     return [
-      // SEO — preserve old beer/wine menu slugs with 301s
+      // ── SEO — beer/wine menu consolidation ─────────────────────────
       {
         source: "/appleton-beer-menu",
         destination: "/appleton-drinks-menu",
@@ -52,6 +52,69 @@ const nextConfig: NextConfig = {
       {
         source: "/the-falls-wine-menu/",
         destination: "/the-falls-drinks-menu/#wine",
+        permanent: true,
+      },
+      // ── Slug changes (WordPress slugs → new site slugs) ────────────
+      {
+        source: "/about-us",
+        destination: "/about",
+        permanent: true,
+      },
+      {
+        source: "/about-us/",
+        destination: "/about/",
+        permanent: true,
+      },
+      {
+        source: "/contact-us",
+        destination: "/contact",
+        permanent: true,
+      },
+      {
+        source: "/contact-us/",
+        destination: "/contact/",
+        permanent: true,
+      },
+      {
+        source: "/apply-now",
+        destination: "/apply",
+        permanent: true,
+      },
+      {
+        source: "/apply-now/",
+        destination: "/apply/",
+        permanent: true,
+      },
+      // ── Old WordPress redirect chains — collapse to final destination
+      {
+        source: "/beer-menu-appleton",
+        destination: "/appleton-drinks-menu",
+        permanent: true,
+      },
+      {
+        source: "/beer-menu-appleton/",
+        destination: "/appleton-drinks-menu/",
+        permanent: true,
+      },
+      {
+        source: "/beer-menu-menomonee-falls",
+        destination: "/the-falls-drinks-menu",
+        permanent: true,
+      },
+      {
+        source: "/beer-menu-menomonee-falls/",
+        destination: "/the-falls-drinks-menu/",
+        permanent: true,
+      },
+      // ── Order Online standalone page → home ────────────────────────
+      {
+        source: "/order-online",
+        destination: "/",
+        permanent: true,
+      },
+      {
+        source: "/order-online/",
+        destination: "/",
         permanent: true,
       },
     ];
