@@ -441,17 +441,18 @@ function EasterEggToast({ message }: { message: string | null }) {
   if (!message) return null;
 
   return (
-    <div
-      className={cn(
-        "fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] pointer-events-none",
-        "px-4 py-2 text-sm transition-opacity duration-500",
-        visible ? "opacity-100" : "opacity-0"
-      )}
-      style={{ color: "var(--color-muted)" }}
-      role="status"
-      aria-live="polite"
-    >
-      {message}
+    <div className="fixed bottom-6 left-0 right-0 z-[100] pointer-events-none flex justify-center px-4">
+      <div
+        className={cn(
+          "px-4 py-2 rounded-full text-sm whitespace-nowrap",
+          visible ? "animate-fade-in-out" : "opacity-0"
+        )}
+        style={{ backgroundColor: "var(--color-ink)", color: "var(--color-warm-white)", opacity: visible ? 0.88 : 0 }}
+        role="status"
+        aria-live="polite"
+      >
+        {message}
+      </div>
     </div>
   );
 }

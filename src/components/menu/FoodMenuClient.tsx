@@ -9,8 +9,8 @@ import type { MenuItemSeed } from "@/data/menu-appleton";
 
 const SECTIONS = [
   { id: "specialty-pizzas", label: "Specialty Pizzas" },
-  { id: "dessert", label: "Dessert" },
   { id: "build-your-own", label: "Build Your Own" },
+  { id: "dessert", label: "Dessert" },
 ];
 
 const SECTION_NAME_MAP: Record<string, string> = {
@@ -23,6 +23,17 @@ const FILTERS = [
   { id: "vegetarian", label: "Vegetarian" },
   { id: "vegan", label: "Vegan" },
   { id: "glutenFree", label: "Gluten Free" },
+];
+
+const REPICK_TOASTS = [
+  (name: string) => `The ${name} is still right.`,
+  (name: string) => `${name}. Final answer.`,
+  (name: string) => `We stand by ${name}.`,
+  (name: string) => `${name}. Trust us.`,
+  (_name: string) => `We could do this all day.`,
+  (name: string) => `Okay. ${name}. For real this time.`,
+  (_name: string) => `The bar has opinions too, you know.`,
+  (name: string) => `${name}. The oven agrees.`,
 ];
 
 interface FoodMenuClientProps {
@@ -108,17 +119,23 @@ export default function FoodMenuClient({
     const eligible = pizzaItems.filter((i) => i.section === "Specialty Pizzas");
     if (eligible.length === 0) return;
 
-    if (randomizerUsed && lastPickedName) {
-      showToast(`Stick with it.`);
-      return;
-    }
+    // Avoid picking the same pizza twice in a row
+    const pool = eligible.length > 1
+      ? eligible.filter((i) => i.name !== lastPickedName)
+      : eligible;
 
-    const pick = eligible[Math.floor(Math.random() * eligible.length)];
+    const pick = pool[Math.floor(Math.random() * pool.length)];
     const itemId = `pizza-${pick.displayOrder}`;
     setHighlightedId(itemId);
     setRandomizerUsed(true);
     setLastPickedName(pick.name);
-    showToast(`${pick.name} has chosen you.`);
+
+    const isRepick = randomizerUsed;
+    const toastText = isRepick
+      ? REPICK_TOASTS[Math.floor(Math.random() * REPICK_TOASTS.length)](pick.name)
+      : `${pick.name} has chosen you.`;
+
+    showToast(toastText);
 
     const el = document.getElementById(itemId);
     if (el) {
@@ -159,7 +176,7 @@ export default function FoodMenuClient({
                     : "border-current hover:opacity-80"
                 )}
                 style={{
-                  backgroundColor: active ? "var(--color-teal)" : "transparent",
+                  backgroundColor: active ? "var(--color-green)" : "transparent",
                   color: active ? "white" : "var(--color-muted)",
                   WebkitTapHighlightColor: "transparent",
                 }}
@@ -225,32 +242,11 @@ export default function FoodMenuClient({
                 className="text-xs underline-offset-2 hover:underline transition-colors"
                 style={{ color: "var(--color-muted)" }}
               >
-                {randomizerUsed ? "I still can't decide" : "Just pick one for me"}
+                {randomizerUsed ? "Still can't decide" : "Just pick one for me"}
               </button>
             </p>
           )}
         </section>
-
-        {/* Dessert */}
-        {dessertItems.length > 0 && (
-          <section
-            ref={(el) => { sectionRefs.current["dessert"] = el; }}
-            id="dessert"
-            className="pt-12"
-          >
-            <h2
-              className="font-heading text-2xl font-bold mb-6"
-              style={{ color: "var(--color-teal)" }}
-            >
-              Dessert
-            </h2>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {dessertItems.map((item) => (
-                <MenuItemCard key={item.displayOrder} item={item} />
-              ))}
-            </div>
-          </section>
-        )}
 
         {/* Build Your Own */}
         <section
@@ -310,6 +306,27 @@ export default function FoodMenuClient({
           </div>
         </section>
 
+        {/* Dessert */}
+        {dessertItems.length > 0 && (
+          <section
+            ref={(el) => { sectionRefs.current["dessert"] = el; }}
+            id="dessert"
+            className="pt-12"
+          >
+            <h2
+              className="font-heading text-2xl font-bold mb-6"
+              style={{ color: "var(--color-teal)" }}
+            >
+              Dessert
+            </h2>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {dessertItems.map((item) => (
+                <MenuItemCard key={item.displayOrder} item={item} />
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* "You read the whole thing" — quiet end-of-menu line */}
         <p
           className="mt-16 text-center text-sm italic"
@@ -323,7 +340,7 @@ export default function FoodMenuClient({
           <Link
             href={drinksHref}
             className="flex flex-col rounded-xl p-6 transition-opacity hover:opacity-90"
-            style={{ backgroundColor: "var(--color-teal)", color: "white" }}
+            style={{ backgroundColor: "var(--color-ink)", color: "white" }}
           >
             <span className="font-heading text-lg font-bold">Pair it with a drink</span>
             <span className="mt-1 text-sm opacity-80">See what's pouring right now →</span>
@@ -341,13 +358,15 @@ export default function FoodMenuClient({
 
       {/* Quiet toast */}
       {toastMsg && (
-        <div
-          className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[100] pointer-events-none px-4 py-2 text-sm text-center"
-          style={{ color: "var(--color-muted)" }}
-          role="status"
-          aria-live="polite"
-        >
-          {toastMsg}
+        <div className="fixed bottom-24 left-0 right-0 z-[100] pointer-events-none flex justify-center px-4">
+          <div
+            className="px-4 py-2 rounded-full text-sm whitespace-nowrap animate-fade-in-out"
+            style={{ backgroundColor: "var(--color-ink)", color: "var(--color-warm-white)", opacity: 0.88 }}
+            role="status"
+            aria-live="polite"
+          >
+            {toastMsg}
+          </div>
         </div>
       )}
     </>

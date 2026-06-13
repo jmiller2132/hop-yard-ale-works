@@ -41,7 +41,7 @@ export default function LocationContextBar() {
     <div
       className="sticky top-16 z-30 border-b py-2 px-4 sm:px-6"
       style={{
-        backgroundColor: "var(--color-teal)",
+        backgroundColor: "var(--color-ink)",
         borderColor: "rgba(255,255,255,0.15)",
       }}
     >
@@ -52,7 +52,7 @@ export default function LocationContextBar() {
         <Link
           href={ctx.oppositePath}
           className="font-medium underline-offset-2 hover:underline transition-colors"
-          style={{ color: "var(--color-gold)" }}
+          style={{ color: "rgba(255,255,255,0.85)" }}
         >
           Switch to {ctx.opposite}
         </Link>

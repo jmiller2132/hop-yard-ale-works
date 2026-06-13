@@ -5,7 +5,13 @@ export const taproomPhotoSchema = defineType({
   title: "Taproom Photo",
   type: "document",
   fields: [
-    defineField({ name: "image", title: "Photo", type: "image", options: { hotspot: true }, validation: (r) => r.required() }),
+    defineField({
+      name: "image",
+      title: "Photo",
+      type: "image",
+      options: { hotspot: true },
+      validation: (r) => r.required(),
+    }),
     defineField({ name: "caption", title: "Caption", type: "string" }),
     defineField({
       name: "location",
@@ -13,22 +19,23 @@ export const taproomPhotoSchema = defineType({
       type: "reference",
       to: [{ type: "location" }],
     }),
-    defineField({ name: "submittedBy", title: "Submitted By", type: "string" }),
     defineField({
-      name: "approvalStatus",
-      title: "Approval Status",
-      type: "string",
-      options: { list: [
-        { title: "Pending Review", value: "pending" },
-        { title: "Approved", value: "approved" },
-        { title: "Rejected", value: "rejected" },
-      ]},
-      initialValue: "pending",
-      validation: (r) => r.required(),
+      name: "featured",
+      title: "Featured (show first)",
+      type: "boolean",
+      initialValue: false,
     }),
-    defineField({ name: "featured", title: "Featured (show first in strip)", type: "boolean" }),
+    defineField({
+      name: "displayOrder",
+      title: "Display Order",
+      type: "number",
+      description: "Lower numbers appear first. Leave blank to sort by upload date.",
+    }),
   ],
   preview: {
-    select: { title: "submittedBy", subtitle: "approvalStatus", media: "image" },
+    select: { title: "caption", subtitle: "location.name", media: "image" },
+    prepare({ title, subtitle, media }) {
+      return { title: title ?? "Untitled photo", subtitle, media };
+    },
   },
 });

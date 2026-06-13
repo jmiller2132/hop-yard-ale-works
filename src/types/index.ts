@@ -53,8 +53,9 @@ export interface PrivateEvents {
 
 export interface SeasonalTheme {
   name: string;
-  badgeText: string;
-  bannerMessage: string;
+  badgeText?: string;
+  bannerMessage?: string;
+  bannerLinkUrl?: string;
   heroImages?: SanityImage[];
   logoOverride?: SanityImage;
   accentPalette:
@@ -99,13 +100,17 @@ export interface Event {
   _id: string;
   title: string;
   date: string;
-  time: string;
+  time?: string;
   location?: { name: string; slug: { current: string } };
   description: string;
   isRecurring: boolean;
   recurrenceNote?: string;
   requiresTicket: boolean;
   ticketUrl?: string;
+  externalUrl?: string;
+  artistLinks?: { label: string; url: string }[];
+  category?: string;
+  isPlaceholder?: boolean;
 }
 
 export interface TaproomPhoto {

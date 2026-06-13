@@ -16,6 +16,7 @@ export const activeSeasonalThemeQuery = groq`
     name,
     badgeText,
     bannerMessage,
+    bannerLinkUrl,
     heroImages[],
     logoOverride,
     accentPalette,
@@ -103,8 +104,8 @@ export const upcomingEventsByLocationQuery = groq`
   }
 `;
 
-export const approvedTaproomPhotosQuery = groq`
-  *[_type == "taproomPhoto" && approvalStatus == "approved"] | order(featured desc, _createdAt desc) [0...20] {
+export const taproomPhotosQuery = groq`
+  *[_type == "taproomPhoto"] | order(featured desc, displayOrder asc, _createdAt desc) [0...24] {
     _id,
     image,
     caption,
@@ -113,8 +114,8 @@ export const approvedTaproomPhotosQuery = groq`
   }
 `;
 
-export const approvedPhotosByLocationQuery = groq`
-  *[_type == "taproomPhoto" && approvalStatus == "approved" && location._ref == $locationId] | order(featured desc, _createdAt desc) [0...20] {
+export const taproomPhotosByLocationQuery = groq`
+  *[_type == "taproomPhoto" && location._ref == $locationId] | order(featured desc, displayOrder asc, _createdAt desc) [0...24] {
     _id,
     image,
     caption,

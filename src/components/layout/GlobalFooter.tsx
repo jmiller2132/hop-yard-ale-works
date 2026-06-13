@@ -99,9 +99,10 @@ const NAV_LINKS = [
 ];
 
 const SOCIAL_LINKS = [
-  { label: "Facebook", href: "https://facebook.com/hopyardaleworks", icon: "facebook" },
-  { label: "Instagram", href: "https://instagram.com/hopyardaleworks", icon: "instagram" },
+  { label: "Instagram", href: "https://www.instagram.com/hopyardaleworks/", icon: "instagram" },
+  { label: "Facebook", href: "https://www.facebook.com/hopyardaleworks/", icon: "facebook" },
   { label: "Untappd", href: "https://untappd.com/HopYardAleWorks", icon: "untappd" },
+  { label: "Linktree", href: "https://linktr.ee/hopyardaleworks", icon: "linktree" },
 ];
 
 const DEFAULT_FOOTER_MESSAGES = [
@@ -149,7 +150,7 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
   return (
     <footer
       className="mt-auto"
-      style={{ backgroundColor: "var(--color-teal)", color: "var(--color-warm-white)" }}
+      style={{ backgroundColor: "var(--color-ink)", color: "var(--color-warm-white)" }}
     >
       {/* Main footer content */}
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16">
@@ -158,7 +159,7 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
           <div>
             <h3
               className="mb-3 font-heading text-base font-semibold tracking-wide uppercase"
-              style={{ color: "var(--color-gold)" }}
+              style={{ color: "rgba(255,255,255,0.6)" }}
             >
               Appleton
             </h3>
@@ -177,7 +178,7 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
           <div>
             <h3
               className="mb-3 font-heading text-base font-semibold tracking-wide uppercase"
-              style={{ color: "var(--color-gold)" }}
+              style={{ color: "rgba(255,255,255,0.6)" }}
             >
               Menomonee Falls
             </h3>
@@ -196,7 +197,7 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
           <div>
             <h3
               className="mb-3 font-heading text-base font-semibold tracking-wide uppercase"
-              style={{ color: "var(--color-gold)" }}
+              style={{ color: "rgba(255,255,255,0.6)" }}
             >
               Navigate
             </h3>
@@ -218,7 +219,7 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
           <div>
             <h3
               className="mb-3 font-heading text-base font-semibold tracking-wide uppercase"
-              style={{ color: "var(--color-gold)" }}
+              style={{ color: "rgba(255,255,255,0.6)" }}
             >
               Stay in the Loop
             </h3>
@@ -246,8 +247,8 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
                   type="submit"
                   className="rounded-md px-4 py-2 text-sm font-semibold min-h-[44px] transition-opacity hover:opacity-90"
                   style={{
-                    backgroundColor: "var(--color-gold)",
-                    color: "var(--color-ink)",
+                    backgroundColor: "var(--color-seasonal-cta)",
+                    color: "white",
                   }}
                 >
                   Subscribe
@@ -292,7 +293,7 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
               <span
                 key={`${icon.id}-${i}`}
                 className="flex-shrink-0"
-                style={{ color: "var(--color-gold)", opacity: 0.7 }}
+                style={{ color: "rgba(255,255,255,0.5)", opacity: 1 }}
               >
                 <svg
                   width="28"
@@ -351,6 +352,13 @@ function SocialIcon({ icon }: { icon: string }) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3l1.5 4.5H18l-3.5 2.5 1.5 4.5L12 14l-4 2.5 1.5-4.5L6 9.5h4.5z" />
+      </svg>
+    );
+  }
+  if (icon === "linktree") {
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+        <path d="M7.953 15.066c-.08.163-.08.324-.08.486.08.891.81 1.539 1.701 1.539h.243l3.727-.054v3.402c0 .972.729 1.782 1.701 1.782.973 0 1.702-.81 1.702-1.782v-3.402l3.726.054h.244c.891 0 1.62-.648 1.7-1.539 0-.162 0-.323-.08-.486l-1.863-3.482 1.863-.054c.891-.027 1.593-.756 1.566-1.647-.027-.864-.756-1.566-1.62-1.566l-3.645.054 2.16-3.78c.459-.81.162-1.836-.648-2.295a1.67 1.67 0 0 0-2.268.621l-2.457 4.267-2.457-4.267a1.675 1.675 0 0 0-2.268-.621c-.81.459-1.107 1.485-.648 2.295l2.16 3.78-3.645-.054c-.864 0-1.593.702-1.62 1.566-.027.891.675 1.62 1.566 1.647l1.863.054-1.863 3.482z"/>
       </svg>
     );
   }

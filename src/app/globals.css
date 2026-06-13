@@ -4,10 +4,10 @@
 :root {
   /* Core brand palette */
   --color-teal: #2D4F54;
-  --color-green: #5CB82C;
+  --color-green: #6ABF4B;
   --color-orange: #C94B2A;
   --color-gold: #D4A017;
-  --color-ink: #1A1A1A;
+  --color-ink: #231F20;
   --color-warm-white: #F5F2EE;
   --color-muted: #6B7280;
 
@@ -15,58 +15,79 @@
   --color-bg: var(--color-warm-white);
   --color-text: var(--color-ink);
   --color-cta: var(--color-green);
-  --color-hero-bg: var(--color-teal);
-  --color-footer-bg: var(--color-teal);
+  --color-hero-bg: var(--color-ink);
+  --color-footer-bg: var(--color-ink);
 
   /* Seasonal palette overrides (default = brand) */
   --color-seasonal-cta: var(--color-green);
   --color-seasonal-badge: var(--color-green);
   --color-seasonal-accent: var(--color-gold);
+  --color-seasonal-banner-bg: var(--color-ink);
+  --color-seasonal-banner-text: rgba(255,255,255,0.9);
 }
 
-/* Seasonal theme: Oktoberfest */
+/* Seasonal theme: Oktoberfest — warm amber/brown */
 [data-theme="oktoberfest"] {
-  --color-seasonal-cta: #0077B6;
-  --color-seasonal-badge: #0077B6;
-  --color-seasonal-accent: var(--color-gold);
+  --color-seasonal-cta: #b45309;
+  --color-seasonal-badge: #b45309;
+  --color-seasonal-accent: #92400e;
+  --color-seasonal-banner-bg: #78350f;
+  --color-seasonal-banner-text: #fef3c7;
 }
 
-/* Seasonal theme: St. Patrick's Day */
+/* Seasonal theme: St. Patrick's Day — deep green */
 [data-theme="stPatricks"] {
-  --color-seasonal-cta: #1B5E20;
-  --color-seasonal-badge: #1B5E20;
+  --color-seasonal-cta: #166534;
+  --color-seasonal-badge: #166534;
   --color-seasonal-accent: var(--color-gold);
+  --color-seasonal-banner-bg: #14532d;
+  --color-seasonal-banner-text: #dcfce7;
 }
 
-/* Seasonal theme: 4th of July */
+/* Seasonal theme: Summer Bright — sky blue */
+[data-theme="summerBright"] {
+  --color-seasonal-cta: #0369a1;
+  --color-seasonal-badge: #0369a1;
+  --color-seasonal-accent: #f59e0b;
+  --color-seasonal-banner-bg: #0c4a6e;
+  --color-seasonal-banner-text: #e0f2fe;
+}
+
+/* Seasonal theme: 4th of July — red white blue */
 [data-theme="fourthOfJuly"] {
-  --color-seasonal-cta: #B71C1C;
-  --color-seasonal-badge: #B71C1C;
-  --color-seasonal-accent: #1A237E;
+  --color-seasonal-cta: #b91c1c;
+  --color-seasonal-badge: #b91c1c;
+  --color-seasonal-accent: #1e3a8a;
+  --color-seasonal-banner-bg: #991b1b;
+  --color-seasonal-banner-text: #fee2e2;
 }
 
-/* Seasonal theme: Halloween */
+/* Seasonal theme: Halloween — deep orange */
 [data-theme="halloween"] {
-  --color-seasonal-cta: #E65100;
-  --color-seasonal-badge: #E65100;
-  --color-seasonal-accent: #1A1A1A;
+  --color-seasonal-cta: #c2410c;
+  --color-seasonal-badge: #c2410c;
+  --color-seasonal-accent: #1c1917;
+  --color-seasonal-banner-bg: #431407;
+  --color-seasonal-banner-text: #ffedd5;
 }
 
-/* Seasonal theme: Christmas */
+/* Seasonal theme: Christmas / Holiday — rich red */
 [data-theme="christmas"] {
-  --color-seasonal-cta: #C62828;
-  --color-seasonal-badge: #C62828;
-  --color-seasonal-accent: var(--color-gold);
+  --color-seasonal-cta: #b91c1c;
+  --color-seasonal-badge: #b91c1c;
+  --color-seasonal-accent: #166534;
+  --color-seasonal-banner-bg: #7f1d1d;
+  --color-seasonal-banner-text: #fef2f2;
 }
 
 /* ─── Tailwind v4 theme extension ─── */
 @theme inline {
   /* Colors */
   --color-teal: #2D4F54;
-  --color-green: #5CB82C;
+  --color-green: #6ABF4B;
   --color-orange: #C94B2A;
   --color-gold: #D4A017;
-  --color-ink: #1A1A1A;
+  --color-ink: #231F20;
   --color-warm-white: #F5F2EE;
   --color-muted: #6B7280;
 
@@ -141,6 +162,18 @@ h1, h2, h3, h4, h5, h6 {
 :focus-visible {
   outline: 2px solid var(--color-green);
   outline-offset: 2px;
+}
+
+/* ─── Toast fade ─── */
+@keyframes fade-in-out {
+  0%   { opacity: 0; transform: translateY(4px); }
+  15%  { opacity: 1; transform: translateY(0); }
+  75%  { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-2px); }
+}
+
+.animate-fade-in-out {
+  animation: fade-in-out 3.2s ease-in-out forwards;
 }
 
 /* ─── Footer marquee icon strip ─── */

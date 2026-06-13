@@ -5,6 +5,9 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import GlobalHeader from "@/components/layout/GlobalHeader";
 import GlobalFooter from "@/components/layout/GlobalFooter";
+import GlobalBanner from "@/components/layout/GlobalBanner";
+import ChatBot from "@/components/chat/ChatBot";
+import KonamiCode from "@/components/ui/KonamiCode";
 import { sanityClient } from "@/lib/sanity/client";
 import { activeSeasonalThemeQuery, globalConfigQuery } from "@/lib/sanity/queries";
 import type { SeasonalTheme, GlobalConfig } from "@/types";
@@ -70,9 +73,17 @@ export default async function RootLayout({
       {...(themeAttr ? { "data-theme": themeAttr } : {})}
     >
       <body className="flex min-h-screen flex-col" style={{ fontFamily: "var(--font-body)" }}>
+        {activeTheme?.bannerMessage && (
+          <GlobalBanner
+            message={activeTheme.bannerMessage}
+            linkUrl={activeTheme.bannerLinkUrl ?? undefined}
+          />
+        )}
         <GlobalHeader activeTheme={activeTheme} />
         <main className="flex-1">{children}</main>
         <GlobalFooter config={globalConfig} />
+        <ChatBot />
+        <KonamiCode />
         <Analytics />
         <SpeedInsights />
       </body>

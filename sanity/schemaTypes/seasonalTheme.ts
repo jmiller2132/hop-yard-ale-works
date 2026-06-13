@@ -8,6 +8,7 @@ export const seasonalThemeSchema = defineType({
     defineField({ name: "name", title: "Theme Name", type: "string", validation: (r) => r.required() }),
     defineField({ name: "badgeText", title: "Badge Text (shown on heroes)", type: "string" }),
     defineField({ name: "bannerMessage", title: "Global Banner Message", type: "string" }),
+    defineField({ name: "bannerLinkUrl", title: "Banner Link URL (optional)", type: "url" }),
     defineField({
       name: "heroImages",
       title: "Hero Image Overrides",

@@ -23,7 +23,7 @@ export default function AppletonFoodMenuPage() {
         className="relative flex items-end pb-8 pt-20 sm:pt-24"
         style={{
           minHeight: "clamp(180px, 40vh, 280px)",
-          backgroundColor: "var(--color-teal)",
+          backgroundColor: "var(--color-ink)",
         }}
         aria-label="Food Menu"
       >

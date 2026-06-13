@@ -31,7 +31,7 @@ export default function MenuItemCard({ item, id, highlighted }: MenuItemCardProp
         backgroundColor: "white",
         border: "1px solid rgba(0,0,0,0.07)",
         ...(highlighted
-          ? { ringColor: "var(--color-gold)", boxShadow: "0 0 0 2px var(--color-gold)" }
+          ? { ringColor: "var(--color-green)", boxShadow: "0 0 0 2px var(--color-green)" }
           : {}),
       }}
     >
@@ -48,7 +48,7 @@ export default function MenuItemCard({ item, id, highlighted }: MenuItemCardProp
             {item.isFanFavorite && (
               <span
                 className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
-                style={{ backgroundColor: "var(--color-teal)", color: "white" }}
+                style={{ backgroundColor: "var(--color-green)", color: "white" }}
               >
                 Fan Favorite
               </span>
@@ -94,7 +94,7 @@ export default function MenuItemCard({ item, id, highlighted }: MenuItemCardProp
         {/* Price */}
         <span
           className="flex-shrink-0 font-heading text-base font-bold"
-          style={{ color: "var(--color-teal)" }}
+          style={{ color: "var(--color-ink)" }}
         >
           {item.price}
         </span>
