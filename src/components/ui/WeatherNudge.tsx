@@ -9,16 +9,48 @@ interface WeatherNudge {
 
 const SESSION_KEY = "hopyard_weather_nudge_v2";
 
+function getSeason(month: number): "winter" | "spring" | "summer" | "fall" {
+  if (month <= 1 || month === 11) return "winter"; // Dec, Jan, Feb
+  if (month <= 4) return "spring";                  // Mar, Apr, May
+  if (month <= 7) return "summer";                  // Jun, Jul, Aug
+  return "fall";                                     // Sep, Oct, Nov
+}
+
 function getWeatherMessage(temp: number, weathercode: number): string | null {
   const isRainy = [51,53,55,61,63,65,80,81,82].includes(weathercode);
   const isSnowy = [71,73,75,77,85,86].includes(weathercode);
+  const season = getSeason(new Date().getMonth());
 
   if (isSnowy) return `${temp}°F and snowing. Cold outside. Not in here.`;
-  if (isRainy) return `${temp}°F and raining. The patio's still open if you're brave.`;
+
+  if (isRainy) {
+    if (season === "summer") return `${temp}°F and raining. Summer shower. Patio might be a gamble.`;
+    return `${temp}°F and raining. The patio's still open if you're brave.`;
+  }
+
   if (temp <= 32) return `${temp}°F out there. Porter weather.`;
-  if (temp <= 50) return `${temp}°F — a little crisp. Something dark and smooth sounds right.`;
-  if (temp <= 65) return `${temp}°F out there. A good day for a pint.`;
-  if (temp <= 79) return `${temp}°F — solid patio weather.`;
+
+  if (temp <= 50) {
+    if (season === "spring") return `${temp}°F — still thawing out. A good excuse to warm up inside.`;
+    if (season === "fall")   return `${temp}°F — fall is settling in. Something darker sounds right.`;
+    return `${temp}°F out there. Something warm and dark sounds right.`;
+  }
+
+  if (temp <= 65) {
+    if (season === "spring") return `${temp}°F in ${season} — basically shorts weather around here.`;
+    if (season === "summer") return `${temp}°F in summer. A little cool, but the beer's still cold.`;
+    if (season === "fall")   return `${temp}°F — classic fall day. Good pint weather.`;
+    return `${temp}°F out there. A good day for a pint.`;
+  }
+
+  if (temp <= 79) {
+    if (season === "fall")   return `${temp}°F in fall? Make the most of it. Patio's open.`;
+    if (season === "winter") return `${temp}°F in winter?? Patio's open. We're not asking questions.`;
+    return `${temp}°F — solid patio weather.`;
+  }
+
+  // 80+
+  if (season === "fall") return `${temp}°F in fall. Rare one. Get out here.`;
   return `${temp}°F out there. Something hazy sounds right.`;
 }
 
