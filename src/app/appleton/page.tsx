@@ -93,7 +93,7 @@ export default async function AppletonPage() {
                 className="text-sm font-medium px-2.5 py-1 rounded-full"
                 style={{ backgroundColor: "var(--color-green)", color: "white" }}
               >
-                Live music tonight
+                Live Music Today · 1–4 PM
               </span>
             )}
           </div>
