@@ -236,8 +236,8 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
                 height={36}
                 className="flex-shrink-0"
                 style={{
-                  filter: "brightness(0) invert(1)",
-                  opacity: 0.45,
+                  filter: "invert(1)",
+                  opacity: 0.5,
                   objectFit: "contain",
                 }}
               />
