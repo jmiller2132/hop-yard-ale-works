@@ -147,29 +147,26 @@ const ALL_PICKS: EmployeePick[] = [
   },
 ];
 
-function getPickForLocation(locationSlug: string): EmployeePick {
-  const locationPicks = ALL_PICKS.filter((p) => p.location === locationSlug);
-  if (!locationPicks.length) return ALL_PICKS[0];
-  // Rotate based on day of week so it changes daily without being random on each load
-  const dayIndex = new Date().getDay();
-  return locationPicks[dayIndex % locationPicks.length];
-}
-
 export function EmployeePickSection({ locationSlug }: { locationSlug: string }) {
-  const pick = getPickForLocation(locationSlug);
+  const picks = ALL_PICKS.filter((p) => p.location === locationSlug);
   const drinksHref = `/${locationSlug}-drinks-menu/`;
   return (
     <section className="section-padding" style={{ backgroundColor: "var(--color-warm-white)" }}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="max-w-sm">
-          <EmployeePickCard pick={pick} />
-          <p className="mt-3 text-xs" style={{ color: "var(--color-muted)" }}>
-            Staff picks rotate regularly.{" "}
-            <Link href={drinksHref} className="underline underline-offset-2">
-              See what&apos;s on tap →
-            </Link>
-          </p>
+        <h2 className="font-heading text-2xl font-bold mb-6" style={{ color: "var(--color-ink)" }}>
+          Staff Picks
+        </h2>
+        <div className="grid gap-4 sm:grid-cols-3">
+          {picks.map((pick) => (
+            <EmployeePickCard key={pick.employeeName} pick={pick} />
+          ))}
         </div>
+        <p className="mt-4 text-xs" style={{ color: "var(--color-muted)" }}>
+          Tap a card to learn more.{" "}
+          <Link href={drinksHref} className="underline underline-offset-2">
+            See what&apos;s on tap →
+          </Link>
+        </p>
       </div>
     </section>
   );
