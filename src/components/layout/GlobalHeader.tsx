@@ -183,7 +183,7 @@ export default function GlobalHeader({ activeTheme }: GlobalHeaderProps) {
           </div>
         )}
 
-        <div className="mx-auto flex h-24 max-w-7xl items-center justify-between px-4 sm:px-6">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
           {/* Logo */}
           <button
             onClick={handleLogoClick}
@@ -197,8 +197,8 @@ export default function GlobalHeader({ activeTheme }: GlobalHeaderProps) {
                 alt="Hop Yard Ale Works"
                 width={320}
                 height={280}
-                className="w-48 sm:w-56 h-auto object-contain -my-3"
-                style={{ mixBlendMode: "multiply" }}
+                className="w-auto object-contain"
+                style={{ mixBlendMode: "multiply", maxHeight: "60px", maxWidth: "220px" }}
                 priority
               />
             </Link>
