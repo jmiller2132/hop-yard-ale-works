@@ -8,21 +8,27 @@ interface GlobalFooterProps {
   config?: GlobalConfig | null;
 }
 
-// Footer tile strip — colorful CrossTel-style scrolling tiles
-const FOOTER_TILES = [
-  { id: "pint",     label: "Cold Draft",       emoji: "🍺", bg: "#1a3a2a", fg: "#6ABF4B" },
-  { id: "pizza",    label: "Wood-Fired",        emoji: "🍕", bg: "#3a1a0a", fg: "#e07b39" },
-  { id: "hops",     label: "Hop Forward",       emoji: "🌿", bg: "#0e2918", fg: "#6ABF4B" },
-  { id: "barrel",   label: "Craft Brewed",      emoji: "🛢️",  bg: "#2a1a08", fg: "#D4A017" },
-  { id: "wheat",    label: "Small Batch",       emoji: "🌾", bg: "#2a2008", fg: "#D4A017" },
-  { id: "fire",     label: "Made Fresh",        emoji: "🔥", bg: "#2a0a00", fg: "#e07b39" },
-  { id: "wi",       label: "Wisconsin-Made",    emoji: "🧀", bg: "#1a1020", fg: "#a78bfa" },
-  { id: "mug",      label: "Happy Hour",        emoji: "🍻", bg: "#0a2030", fg: "#38bdf8" },
-  { id: "star",     label: "Staff Favorite",    emoji: "⭐", bg: "#2a2000", fg: "#D4A017" },
-  { id: "music",    label: "Live Music",        emoji: "🎸", bg: "#1a0a2a", fg: "#c084fc" },
-  { id: "pretzel",  label: "Scratch Kitchen",   emoji: "🥨", bg: "#2a1500", fg: "#e07b39" },
-  { id: "bottle",   label: "On Tap Now",        emoji: "🍾", bg: "#0a1a10", fg: "#6ABF4B" },
+// Footer icon strip — real PNG icons, tinted via CSS filter
+const BASE_ICONS = [
+  { id: "pint",      src: "/icons/pint.png",      label: "Pint glass" },
+  { id: "hops",      src: "/icons/hops.png",      label: "Hop cone" },
+  { id: "wheat",     src: "/icons/wheat.png",     label: "Wheat" },
+  { id: "barrel",    src: "/icons/barrel.png",    label: "Barrel" },
+  { id: "bottle",    src: "/icons/bottle.png",    label: "Beer bottle" },
+  { id: "pizza",     src: "/icons/pizza.png",     label: "Pizza" },
+  { id: "pretzel",   src: "/icons/pretzel.png",   label: "Pretzel" },
+  { id: "wisconsin", src: "/icons/wisconsin.png", label: "Wisconsin" },
+  { id: "water",     src: "/icons/water.png",     label: "Water drop" },
 ];
+
+const SEASONAL_ICON_MAP: Record<string, { src: string; label: string }> = {
+  halloween:    { src: "/icons/snowflake.png", label: "Snowflake" },
+  christmas:    { src: "/icons/snowflake.png", label: "Snowflake" },
+  summerBright: { src: "/icons/sun.png",       label: "Sun" },
+  fourthOfJuly: { src: "/icons/sun.png",       label: "Sun" },
+  oktoberfest:  { src: "/icons/mapleleaf.png", label: "Maple leaf" },
+  stPatricks:   { src: "/icons/water.png",     label: "Water drop" },
+};
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
@@ -53,6 +59,7 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
   const [footerMessage, setFooterMessage] = useState<string | null>(null);
   const [emailValue, setEmailValue] = useState("");
   const [emailSubmitted, setEmailSubmitted] = useState(false);
+  const [activeTheme, setActiveTheme] = useState<string | null>(null);
 
   useEffect(() => {
     // Pick a random footer message per page load
@@ -61,7 +68,15 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
       DEFAULT_FOOTER_MESSAGES;
     const idx = Math.floor(Math.random() * messages.length);
     setFooterMessage(messages[idx] ?? null);
+    const themeAttr = document.documentElement.getAttribute("data-theme");
+    setActiveTheme(themeAttr);
   }, [config]);
+
+  // Build strip: base icons + seasonal icon if applicable, tripled for seamless loop
+  const stripIcons = [...BASE_ICONS];
+  const seasonalIcon = activeTheme ? SEASONAL_ICON_MAP[activeTheme] : null;
+  if (seasonalIcon) stripIcons.push({ id: "seasonal", ...seasonalIcon });
+  const tileList = [...stripIcons, ...stripIcons, ...stripIcons];
 
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,9 +84,6 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
     // TODO: wire to Mailchimp API
     setEmailSubmitted(true);
   };
-
-  // Triplicate for seamless scroll loop
-  const tileList = [...FOOTER_TILES, ...FOOTER_TILES, ...FOOTER_TILES];
 
   return (
     <footer
@@ -201,7 +213,7 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
         </div>
       </div>
 
-      {/* Marquee tile strip */}
+      {/* Marquee icon strip */}
       <div
         className="overflow-hidden"
         style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
@@ -214,25 +226,21 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
             WebkitMaskImage: "linear-gradient(to right, transparent, black 6%, black 94%, transparent)",
           }}
         >
-          <div className="flex animate-marquee will-change-transform" style={{ gap: "3px" }}>
-            {tileList.map((tile, i) => (
-              <div
-                key={`${tile.id}-${i}`}
-                className="flex-shrink-0 flex flex-col items-center justify-center gap-1"
+          <div className="flex animate-marquee will-change-transform items-center" style={{ gap: "40px", padding: "20px 0" }}>
+            {tileList.map((icon, i) => (
+              <img
+                key={`${icon.id}-${i}`}
+                src={icon.src}
+                alt={icon.label}
+                width={36}
+                height={36}
+                className="flex-shrink-0"
                 style={{
-                  width: 110,
-                  height: 88,
-                  backgroundColor: tile.bg,
+                  filter: "brightness(0) invert(1)",
+                  opacity: 0.45,
+                  objectFit: "contain",
                 }}
-              >
-                <span style={{ fontSize: "1.75rem", lineHeight: 1 }}>{tile.emoji}</span>
-                <span
-                  className="text-xs font-semibold uppercase tracking-wide"
-                  style={{ color: tile.fg }}
-                >
-                  {tile.label}
-                </span>
-              </div>
+              />
             ))}
           </div>
         </div>
