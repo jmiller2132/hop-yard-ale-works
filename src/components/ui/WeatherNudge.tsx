@@ -54,15 +54,10 @@ function getWeatherMessage(temp: number, weathercode: number): string | null {
   return `${temp}°F out there. Something hazy sounds right.`;
 }
 
-async function fetchNudge(): Promise<WeatherNudge | null> {
+async function fetchNudge(lat: number, lng: number): Promise<WeatherNudge | null> {
   try {
-    // Get rough location from IP (no key required)
-    const geoRes = await fetch("https://ipapi.co/json/", { signal: AbortSignal.timeout(4000) });
-    const geo = await geoRes.json();
-    if (!geo.latitude || !geo.longitude) return null;
-
     const wxRes = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${geo.latitude}&longitude=${geo.longitude}&current_weather=true&temperature_unit=fahrenheit`,
+      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true&temperature_unit=fahrenheit`,
       { signal: AbortSignal.timeout(4000) }
     );
     const wx = await wxRes.json();
@@ -77,28 +72,36 @@ async function fetchNudge(): Promise<WeatherNudge | null> {
   }
 }
 
+const LOCATION_COORDS: Record<string, { lat: number; lng: number }> = {
+  appleton:  { lat: 44.2619, lng: -88.4154 },
+  "the-falls": { lat: 43.1456, lng: -88.1067 },
+};
+
 interface WeatherNudgeProps {
+  locationSlug: "appleton" | "the-falls";
   drinksHref?: string;
 }
 
-export default function WeatherNudge({ drinksHref }: WeatherNudgeProps) {
+export default function WeatherNudge({ locationSlug, drinksHref }: WeatherNudgeProps) {
   const [nudge, setNudge] = useState<WeatherNudge | null>(null);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    const cached = sessionStorage.getItem(SESSION_KEY);
+    const SESSION_KEY_LOCATION = `${SESSION_KEY}_${locationSlug}`;
+    const cached = sessionStorage.getItem(SESSION_KEY_LOCATION);
     if (cached) {
       setNudge(cached === "null" ? null : JSON.parse(cached));
       setLoaded(true);
       return;
     }
 
-    fetchNudge().then((result) => {
-      sessionStorage.setItem(SESSION_KEY, result ? JSON.stringify(result) : "null");
+    const coords = LOCATION_COORDS[locationSlug];
+    fetchNudge(coords.lat, coords.lng).then((result) => {
+      sessionStorage.setItem(SESSION_KEY_LOCATION, result ? JSON.stringify(result) : "null");
       setNudge(result);
       setLoaded(true);
     });
-  }, []);
+  }, [locationSlug]);
 
   if (!loaded || !nudge) return null;
 

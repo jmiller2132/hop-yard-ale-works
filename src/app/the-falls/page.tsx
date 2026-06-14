@@ -135,7 +135,7 @@ export default async function TheFallsPage() {
               <p className="mt-3 text-xs" style={{ color: "var(--color-muted)" }}>
                 Kitchen closes 30 min before close. Hours subject to change on holidays.
               </p>
-              <WeatherNudge drinksHref="/the-falls-drinks-menu/" />
+              <WeatherNudge locationSlug="the-falls" drinksHref="/the-falls-drinks-menu/" />
             </div>
 
             {/* Find Us */}
