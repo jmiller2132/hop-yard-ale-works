@@ -14,7 +14,6 @@ const MESSAGES = [
   "You've done this before.",
   "Old habits.",
   "We were wondering when you'd show up.",
-  "Since you're clearly looking for something — /pour/",
 ];
 
 const SESSION_KEY = "hopyard_konami_idx";

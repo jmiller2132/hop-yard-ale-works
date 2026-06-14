@@ -324,6 +324,9 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
             <p className="italic">{footerMessage}</p>
           )}
           <p>&copy; {new Date().getFullYear()} Hop Yard Ale Works. All rights reserved.</p>
+          <a href="/pour/" className="hover:opacity-100 transition-opacity" style={{ opacity: 0.3 }}>
+            🍺
+          </a>
         </div>
       </div>
     </footer>
