@@ -79,7 +79,7 @@ export default async function HomePage() {
             </p>
           )}
 
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 sm:gap-6 text-left">
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 sm:gap-6 text-left items-stretch">
             <LocationHeroCard
               name="Appleton"
               tagline="The original taproom & brewhouse."
@@ -297,7 +297,7 @@ function LocationHeroCard({
 }) {
   return (
     <div
-      className="rounded-xl p-6"
+      className="rounded-xl p-6 flex flex-col"
       style={{
         backgroundColor: "rgba(255,255,255,0.12)",
         border: "1px solid rgba(255,255,255,0.2)",
@@ -310,7 +310,7 @@ function LocationHeroCard({
           <OpenClosedBadge status={status} />
         </div>
       )}
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="mt-auto pt-4 flex flex-wrap gap-2">
         <Link
           href={href}
           className="rounded-md px-4 py-2 text-sm font-semibold text-white min-h-[44px] flex items-center"

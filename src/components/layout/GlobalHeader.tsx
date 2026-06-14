@@ -170,7 +170,7 @@ export default function GlobalHeader({ activeTheme }: GlobalHeaderProps) {
   return (
     <>
       <header
-        className="sticky top-0 z-50 w-full border-b border-black/5 overflow-hidden"
+        className="sticky top-0 z-50 w-full border-b border-black/5"
         style={{ backgroundColor: "var(--color-warm-white)" }}
       >
         {/* Seasonal banner */}
@@ -195,10 +195,10 @@ export default function GlobalHeader({ activeTheme }: GlobalHeaderProps) {
               <Image
                 src={logoSrc}
                 alt="Hop Yard Ale Works"
-                width={480}
-                height={270}
+                width={740}
+                height={372}
                 className="w-auto object-contain"
-                style={{ mixBlendMode: "multiply", maxHeight: "120px", maxWidth: "300px" }}
+                style={{ mixBlendMode: "multiply", maxHeight: "56px", maxWidth: "280px" }}
                 priority
               />
             </Link>
