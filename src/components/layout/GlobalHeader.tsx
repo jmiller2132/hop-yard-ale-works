@@ -198,6 +198,7 @@ export default function GlobalHeader({ activeTheme }: GlobalHeaderProps) {
                 width={320}
                 height={280}
                 className="w-36 sm:w-44 h-auto object-contain"
+                style={{ mixBlendMode: "multiply" }}
                 priority
               />
             </Link>
