@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
+import { urlFor } from "@/lib/sanity/client";
 import type { SeasonalTheme } from "@/types";
 
 interface GlobalHeaderProps {
@@ -153,10 +154,18 @@ export default function GlobalHeader({ activeTheme }: GlobalHeaderProps) {
     },
   ];
 
-  // Use seasonal logo override if available
-  const logoSrc = activeTheme?.logoOverride
-    ? `/api/sanity-image?ref=${activeTheme.logoOverride.asset._ref}`
-    : "/logo.png";
+  // Map theme palette → local seasonal logo
+  const SEASONAL_LOGOS: Partial<Record<string, string>> = {
+    halloween:    "/logos/halloween.png",
+    christmas:    "/logos/christmas.png",
+    fourthOfJuly: "/logos/fourthOfJuly.png",
+  };
+
+  const logoSrc =
+    (activeTheme?.accentPalette && SEASONAL_LOGOS[activeTheme.accentPalette]) ??
+    (activeTheme?.logoOverride
+      ? urlFor(activeTheme.logoOverride).width(360).url()
+      : "/logo.png");
 
   return (
     <>
@@ -183,9 +192,14 @@ export default function GlobalHeader({ activeTheme }: GlobalHeaderProps) {
             style={{ WebkitTapHighlightColor: "transparent" }}
           >
             <Link href="/">
-              <span className="font-heading text-xl font-bold tracking-tight" style={{ color: "var(--color-teal)" }}>
-                Hop Yard Ale Works
-              </span>
+              <Image
+                src={logoSrc}
+                alt="Hop Yard Ale Works"
+                width={180}
+                height={56}
+                className="h-10 w-auto object-contain"
+                priority
+              />
             </Link>
           </button>
 

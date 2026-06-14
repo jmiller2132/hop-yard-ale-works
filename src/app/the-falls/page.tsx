@@ -6,6 +6,8 @@ import { computeOpenClosed } from "@/lib/hours";
 import { LOCATION_STATIC_DATA } from "@/lib/location-data";
 import OpenClosedBadge from "@/components/ui/OpenClosedBadge";
 import HoursTable from "@/components/ui/HoursTable";
+import WeatherNudge from "@/components/ui/WeatherNudge";
+import { EmployeePickSection } from "@/components/ui/EmployeePickCard";
 import type { Location } from "@/types";
 
 export const revalidate = 900;
@@ -133,6 +135,7 @@ export default async function TheFallsPage() {
               <p className="mt-3 text-xs" style={{ color: "var(--color-muted)" }}>
                 Kitchen closes 30 min before close. Hours subject to change on holidays.
               </p>
+              <WeatherNudge drinksHref="/the-falls-drinks-menu/" />
             </div>
 
             {/* Find Us */}
@@ -177,6 +180,67 @@ export default async function TheFallsPage() {
               </div>
             </div>
 
+          </div>
+        </div>
+      </section>
+
+      <EmployeePickSection locationSlug="the-falls" />
+
+      {/* Private Events */}
+      <section
+        className="section-padding"
+        style={{ backgroundColor: "var(--color-ink)", color: "white" }}
+      >
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="grid gap-10 lg:grid-cols-2 items-center">
+            <div>
+              <p className="font-heading text-sm font-semibold uppercase tracking-widest mb-3" style={{ color: "var(--color-green)" }}>
+                Private Events
+              </p>
+              <h2 className="font-heading text-3xl font-bold text-white sm:text-4xl">
+                Host Your Event at The Falls
+              </h2>
+              <p className="mt-4 text-base leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>
+                The Falls has space for private gatherings — full bar service, wood-fired
+                pizza, and a great atmosphere. Available any day we&rsquo;re open, with a
+                contract required to reserve.
+              </p>
+              <ul className="mt-5 space-y-2">
+                {["Up to 80 guests", "Full bar service included", "Pizza menu available", "Any day we're open"].map((item) => (
+                  <li key={item} className="flex items-center gap-2 text-sm" style={{ color: "rgba(255,255,255,0.75)" }}>
+                    <span style={{ color: "var(--color-green)" }}>✓</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-8">
+                <Link
+                  href="/contact/?subject=private-event&location=the-falls"
+                  className="inline-flex items-center rounded-full px-6 py-3 text-sm font-semibold min-h-[44px] transition-opacity hover:opacity-90"
+                  style={{ backgroundColor: "var(--color-green)", color: "white" }}
+                >
+                  Get in Touch
+                </Link>
+              </div>
+            </div>
+            <div
+              className="rounded-xl p-8 text-center"
+              style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}
+            >
+              <p className="text-lg font-heading font-semibold text-white">
+                Interested in hosting?
+              </p>
+              <p className="mt-2 text-sm" style={{ color: "rgba(255,255,255,0.55)" }}>
+                Email us at{" "}
+                <a
+                  href="mailto:hopyardthefalls@gmail.com"
+                  className="underline underline-offset-2 hover:opacity-70 transition-opacity text-white"
+                >
+                  hopyardthefalls@gmail.com
+                </a>
+                {" "}or use the contact form.
+              </p>
+            </div>
           </div>
         </div>
       </section>

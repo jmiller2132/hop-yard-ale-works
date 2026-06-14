@@ -6,6 +6,8 @@ import { computeOpenClosed, isSunday } from "@/lib/hours";
 import { LOCATION_STATIC_DATA } from "@/lib/location-data";
 import OpenClosedBadge from "@/components/ui/OpenClosedBadge";
 import HoursTable from "@/components/ui/HoursTable";
+import WeatherNudge from "@/components/ui/WeatherNudge";
+import { EmployeePickSection } from "@/components/ui/EmployeePickCard";
 import type { Location } from "@/types";
 
 export const revalidate = 900;
@@ -89,7 +91,7 @@ export default async function AppletonPage() {
             {sunday && (
               <span
                 className="text-sm font-medium px-2.5 py-1 rounded-full"
-                style={{ backgroundColor: "var(--color-gold)", color: "var(--color-ink)" }}
+                style={{ backgroundColor: "var(--color-green)", color: "white" }}
               >
                 Live music tonight
               </span>
@@ -138,6 +140,7 @@ export default async function AppletonPage() {
               <p className="mt-3 text-xs" style={{ color: "var(--color-muted)" }}>
                 Kitchen closes 30 min before close. Hours subject to change on holidays.
               </p>
+              <WeatherNudge drinksHref="/appleton-drinks-menu/" />
             </div>
 
             {/* Find Us */}
@@ -185,6 +188,8 @@ export default async function AppletonPage() {
           </div>
         </div>
       </section>
+
+      <EmployeePickSection locationSlug="appleton" />
 
       {/* Quick links */}
       <section className="pb-16">

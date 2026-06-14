@@ -8,9 +8,11 @@ import GlobalFooter from "@/components/layout/GlobalFooter";
 import GlobalBanner from "@/components/layout/GlobalBanner";
 import ChatBot from "@/components/chat/ChatBot";
 import KonamiCode from "@/components/ui/KonamiCode";
+import TabTitleInactivity from "@/components/ui/TabTitleInactivity";
 import { sanityClient } from "@/lib/sanity/client";
 import { activeSeasonalThemeQuery, globalConfigQuery } from "@/lib/sanity/queries";
 import type { SeasonalTheme, GlobalConfig } from "@/types";
+import { isLateNight } from "@/lib/hours";
 
 const zillaSlab = Zilla_Slab({
   subsets: ["latin"],
@@ -66,6 +68,8 @@ export default async function RootLayout({
       ? activeTheme.accentPalette
       : undefined;
 
+  const lateNight = isLateNight();
+
   return (
     <html
       lang="en"
@@ -82,8 +86,17 @@ export default async function RootLayout({
         <GlobalHeader activeTheme={activeTheme} />
         <main className="flex-1">{children}</main>
         <GlobalFooter config={globalConfig} />
+        {lateNight && (
+          <p
+            className="fixed bottom-0 left-0 right-0 text-center text-xs py-1.5 pointer-events-none z-40"
+            style={{ backgroundColor: "var(--color-ink)", color: "rgba(255,255,255,0.35)" }}
+          >
+            You&apos;re up late. So is the dough.
+          </p>
+        )}
         <ChatBot />
         <KonamiCode />
+        <TabTitleInactivity />
         <Analytics />
         <SpeedInsights />
       </body>
