@@ -7,19 +7,19 @@ interface WeatherNudge {
   message: string;
 }
 
-const SESSION_KEY = "hopyard_weather_nudge";
+const SESSION_KEY = "hopyard_weather_nudge_v2";
 
 function getWeatherMessage(temp: number, weathercode: number): string | null {
-  // WMO weather codes: https://open-meteo.com/en/docs#weathervariables
   const isRainy = [51,53,55,61,63,65,80,81,82].includes(weathercode);
   const isSnowy = [71,73,75,77,85,86].includes(weathercode);
 
-  if (isSnowy) return "Cold outside. Not in here.";
-  if (isRainy) return "The patio's still open if you're brave.";
-  if (temp <= 40) return "Porter weather.";
-  if (temp >= 80) return "Something hazy sounds right.";
-  if (temp >= 50 && temp <= 65) return "This is exactly what fall is for.";
-  return null;
+  if (isSnowy) return `${temp}°F and snowing. Cold outside. Not in here.`;
+  if (isRainy) return `${temp}°F and raining. The patio's still open if you're brave.`;
+  if (temp <= 32) return `${temp}°F out there. Porter weather.`;
+  if (temp <= 50) return `${temp}°F — a little crisp. Something dark and smooth sounds right.`;
+  if (temp <= 65) return `${temp}°F out there. A good day for a pint.`;
+  if (temp <= 79) return `${temp}°F — solid patio weather.`;
+  return `${temp}°F out there. Something hazy sounds right.`;
 }
 
 async function fetchNudge(): Promise<WeatherNudge | null> {
