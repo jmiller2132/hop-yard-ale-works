@@ -2,91 +2,27 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { cn } from "@/lib/cn";
 import type { GlobalConfig } from "@/types";
 
 interface GlobalFooterProps {
   config?: GlobalConfig | null;
 }
 
-// Footer icon strip — base icons using inline SVG paths
-// All icons use currentColor so they can be tinted
-const FOOTER_ICONS = [
-  {
-    id: "pint",
-    label: "Pint glass",
-    path: "M6 2h12l-2 18H8L6 2zm4 6h4m-4 4h4",
-  },
-  {
-    id: "hops",
-    label: "Hop cone",
-    path: "M12 3C8 3 5 7 5 12s3 9 7 9 7-4 7-9-3-9-7-9zm0 0v18M9 7.5c1 1 2 1.5 3 1.5M15 7.5c-1 1-2 1.5-3 1.5M9 12c1 1 2 1.5 3 1.5M15 12c-1 1-2 1.5-3 1.5M9 16c1 1 2 1.5 3 1.5M15 16c-1 1-2 1.5-3 1.5",
-  },
-  {
-    id: "wheat",
-    label: "Wheat stalk",
-    path: "M12 21V5M9 8l3-3 3 3M9 12l3-3 3 3M9 16l3-3 3 3M6 19l6-6 6 6",
-  },
-  {
-    id: "barrel",
-    label: "Barrel",
-    path: "M7 4h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm0 4h10M7 16h10M12 4v16",
-  },
-  {
-    id: "bottle",
-    label: "Beer bottle",
-    path: "M9 2v5l-2 3v10a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V10L15 7V2H9zm0 0h6m-6 5h6",
-  },
-  {
-    id: "pizza",
-    label: "Pizza slice",
-    path: "M12 2L3 20h18L12 2zm0 0v18M7 14h10",
-  },
-  {
-    id: "pretzel",
-    label: "Pretzel",
-    path: "M12 4C9 4 7 6 7 9c0 2 1 3 2 4l-3 4a4 4 0 0 0 7 0l1-1 1 1a4 4 0 0 0 7 0l-3-4c1-1 2-2 2-4 0-3-2-5-5-5h-4z",
-  },
-  {
-    id: "wisconsin",
-    label: "Wisconsin",
-    path: "M4 6l2-1 1 1h2l1-2 2 1 1-1h3l1 2 1-1 1 1-1 3-1 1v2l1 1-1 2-2 1-1 2-2 1-2-1-1 1-1-1v-2l-2-1V9l1-1-1-2z",
-  },
+// Footer tile strip — colorful CrossTel-style scrolling tiles
+const FOOTER_TILES = [
+  { id: "pint",     label: "Cold Draft",       emoji: "🍺", bg: "#1a3a2a", fg: "#6ABF4B" },
+  { id: "pizza",    label: "Wood-Fired",        emoji: "🍕", bg: "#3a1a0a", fg: "#e07b39" },
+  { id: "hops",     label: "Hop Forward",       emoji: "🌿", bg: "#0e2918", fg: "#6ABF4B" },
+  { id: "barrel",   label: "Craft Brewed",      emoji: "🛢️",  bg: "#2a1a08", fg: "#D4A017" },
+  { id: "wheat",    label: "Small Batch",       emoji: "🌾", bg: "#2a2008", fg: "#D4A017" },
+  { id: "fire",     label: "Made Fresh",        emoji: "🔥", bg: "#2a0a00", fg: "#e07b39" },
+  { id: "wi",       label: "Wisconsin-Made",    emoji: "🧀", bg: "#1a1020", fg: "#a78bfa" },
+  { id: "mug",      label: "Happy Hour",        emoji: "🍻", bg: "#0a2030", fg: "#38bdf8" },
+  { id: "star",     label: "Staff Favorite",    emoji: "⭐", bg: "#2a2000", fg: "#D4A017" },
+  { id: "music",    label: "Live Music",        emoji: "🎸", bg: "#1a0a2a", fg: "#c084fc" },
+  { id: "pretzel",  label: "Scratch Kitchen",   emoji: "🥨", bg: "#2a1500", fg: "#e07b39" },
+  { id: "bottle",   label: "On Tap Now",        emoji: "🍾", bg: "#0a1a10", fg: "#6ABF4B" },
 ];
-
-// Seasonal icons — only shown when a matching theme is active
-const SEASONAL_ICONS: Record<string, { id: string; label: string; path: string }> = {
-  halloween: {
-    id: "snowflake",
-    label: "Snowflake",
-    path: "M12 2v20M2 12h20M5 5l14 14M19 5L5 19",
-  },
-  christmas: {
-    id: "snowflake",
-    label: "Snowflake",
-    path: "M12 2v20M2 12h20M5 5l14 14M19 5L5 19",
-  },
-  summerBright: {
-    id: "sun",
-    label: "Sun",
-    path: "M12 2v2M12 20v2M2 12h2M20 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4l1.4-1.4M17 7l1.4-1.4M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z",
-  },
-  fourthOfJuly: {
-    id: "sun",
-    label: "Sun",
-    path: "M12 2v2M12 20v2M2 12h2M20 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4l1.4-1.4M17 7l1.4-1.4M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z",
-  },
-  oktoberfest: {
-    id: "mapleleaf",
-    label: "Maple leaf",
-    path: "M12 2l2 5h5l-4 3 2 5-5-3-5 3 2-5-4-3h5z",
-  },
-  stPatricks: {
-    id: "raindrop",
-    label: "Raindrop",
-    path: "M12 3C12 3 6 10 6 14a6 6 0 0 0 12 0c0-4-6-11-6-11z",
-  },
-};
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
@@ -117,7 +53,6 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
   const [footerMessage, setFooterMessage] = useState<string | null>(null);
   const [emailValue, setEmailValue] = useState("");
   const [emailSubmitted, setEmailSubmitted] = useState(false);
-  const [activeTheme, setActiveTheme] = useState<string | null>(null);
 
   useEffect(() => {
     // Pick a random footer message per page load
@@ -126,10 +61,6 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
       DEFAULT_FOOTER_MESSAGES;
     const idx = Math.floor(Math.random() * messages.length);
     setFooterMessage(messages[idx] ?? null);
-
-    // Read theme from DOM data attribute
-    const themeAttr = document.documentElement.getAttribute("data-theme");
-    setActiveTheme(themeAttr);
   }, [config]);
 
   const handleEmailSubmit = (e: React.FormEvent) => {
@@ -139,13 +70,8 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
     setEmailSubmitted(true);
   };
 
-  // Build the icon strip: base icons + seasonal icon at end if applicable
-  const iconStrip = [...FOOTER_ICONS];
-  const seasonalIcon = activeTheme ? SEASONAL_ICONS[activeTheme] : null;
-  if (seasonalIcon) iconStrip.push(seasonalIcon);
-
   // Triplicate for seamless scroll loop
-  const iconList = [...iconStrip, ...iconStrip, ...iconStrip];
+  const tileList = [...FOOTER_TILES, ...FOOTER_TILES, ...FOOTER_TILES];
 
   return (
     <footer
@@ -275,40 +201,38 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
         </div>
       </div>
 
-      {/* Marquee icon strip */}
+      {/* Marquee tile strip */}
       <div
-        className="border-t overflow-hidden"
-        style={{ borderColor: "rgba(255,255,255,0.1)" }}
+        className="overflow-hidden"
+        style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
         aria-hidden="true"
       >
         <div
           className="relative flex"
           style={{
-            maskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
-            WebkitMaskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
+            maskImage: "linear-gradient(to right, transparent, black 6%, black 94%, transparent)",
+            WebkitMaskImage: "linear-gradient(to right, transparent, black 6%, black 94%, transparent)",
           }}
         >
-          <div className="flex animate-marquee gap-10 py-4 will-change-transform">
-            {iconList.map((icon, i) => (
-              <span
-                key={`${icon.id}-${i}`}
-                className="flex-shrink-0"
-                style={{ color: "rgba(255,255,255,0.5)", opacity: 1 }}
+          <div className="flex animate-marquee will-change-transform" style={{ gap: "3px" }}>
+            {tileList.map((tile, i) => (
+              <div
+                key={`${tile.id}-${i}`}
+                className="flex-shrink-0 flex flex-col items-center justify-center gap-1"
+                style={{
+                  width: 110,
+                  height: 88,
+                  backgroundColor: tile.bg,
+                }}
               >
-                <svg
-                  width="28"
-                  height="28"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-label={icon.label}
+                <span style={{ fontSize: "1.75rem", lineHeight: 1 }}>{tile.emoji}</span>
+                <span
+                  className="text-xs font-semibold uppercase tracking-wide"
+                  style={{ color: tile.fg }}
                 >
-                  <path d={icon.path} />
-                </svg>
-              </span>
+                  {tile.label}
+                </span>
+              </div>
             ))}
           </div>
         </div>
