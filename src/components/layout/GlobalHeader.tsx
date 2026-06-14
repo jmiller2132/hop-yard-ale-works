@@ -183,7 +183,7 @@ export default function GlobalHeader({ activeTheme }: GlobalHeaderProps) {
           </div>
         )}
 
-        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6">
+        <div className="mx-auto flex h-24 max-w-7xl items-center justify-between px-4 sm:px-6">
           {/* Logo */}
           <button
             onClick={handleLogoClick}
@@ -195,9 +195,9 @@ export default function GlobalHeader({ activeTheme }: GlobalHeaderProps) {
               <Image
                 src={logoSrc}
                 alt="Hop Yard Ale Works"
-                width={260}
-                height={80}
-                className="h-12 sm:h-14 w-auto object-contain"
+                width={320}
+                height={280}
+                className="w-36 sm:w-44 h-auto object-contain"
                 priority
               />
             </Link>
