@@ -64,12 +64,12 @@ const BYO_VEGGIES = [
 // White sauce = eggs + dairy (not vegan; fine for vegetarian)
 // Oil = clean base, works for vegetarian & vegan
 const BYO_SAUCES = [
-  { name: "Extra Red Sauce", vegetarian: false, vegan: false, gf: true, note: "Contains anchovies" },
+  { name: "Extra Red Sauce", vegetarian: false, vegan: false, gf: true },
   { name: "Balsamic Glaze",  vegetarian: true,  vegan: true,  gf: true },
-  { name: "Hot Honey",       vegetarian: true,  vegan: false, gf: true, note: "Contains honey" },
+  { name: "Hot Honey",       vegetarian: true,  vegan: false, gf: true },
   { name: "Oil",             vegetarian: true,  vegan: true,  gf: true, recommended: "Best base for veg/vegan" },
-  { name: "Ranch",           vegetarian: true,  vegan: false, gf: true, note: "Contains dairy" },
-  { name: "White Sauce",     vegetarian: true,  vegan: false, gf: true, note: "Contains eggs & dairy" },
+  { name: "Ranch",           vegetarian: true,  vegan: false, gf: true },
+  { name: "White Sauce",     vegetarian: true,  vegan: false, gf: true },
 ];
 
 interface FoodMenuClientProps {
@@ -435,7 +435,6 @@ type ToppingItem = {
   vegetarian: boolean;
   vegan: boolean;
   gf: boolean;
-  note?: string;
   recommended?: string;
 };
 
@@ -485,9 +484,6 @@ function ByoGroup({
               <span className={cn(dimmed ? "line-through" : "")}>{item.name}</span>
               {!dimmed && highlight && (
                 <span className="text-xs font-semibold shrink-0" style={{ color: "var(--color-green)" }}>✓ base</span>
-              )}
-              {!dimmed && !highlight && item.note && (
-                <span className="text-xs shrink-0" style={{ color: "var(--color-muted)" }}>{item.note}</span>
               )}
             </li>
           );
