@@ -1,5 +1,5 @@
 // Appleton food menu — structured for Sanity ingestion.
-// menuType: "food" | section: "Specialty Pizzas" | "Sharables" | "Build Your Own" | "Dessert"
+// menuType: "food" | section: "The Basics" | "Our Creations" | "Snacks" | "Build Your Own" | "Dessert"
 // tags: ("vegetarian" | "vegan" | "glutenFree")[]
 // Note: emoji flags from WordPress = vegetarian 🍅, vegan 🌱, gluten-free 🌾, spicy 🔥, nuts 🥜, eggs 🥚
 
@@ -15,13 +15,72 @@ export interface MenuItemSeed {
 }
 
 export const APPLETON_FOOD_MENU: MenuItemSeed[] = [
-  // ── Specialty Pizzas ─────────────────────────────────────────────
+  // ── The Basics (steadfast) ────────────────────────────────────────
+  {
+    name: "Italian Dunkers",
+    description:
+      "EVOO · Garlic · Mozzarella · Red Sauce as Dip (Cut in Strips)",
+    price: "$12",
+    section: "The Basics",
+    tags: ["vegetarian"],
+    displayOrder: 7,
+  },
+  {
+    name: "Fancy Pants (Cheese!)",
+    description: "Red Sauce · Mozzarella",
+    price: "$12",
+    section: "The Basics",
+    tags: ["vegetarian"],
+    displayOrder: 8,
+  },
+  {
+    name: "My Fav",
+    description: "Red Sauce · Mozzarella · Garlic · Tomatoes · Basil",
+    price: "$13",
+    section: "The Basics",
+    tags: ["vegetarian"],
+    displayOrder: 9,
+  },
+  {
+    name: "First Timer",
+    description: "Red Sauce · Mozzarella · Pepperoni · Sausage",
+    price: "$16",
+    section: "The Basics",
+    tags: [],
+    displayOrder: 10,
+  },
+  {
+    name: "Bits & Bobs",
+    description: "Red Sauce · Mozzarella · Sausage · Mushroom",
+    price: "$14",
+    section: "The Basics",
+    tags: [],
+    displayOrder: 12,
+  },
+  {
+    name: "Old Reliable",
+    description: "Red Sauce · Mozzarella · Pepperoni · Sausage · Onion · Mushroom",
+    price: "$17",
+    section: "The Basics",
+    tags: [],
+    displayOrder: 11,
+  },
+  {
+    name: "Winner Winner Chicken Dinner",
+    description:
+      "White Sauce · Mozzarella · Chicken · Mushroom · Garlic · Basil · Wine",
+    price: "$16",
+    section: "The Basics",
+    tags: [],
+    displayOrder: 13,
+  },
+  // ── Our Creations (rotating ~every 2 months) ──────────────────────
   {
     name: "Watermelon Sugar Pie",
     description:
       "Oil · Garlic · Herb Chèvre · Smoked Tomato · Jalapeño · Mint · Watermelon · Jalapeño-Lime Vinaigrette · Honey Crystals",
     price: "$16",
-    section: "Specialty Pizzas",
+    section: "Our Creations",
     tags: ["vegetarian"],
     displayOrder: 1,
   },
@@ -30,7 +89,7 @@ export const APPLETON_FOOD_MENU: MenuItemSeed[] = [
     description:
       "Jalapeño Aioli · Cheddar · Meat Block Hot Dogs · Bacon · Sautéed Onion · BBQ · Chili Cheese Fritos",
     price: "$17",
-    section: "Specialty Pizzas",
+    section: "Our Creations",
     tags: [],
     displayOrder: 2,
   },
@@ -39,7 +98,7 @@ export const APPLETON_FOOD_MENU: MenuItemSeed[] = [
     description:
       "Red Sauce · Herb Chèvre · Garlic · Basil · Oregano · Sautéed Onion · Bacon · Orange Honey",
     price: "$17",
-    section: "Specialty Pizzas",
+    section: "Our Creations",
     tags: [],
     displayOrder: 3,
   },
@@ -48,7 +107,7 @@ export const APPLETON_FOOD_MENU: MenuItemSeed[] = [
     description:
       "Mac Sauce · Cheddar · Ground Beef · Onion · Pickles · Tomato · Lettuce · House-Made Ketchup · Sesame Seeds",
     price: "$18",
-    section: "Specialty Pizzas",
+    section: "Our Creations",
     tags: [],
     displayOrder: 4,
   },
@@ -57,7 +116,7 @@ export const APPLETON_FOOD_MENU: MenuItemSeed[] = [
     description:
       "Pesto · Fresh Mozzarella · Garlic · Sliced Tomato · Blackberry-Ginger Balsamic",
     price: "$16",
-    section: "Specialty Pizzas",
+    section: "Our Creations",
     tags: [],
     displayOrder: 5,
   },
@@ -66,74 +125,16 @@ export const APPLETON_FOOD_MENU: MenuItemSeed[] = [
     description:
       "Bang Sauce · Mozzarella · Chicken · Onion · Red Pepper · Fresh Cucumber · Sugar Snap Pea Pods · Cilantro",
     price: "$17",
-    section: "Specialty Pizzas",
+    section: "Our Creations",
     tags: [],
     displayOrder: 6,
-  },
-  {
-    name: "Italian Dunkers",
-    description:
-      "EVOO · Garlic · Mozzarella · Red Sauce as Dip (Cut in Strips)",
-    price: "$12",
-    section: "Specialty Pizzas",
-    tags: ["vegetarian"],
-    displayOrder: 7,
-  },
-  {
-    name: "Fancy Pants (Cheese!)",
-    description: "Red Sauce · Mozzarella",
-    price: "$12",
-    section: "Specialty Pizzas",
-    tags: ["vegetarian"],
-    displayOrder: 8,
-  },
-  {
-    name: "My Fav",
-    description: "Red Sauce · Mozzarella · Garlic · Tomatoes · Basil",
-    price: "$13",
-    section: "Specialty Pizzas",
-    tags: ["vegetarian"],
-    displayOrder: 9,
-  },
-  {
-    name: "First Timer",
-    description: "Red Sauce · Mozzarella · Pepperoni · Sausage",
-    price: "$16",
-    section: "Specialty Pizzas",
-    tags: [],
-    displayOrder: 10,
-  },
-  {
-    name: "Old Reliable",
-    description: "Red Sauce · Mozzarella · Pepperoni · Sausage · Onion · Mushroom",
-    price: "$17",
-    section: "Specialty Pizzas",
-    tags: [],
-    displayOrder: 11,
-  },
-  {
-    name: "Bits & Bobs",
-    description: "Red Sauce · Mozzarella · Sausage · Mushroom",
-    price: "$14",
-    section: "Specialty Pizzas",
-    tags: [],
-    displayOrder: 12,
-  },
-  {
-    name: "Winner Winner Chicken Dinner",
-    description:
-      "White Sauce · Mozzarella · Chicken · Mushroom · Garlic · Basil · Wine",
-    price: "$16",
-    section: "Specialty Pizzas",
-    tags: [],
-    displayOrder: 13,
   },
   {
     name: "99 Corvette",
     description:
       "Red Sauce · Mozzarella · Garlic · Basil · Pepperoni · Ricotta · Hot Honey",
     price: "$17",
-    section: "Specialty Pizzas",
+    section: "Our Creations",
     tags: [],
     displayOrder: 14,
   },
@@ -142,9 +143,26 @@ export const APPLETON_FOOD_MENU: MenuItemSeed[] = [
     description:
       "White Sauce · Mozzarella · Pepperoni · Garlic · Basil · Jalapeño · Pepperoncini",
     price: "$16",
-    section: "Specialty Pizzas",
+    section: "Our Creations",
     tags: [],
     displayOrder: 15,
+  },
+  // ── Snacks ────────────────────────────────────────────────────────
+  {
+    name: "Popcorn",
+    description: "House popcorn.",
+    price: "$5",
+    section: "Snacks",
+    tags: ["vegan", "glutenFree"],
+    displayOrder: 20,
+  },
+  {
+    name: "Chips",
+    description: "Bar chips.",
+    price: "$2",
+    section: "Snacks",
+    tags: ["vegan", "glutenFree"],
+    displayOrder: 21,
   },
   // ── Dessert ──────────────────────────────────────────────────────
   {
