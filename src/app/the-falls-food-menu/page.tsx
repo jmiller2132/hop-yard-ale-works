@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { APPLETON_FOOD_MENU } from "@/data/menu-appleton";
 import { LOCATION_STATIC_DATA } from "@/lib/location-data";
 import FoodMenuClient from "@/components/menu/FoodMenuClient";
@@ -29,12 +30,20 @@ export default function TheFallsFoodMenuPage() {
       >
         <div className="absolute inset-0 bg-black/25" aria-hidden="true" />
         <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6">
-          <p className="text-xs font-medium uppercase tracking-wider mb-1 opacity-70 text-white">
-            The Falls / Food Menu
-          </p>
+          <Link
+            href="/the-falls/"
+            className="inline-flex items-center gap-1.5 text-sm font-medium mb-3 transition-opacity hover:opacity-70"
+            style={{ color: "rgba(255,255,255,0.65)" }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+              <path d="M19 12H5M5 12l7 7M5 12l7-7" />
+            </svg>
+            The Falls
+          </Link>
           <h1 className="font-heading text-4xl font-bold text-white sm:text-5xl">
             Food Menu
           </h1>
+          <p className="mt-1 text-white/60 text-sm font-medium uppercase tracking-wider">Menomonee Falls</p>
         </div>
       </section>
 
