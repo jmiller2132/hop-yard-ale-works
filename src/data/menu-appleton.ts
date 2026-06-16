@@ -30,7 +30,7 @@ export const APPLETON_FOOD_MENU: MenuItemSeed[] = [
     description: "Red Sauce · Mozzarella",
     price: "$12",
     section: "The Basics",
-    tags: ["vegetarian"],
+    tags: [],
     displayOrder: 8,
   },
   {
@@ -38,7 +38,7 @@ export const APPLETON_FOOD_MENU: MenuItemSeed[] = [
     description: "Red Sauce · Mozzarella · Garlic · Tomatoes · Basil",
     price: "$13",
     section: "The Basics",
-    tags: ["vegetarian"],
+    tags: [],
     displayOrder: 9,
   },
   {
@@ -117,7 +117,7 @@ export const APPLETON_FOOD_MENU: MenuItemSeed[] = [
       "Pesto · Fresh Mozzarella · Garlic · Sliced Tomato · Blackberry-Ginger Balsamic",
     price: "$16",
     section: "Our Creations",
-    tags: [],
+    tags: ["vegetarian"],
     displayOrder: 5,
   },
   {

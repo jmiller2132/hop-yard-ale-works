@@ -32,38 +32,44 @@ const REPICK_TOASTS = [
 ];
 
 // BYO topping data with dietary flags
+// vegetarian = no meat, no fish (our red sauce has anchovies = not vegetarian)
+// vegan = no animal products at all (dairy, eggs, honey, fish)
+// gf = gluten-free (most toppings are; house dough is not — see upgrade)
 const BYO_MEATS = [
-  { name: "Pepperoni",    vegan: false, gf: true  },
-  { name: "Sausage",      vegan: false, gf: true  },
-  { name: "Smoked Ham",   vegan: false, gf: true  },
-  { name: "Herb Chicken", vegan: false, gf: true  },
+  { name: "Pepperoni",    vegetarian: false, vegan: false, gf: true },
+  { name: "Sausage",      vegetarian: false, vegan: false, gf: true },
+  { name: "Smoked Ham",   vegetarian: false, vegan: false, gf: true },
+  { name: "Herb Chicken", vegetarian: false, vegan: false, gf: true },
 ];
 const BYO_CHEESES = [
-  { name: "Extra Mozzarella", vegan: false, gf: true },
-  { name: "Parmesan",         vegan: false, gf: true },
-  { name: "Smoked Gouda",     vegan: false, gf: true },
-  { name: "Feta",             vegan: false, gf: true },
+  { name: "Extra Mozzarella", vegetarian: true, vegan: false, gf: true },
+  { name: "Parmesan",         vegetarian: true, vegan: false, gf: true },
+  { name: "Smoked Gouda",     vegetarian: true, vegan: false, gf: true },
+  { name: "Feta",             vegetarian: true, vegan: false, gf: true },
 ];
 const BYO_VEGGIES = [
-  { name: "Black Olive",    vegan: true, gf: true },
-  { name: "Basil",          vegan: true, gf: true },
-  { name: "Fresh Mushroom", vegan: true, gf: true },
-  { name: "Roasted Garlic", vegan: true, gf: true },
-  { name: "Jalapeño",       vegan: true, gf: true },
-  { name: "Onion",          vegan: true, gf: true },
-  { name: "Pineapple",      vegan: true, gf: true },
-  { name: "Pepperoncini",   vegan: true, gf: true },
-  { name: "Red Pepper",     vegan: true, gf: true },
-  { name: "Roma Tomato",    vegan: true, gf: true },
-  { name: "Green Olive",    vegan: true, gf: true },
+  { name: "Black Olive",    vegetarian: true, vegan: true, gf: true },
+  { name: "Basil",          vegetarian: true, vegan: true, gf: true },
+  { name: "Fresh Mushroom", vegetarian: true, vegan: true, gf: true },
+  { name: "Roasted Garlic", vegetarian: true, vegan: true, gf: true },
+  { name: "Jalapeño",       vegetarian: true, vegan: true, gf: true },
+  { name: "Onion",          vegetarian: true, vegan: true, gf: true },
+  { name: "Pineapple",      vegetarian: true, vegan: true, gf: true },
+  { name: "Pepperoncini",   vegetarian: true, vegan: true, gf: true },
+  { name: "Red Pepper",     vegetarian: true, vegan: true, gf: true },
+  { name: "Roma Tomato",    vegetarian: true, vegan: true, gf: true },
+  { name: "Green Olive",    vegetarian: true, vegan: true, gf: true },
 ];
+// Red sauce = anchovies (not vegetarian, not vegan)
+// White sauce = eggs + dairy (not vegan; fine for vegetarian)
+// Oil = clean base, works for vegetarian & vegan
 const BYO_SAUCES = [
-  { name: "Extra Red Sauce",  vegan: true,  gf: true },
-  { name: "Balsamic Glaze",   vegan: true,  gf: true },
-  { name: "Hot Honey",        vegan: false, gf: true },
-  { name: "Oil",              vegan: true,  gf: true },
-  { name: "Ranch",            vegan: false, gf: true },
-  { name: "White Sauce",      vegan: false, gf: true },
+  { name: "Extra Red Sauce", vegetarian: false, vegan: false, gf: true, note: "Contains anchovies" },
+  { name: "Balsamic Glaze",  vegetarian: true,  vegan: true,  gf: true },
+  { name: "Hot Honey",       vegetarian: true,  vegan: false, gf: true, note: "Contains honey" },
+  { name: "Oil",             vegetarian: true,  vegan: true,  gf: true, recommended: "Best base for veg/vegan" },
+  { name: "Ranch",           vegetarian: true,  vegan: false, gf: true, note: "Contains dairy" },
+  { name: "White Sauce",     vegetarian: true,  vegan: false, gf: true, note: "Contains eggs & dairy" },
 ];
 
 interface FoodMenuClientProps {
@@ -125,6 +131,7 @@ export default function FoodMenuClient({
   };
 
   const isVegan = activeFilters.includes("vegan");
+  const isVegetarian = activeFilters.includes("vegetarian");
   const isGF = activeFilters.includes("glutenFree");
   const hasFilter = activeFilters.length > 0;
 
@@ -287,16 +294,22 @@ export default function FoodMenuClient({
           </p>
 
           {/* Dietary notice for BYO */}
+          {isVegetarian && !isVegan && (
+            <div className="mb-5 rounded-lg px-4 py-3 text-sm" style={{ backgroundColor: "rgba(106,191,75,0.08)", border: "1px solid rgba(106,191,75,0.25)", color: "var(--color-ink)" }}>
+              <strong>Filtering for Vegetarian</strong> — meats and our house red sauce (contains anchovies) are not vegetarian.
+              Use <strong>Oil</strong> as your base — it&apos;s the cleanest vegetarian option.
+            </div>
+          )}
           {isVegan && (
             <div className="mb-5 rounded-lg px-4 py-3 text-sm" style={{ backgroundColor: "rgba(106,191,75,0.08)", border: "1px solid rgba(106,191,75,0.25)", color: "var(--color-ink)" }}>
-              <strong>Filtering for Vegan</strong> — meats, dairy cheeses, ranch, and white sauce are not vegan.
-              Items below are marked accordingly. The <strong>Vegan Cheese upgrade</strong> is a great swap.
+              <strong>Filtering for Vegan</strong> — meats, all dairy cheeses, ranch, white sauce (eggs &amp; dairy), and house red sauce (anchovies) are out.
+              Use <strong>Oil</strong> as your base and add the <strong>Vegan Cheese upgrade</strong>.
             </div>
           )}
           {isGF && (
             <div className="mb-5 rounded-lg px-4 py-3 text-sm" style={{ backgroundColor: "rgba(106,191,75,0.08)", border: "1px solid rgba(106,191,75,0.25)", color: "var(--color-ink)" }}>
               <strong>Filtering for Gluten Free</strong> — house dough contains gluten.
-              The <strong>Cauliflower Crust upgrade (+$3)</strong> is available as a gluten-free alternative.
+              The <strong>Cauliflower Crust upgrade (+$3)</strong> is your gluten-free base. Most toppings below are GF.
             </div>
           )}
 
@@ -309,10 +322,10 @@ export default function FoodMenuClient({
           )}
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <ByoGroup title="Meats — $2 each" items={BYO_MEATS} filterVegan={isVegan} filterGF={isGF} type="meat" />
-            <ByoGroup title="Veggies — $1 each" items={BYO_VEGGIES} filterVegan={isVegan} filterGF={isGF} type="veggie" />
-            <ByoGroup title="Extra Cheeses — $2 each" items={BYO_CHEESES} filterVegan={isVegan} filterGF={isGF} type="cheese" />
-            <ByoGroup title="Sauces — $0.50 each" items={BYO_SAUCES} filterVegan={isVegan} filterGF={isGF} type="sauce" note="Can be on the side or on the pizza." />
+            <ByoGroup title="Meats — $2 each" items={BYO_MEATS} filterVegetarian={isVegetarian} filterVegan={isVegan} filterGF={isGF} type="meat" />
+            <ByoGroup title="Veggies — $1 each" items={BYO_VEGGIES} filterVegetarian={isVegetarian} filterVegan={isVegan} filterGF={isGF} type="veggie" />
+            <ByoGroup title="Extra Cheeses — $2 each" items={BYO_CHEESES} filterVegetarian={isVegetarian} filterVegan={isVegan} filterGF={isGF} type="cheese" />
+            <ByoGroup title="Sauces — $0.50 each" items={BYO_SAUCES} filterVegetarian={isVegetarian} filterVegan={isVegan} filterGF={isGF} type="sauce" note="Can be on the side or on the pizza." />
           </div>
 
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -417,11 +430,19 @@ function EmptyPizzaState({
 
 // ── BYO topping group with dietary dimming ──────────────────────────────────
 
-type ToppingItem = { name: string; vegan: boolean; gf: boolean };
+type ToppingItem = {
+  name: string;
+  vegetarian: boolean;
+  vegan: boolean;
+  gf: boolean;
+  note?: string;
+  recommended?: string;
+};
 
 function ByoGroup({
   title,
   items,
+  filterVegetarian,
   filterVegan,
   filterGF,
   type,
@@ -429,6 +450,7 @@ function ByoGroup({
 }: {
   title: string;
   items: ToppingItem[];
+  filterVegetarian: boolean;
   filterVegan: boolean;
   filterGF: boolean;
   type: "meat" | "veggie" | "cheese" | "sauce";
@@ -436,12 +458,14 @@ function ByoGroup({
 }) {
   const filteredOut = (item: ToppingItem) => {
     if (filterVegan && !item.vegan) return true;
+    if (filterVegetarian && !item.vegetarian) return true;
     if (filterGF && !item.gf) return true;
     return false;
   };
 
   const anyFiltered = items.some(filteredOut);
-  const filterLabel = filterVegan ? "Vegan" : filterGF ? "GF" : "";
+  const activeFilter = filterVegan ? "Vegan" : filterVegetarian ? "Vegetarian" : filterGF ? "GF" : "";
+  const showRecommended = filterVegan || filterVegetarian;
 
   return (
     <div className="rounded-xl p-4" style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.07)" }}>
@@ -451,24 +475,31 @@ function ByoGroup({
       <ul className="space-y-1.5">
         {items.map((item) => {
           const dimmed = filteredOut(item);
+          const highlight = showRecommended && !!item.recommended;
           return (
-            <li key={item.name} className={cn("text-sm flex items-center gap-1.5 transition-opacity", dimmed ? "opacity-30" : "")} style={{ color: "var(--color-ink)" }}>
-              {dimmed && <span className="text-xs line-through">{item.name}</span>}
-              {!dimmed && <span>{item.name}</span>}
+            <li
+              key={item.name}
+              className={cn("text-sm flex items-start justify-between gap-1.5 transition-opacity", dimmed ? "opacity-25" : "")}
+              style={{ color: "var(--color-ink)" }}
+            >
+              <span className={cn(dimmed ? "line-through" : "")}>{item.name}</span>
+              {!dimmed && highlight && (
+                <span className="text-xs font-semibold shrink-0" style={{ color: "var(--color-green)" }}>✓ base</span>
+              )}
+              {!dimmed && !highlight && item.note && (
+                <span className="text-xs shrink-0" style={{ color: "var(--color-muted)" }}>{item.note}</span>
+              )}
             </li>
           );
         })}
       </ul>
-      {anyFiltered && filterLabel && (
+      {anyFiltered && activeFilter && (
         <p className="mt-2 text-xs" style={{ color: "var(--color-muted)" }}>
-          Strikethrough items removed for <em>{filterLabel}</em>.
+          Strikethrough items not {activeFilter.toLowerCase()}-friendly.
         </p>
       )}
-      {note && !anyFiltered && (
+      {note && (
         <p className="mt-2 text-xs" style={{ color: "var(--color-muted)" }}>{note}</p>
-      )}
-      {note && anyFiltered && (
-        <p className="mt-1 text-xs" style={{ color: "var(--color-muted)" }}>{note}</p>
       )}
     </div>
   );
