@@ -8,9 +8,10 @@ import MenuSectionNav from "./MenuSectionNav";
 import type { MenuItemSeed } from "@/data/menu-appleton";
 
 const SECTIONS = [
+  { id: "our-creations",  label: "Our Creations" },
   { id: "the-basics",    label: "The Basics" },
-  { id: "our-creations", label: "Our Creations" },
   { id: "build-your-own", label: "Build Your Own" },
+  { id: "snacks",        label: "Snacks" },
 ];
 
 const FILTERS = [
@@ -78,7 +79,7 @@ export default function FoodMenuClient({
   locationName,
   drinksHref,
 }: FoodMenuClientProps) {
-  const [activeSection, setActiveSection] = useState("the-basics");
+  const [activeSection, setActiveSection] = useState("our-creations");
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
@@ -205,50 +206,8 @@ export default function FoodMenuClient({
       {/* Menu content */}
       <div className="mx-auto max-w-7xl px-4 pb-28 sm:px-6 md:pb-12">
 
-        {/* ── The Basics ─────────────────────────────────────────────────────── */}
-        <section ref={(el) => { sectionRefs.current["the-basics"] = el; }} id="the-basics" className="pt-10">
-          <h2 className="font-heading text-2xl font-bold mb-1" style={{ color: "var(--color-ink)" }}>
-            The Basics
-          </h2>
-          <p className="text-sm mb-6" style={{ color: "var(--color-muted)" }}>
-            Steadfast menu items. Always here, always good.
-          </p>
-
-          {basicsItems.length === 0 ? (
-            <EmptyPizzaState filterLabels={activeFilters} onByo={scrollToByo} />
-          ) : (
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {basicsItems.map((item) => (
-                <MenuItemCard
-                  key={item.displayOrder}
-                  item={item}
-                  id={`pizza-basics-${item.displayOrder}`}
-                  highlighted={highlightedId === `pizza-basics-${item.displayOrder}`}
-                />
-              ))}
-            </div>
-          )}
-
-          {/* Snacks */}
-          {snackItems.length > 0 && (
-            <div className="mt-8">
-              <h3 className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "var(--color-muted)" }}>
-                Snacks
-              </h3>
-              <div className="flex flex-wrap gap-3">
-                {snackItems.map((item) => (
-                  <div key={item.displayOrder} className="rounded-lg px-4 py-2 text-sm flex items-center gap-3" style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.07)" }}>
-                    <span style={{ color: "var(--color-ink)" }}>{item.name}</span>
-                    <span className="font-semibold" style={{ color: "var(--color-green)" }}>{item.price}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </section>
-
         {/* ── Our Creations ──────────────────────────────────────────────────── */}
-        <section ref={(el) => { sectionRefs.current["our-creations"] = el; }} id="our-creations" className="pt-14">
+        <section ref={(el) => { sectionRefs.current["our-creations"] = el; }} id="our-creations" className="pt-10">
           <div className="flex flex-wrap items-baseline gap-3 mb-1">
             <h2 className="font-heading text-2xl font-bold" style={{ color: "var(--color-ink)" }}>
               Our Creations
@@ -290,6 +249,31 @@ export default function FoodMenuClient({
                 {randomizerUsed ? "Still can't decide" : "Just pick one for me"}
               </button>
             </p>
+          )}
+        </section>
+
+        {/* ── The Basics ─────────────────────────────────────────────────────── */}
+        <section ref={(el) => { sectionRefs.current["the-basics"] = el; }} id="the-basics" className="pt-14">
+          <h2 className="font-heading text-2xl font-bold mb-1" style={{ color: "var(--color-ink)" }}>
+            The Basics
+          </h2>
+          <p className="text-sm mb-6" style={{ color: "var(--color-muted)" }}>
+            Steadfast menu items. Always here, always good.
+          </p>
+
+          {basicsItems.length === 0 ? (
+            <EmptyPizzaState filterLabels={activeFilters} onByo={scrollToByo} />
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {basicsItems.map((item) => (
+                <MenuItemCard
+                  key={item.displayOrder}
+                  item={item}
+                  id={`pizza-basics-${item.displayOrder}`}
+                  highlighted={highlightedId === `pizza-basics-${item.displayOrder}`}
+                />
+              ))}
+            </div>
           )}
         </section>
 
@@ -336,6 +320,26 @@ export default function FoodMenuClient({
             <ByoUpgrade label="Vegan Cheese" price="+$2" note="Oat milk based" highlight={isVegan} />
           </div>
         </section>
+
+        {/* ── Snacks ───────────────────────────────────────────────────────────── */}
+        {snackItems.length > 0 && (
+          <section ref={(el) => { sectionRefs.current["snacks"] = el; }} id="snacks" className="pt-14">
+            <h2 className="font-heading text-2xl font-bold mb-1" style={{ color: "var(--color-ink)" }}>
+              Snacks
+            </h2>
+            <p className="text-sm mb-6" style={{ color: "var(--color-muted)" }}>
+              Simple bites while you wait.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              {snackItems.map((item) => (
+                <div key={item.displayOrder} className="rounded-lg px-5 py-3 text-sm flex items-center gap-4" style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.07)" }}>
+                  <span className="font-medium" style={{ color: "var(--color-ink)" }}>{item.name}</span>
+                  <span className="font-bold" style={{ color: "var(--color-green)" }}>{item.price}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* ── Dessert ──────────────────────────────────────────────────────────── */}
         {dessertItems.length > 0 && (
