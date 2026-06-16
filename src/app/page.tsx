@@ -297,7 +297,7 @@ function LocationHeroCard({
 }) {
   return (
     <div
-      className="rounded-xl p-6 flex flex-col"
+      className="rounded-xl p-6 flex flex-col h-full"
       style={{
         backgroundColor: "rgba(255,255,255,0.12)",
         border: "1px solid rgba(255,255,255,0.2)",
