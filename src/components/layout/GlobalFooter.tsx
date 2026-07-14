@@ -8,26 +8,25 @@ interface GlobalFooterProps {
   config?: GlobalConfig | null;
 }
 
-// Marquee tile definitions — colorful SVG tiles inspired by the Cross reference
 interface TileDef {
   bg: string;
-  icon: "hops" | "pint" | "wheat" | "barrel" | "pizza" | "flame" | "star" | "diamond" | "wave" | "pretzel" | "leaf" | "mug";
+  icon: "hops" | "pint" | "wheat" | "barrel" | "pizza" | "flame" | "pretzel" | "leaf" | "bottle" | "water" | "wisconsin";
   fg: string;
 }
 
 const MARQUEE_TILES: TileDef[] = [
-  { bg: "#6ABF4B", icon: "hops",     fg: "#231F20" },
-  { bg: "#231F20", icon: "pint",     fg: "#6ABF4B" },
-  { bg: "#C94B2A", icon: "flame",    fg: "#F5F2EE" },
-  { bg: "#2D4F54", icon: "wheat",    fg: "#D4A017" },
-  { bg: "#D4A017", icon: "star",     fg: "#231F20" },
-  { bg: "#F5F2EE", icon: "pizza",    fg: "#C94B2A" },
-  { bg: "#6ABF4B", icon: "barrel",   fg: "#F5F2EE" },
-  { bg: "#2D4F54", icon: "mug",      fg: "#6ABF4B" },
-  { bg: "#C94B2A", icon: "pretzel",  fg: "#F5F2EE" },
-  { bg: "#D4A017", icon: "diamond",  fg: "#2D4F54" },
-  { bg: "#231F20", icon: "wave",     fg: "#D4A017" },
-  { bg: "#F5F2EE", icon: "leaf",     fg: "#2D4F54" },
+  { bg: "#6ABF4B", icon: "hops",      fg: "#231F20" },
+  { bg: "#231F20", icon: "pint",      fg: "#6ABF4B" },
+  { bg: "#C94B2A", icon: "flame",     fg: "#F5F2EE" },
+  { bg: "#2D4F54", icon: "wheat",     fg: "#D4A017" },
+  { bg: "#D4A017", icon: "pretzel",   fg: "#231F20" },
+  { bg: "#F5F2EE", icon: "pizza",     fg: "#C94B2A" },
+  { bg: "#6ABF4B", icon: "barrel",    fg: "#F5F2EE" },
+  { bg: "#2D4F54", icon: "bottle",    fg: "#6ABF4B" },
+  { bg: "#C94B2A", icon: "water",     fg: "#F5F2EE" },
+  { bg: "#D4A017", icon: "leaf",      fg: "#2D4F54" },
+  { bg: "#231F20", icon: "wisconsin", fg: "#D4A017" },
+  { bg: "#F5F2EE", icon: "hops",      fg: "#2D4F54" },
 ];
 
 function MarqueeTile({ tile }: { tile: TileDef }) {
@@ -68,7 +67,6 @@ function TileIcon({ type, fg, bg, size }: { type: TileDef["icon"]; fg: string; b
       return (
         <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
           <path d="M12 6h12l-2 22H14L12 6z" fill={fg} opacity="0.9"/>
-          <path d="M13 12h10" stroke={fg} strokeWidth="0" opacity="0"/>
           <rect x="12" y="6" width="12" height="4" rx="1" fill={fg}/>
           <ellipse cx="18" cy="16" rx="4" ry="2" fill={fg} opacity="0.3"/>
         </svg>
@@ -105,29 +103,7 @@ function TileIcon({ type, fg, bg, size }: { type: TileDef["icon"]; fg: string; b
     case "flame":
       return (
         <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
-          <path d="M18 6c0 0-8 8-8 16a8 8 0 0 0 16 0c0-4-3-7-3-7s-1 4-3 4c-2 0-2-3-2-3s-2 3-2 5a4 4 0 0 0 8 0c0-2-1-4-1-4s4 2 4 6" fill={fg} opacity="0.9"/>
-          <path d="M18 8c0 0-6 7-6 14a6 6 0 0 0 12 0c0-3-2-5-2-5s-1 3-2 3c-1.5 0-2-2-2-2s-1 2-1 4a3 3 0 0 0 6 0" fill={fg}/>
-        </svg>
-      );
-    case "star":
-      return (
-        <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
-          <polygon points="18,5 21,14 30,14 23,20 26,29 18,23 10,29 13,20 6,14 15,14" fill={fg}/>
-        </svg>
-      );
-    case "diamond":
-      return (
-        <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
-          <rect x="10" y="10" width="16" height="16" rx="2" fill={fg} opacity="0.9" transform="rotate(45 18 18)"/>
-          <rect x="14" y="14" width="8" height="8" rx="1" fill={bg} transform="rotate(45 18 18)"/>
-        </svg>
-      );
-    case "wave":
-      return (
-        <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
-          <path d="M4 18c3-6 5-6 7 0s4 6 7 0 4-6 7 0 4 6 7 0" stroke={fg} strokeWidth="3" strokeLinecap="round" fill="none"/>
-          <path d="M4 24c3-6 5-6 7 0s4 6 7 0 4-6 7 0 4 6 7 0" stroke={fg} strokeWidth="2" strokeLinecap="round" fill="none" opacity="0.5"/>
-          <path d="M4 12c3-6 5-6 7 0s4 6 7 0 4-6 7 0 4 6 7 0" stroke={fg} strokeWidth="2" strokeLinecap="round" fill="none" opacity="0.5"/>
+          <path d="M18 30 C10 30 8 22 10 16 C11 12 14 10 14 10 C14 14 16 15 16 15 C16 11 19 7 19 7 C21 10 22 14 20 18 C20 18 23 16 22 12 C26 16 28 22 26 27 C24 31 18 30 18 30Z" fill={fg}/>
         </svg>
       );
     case "pretzel":
@@ -143,17 +119,29 @@ function TileIcon({ type, fg, bg, size }: { type: TileDef["icon"]; fg: string; b
         <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
           <path d="M18 30 C18 30 8 22 8 13 C8 8 13 5 18 8 C23 5 28 8 28 13 C28 22 18 30 18 30Z" fill={fg} opacity="0.9"/>
           <line x1="18" y1="30" x2="18" y2="14" stroke={bg} strokeWidth="1.5" strokeLinecap="round"/>
-          <line x1="18" y1="20" x2="13" y2="16" stroke={bg} strokeWidth="1" strokeLinecap="round"/>
-          <line x1="18" y1="20" x2="23" y2="16" stroke={bg} strokeWidth="1" strokeLinecap="round"/>
+          <line x1="18" y1="22" x2="13" y2="17" stroke={bg} strokeWidth="1" strokeLinecap="round"/>
+          <line x1="18" y1="22" x2="23" y2="17" stroke={bg} strokeWidth="1" strokeLinecap="round"/>
         </svg>
       );
-    case "mug":
+    case "bottle":
       return (
         <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
-          <rect x="8" y="10" width="16" height="18" rx="2" fill={fg} opacity="0.9"/>
-          <path d="M24 14 C28 14 30 16 30 19 C30 22 28 24 24 24" stroke={fg} strokeWidth="2.5" fill="none" strokeLinecap="round"/>
-          <rect x="8" y="10" width="16" height="4" rx="2" fill={fg}/>
-          <rect x="11" y="18" width="4" height="6" rx="1" fill={bg} opacity="0.4"/>
+          <rect x="15" y="4" width="6" height="5" rx="1" fill={fg}/>
+          <path d="M13 9 C10 13 10 16 10 20 L10 29 C10 30.1 10.9 31 12 31 L24 31 C25.1 31 26 30.1 26 29 L26 20 C26 16 26 13 23 9 Z" fill={fg} opacity="0.9"/>
+          <ellipse cx="18" cy="20" rx="4" ry="2" fill={bg} opacity="0.3"/>
+        </svg>
+      );
+    case "water":
+      return (
+        <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
+          <path d="M18 6 C18 6 8 18 8 23 C8 28.5 12.5 32 18 32 C23.5 32 28 28.5 28 23 C28 18 18 6 18 6Z" fill={fg} opacity="0.9"/>
+          <ellipse cx="14" cy="25" rx="2" ry="3" fill={bg} opacity="0.35" transform="rotate(-20 14 25)"/>
+        </svg>
+      );
+    case "wisconsin":
+      return (
+        <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
+          <path d="M8 10 L10 8 L14 9 L16 7 L20 8 L22 7 L26 9 L28 12 L27 16 L29 18 L28 22 L25 24 L24 27 L21 28 L19 26 L16 27 L14 25 L11 26 L9 24 L8 20 L10 17 L8 14 Z" fill={fg} opacity="0.9"/>
         </svg>
       );
     default:
@@ -340,9 +328,9 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
         style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
         aria-hidden="true"
       >
-        <div className="flex animate-marquee will-change-transform" style={{ width: "max-content" }}>
+        <div style={{ display: "flex", animation: "marquee 36s linear infinite" }}>
           {[0, 1].map((copy) => (
-            <div key={copy} className="flex shrink-0" style={{ gap: "6px", padding: "6px 6px 6px 0" }}>
+            <div key={copy} style={{ display: "flex", flexShrink: 0, gap: "6px", padding: "6px 3px 6px 3px" }}>
               {MARQUEE_TILES.map((tile, i) => (
                 <MarqueeTile key={`${copy}-${i}`} tile={tile} />
               ))}
@@ -351,9 +339,9 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
         </div>
       </div>
 
-      {/* Bottom bar */}
+      {/* Bottom bar — extra bottom padding on mobile clears the sticky order bar */}
       <div
-        className="border-t px-4 py-4 sm:px-6"
+        className="border-t px-4 pt-4 pb-24 sm:pb-4 sm:px-6"
         style={{ borderColor: "rgba(255,255,255,0.1)" }}
       >
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 text-xs opacity-60 sm:flex-row">
