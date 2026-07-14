@@ -45,12 +45,12 @@ function MarqueeTile({ tile }: { tile: TileDef }) {
         borderRadius: 4,
       }}
     >
-      <TileIcon type={tile.icon} fg={tile.fg} size={36} />
+      <TileIcon type={tile.icon} fg={tile.fg} bg={tile.bg} size={36} />
     </div>
   );
 }
 
-function TileIcon({ type, fg, size }: { type: TileDef["icon"]; fg: string; size: number }) {
+function TileIcon({ type, fg, bg, size }: { type: TileDef["icon"]; fg: string; bg: string; size: number }) {
   const s = size;
   switch (type) {
     case "hops":
@@ -88,18 +88,18 @@ function TileIcon({ type, fg, size }: { type: TileDef["icon"]; fg: string; size:
       return (
         <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
           <rect x="10" y="8" width="16" height="20" rx="6" fill={fg} opacity="0.9"/>
-          <line x1="10" y1="14" x2="26" y2="14" stroke={tile.bg} strokeWidth="1.5"/>
-          <line x1="10" y1="22" x2="26" y2="22" stroke={tile.bg} strokeWidth="1.5"/>
-          <line x1="18" y1="8"  x2="18" y2="28" stroke={tile.bg} strokeWidth="1.5"/>
+          <line x1="10" y1="14" x2="26" y2="14" stroke={bg} strokeWidth="1.5"/>
+          <line x1="10" y1="22" x2="26" y2="22" stroke={bg} strokeWidth="1.5"/>
+          <line x1="18" y1="8"  x2="18" y2="28" stroke={bg} strokeWidth="1.5"/>
         </svg>
       );
     case "pizza":
       return (
         <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
           <path d="M18 6 L30 28 L6 28 Z" fill={fg} opacity="0.9"/>
-          <circle cx="18" cy="22" r="2" fill={tile.bg}/>
-          <circle cx="14" cy="17" r="1.5" fill={tile.bg}/>
-          <circle cx="22" cy="17" r="1.5" fill={tile.bg}/>
+          <circle cx="18" cy="22" r="2" fill={bg}/>
+          <circle cx="14" cy="17" r="1.5" fill={bg}/>
+          <circle cx="22" cy="17" r="1.5" fill={bg}/>
         </svg>
       );
     case "flame":
@@ -119,7 +119,7 @@ function TileIcon({ type, fg, size }: { type: TileDef["icon"]; fg: string; size:
       return (
         <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
           <rect x="10" y="10" width="16" height="16" rx="2" fill={fg} opacity="0.9" transform="rotate(45 18 18)"/>
-          <rect x="14" y="14" width="8" height="8" rx="1" fill={tile.bg} transform="rotate(45 18 18)"/>
+          <rect x="14" y="14" width="8" height="8" rx="1" fill={bg} transform="rotate(45 18 18)"/>
         </svg>
       );
     case "wave":
@@ -142,9 +142,9 @@ function TileIcon({ type, fg, size }: { type: TileDef["icon"]; fg: string; size:
       return (
         <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
           <path d="M18 30 C18 30 8 22 8 13 C8 8 13 5 18 8 C23 5 28 8 28 13 C28 22 18 30 18 30Z" fill={fg} opacity="0.9"/>
-          <line x1="18" y1="30" x2="18" y2="14" stroke={tile.bg} strokeWidth="1.5" strokeLinecap="round"/>
-          <line x1="18" y1="20" x2="13" y2="16" stroke={tile.bg} strokeWidth="1" strokeLinecap="round"/>
-          <line x1="18" y1="20" x2="23" y2="16" stroke={tile.bg} strokeWidth="1" strokeLinecap="round"/>
+          <line x1="18" y1="30" x2="18" y2="14" stroke={bg} strokeWidth="1.5" strokeLinecap="round"/>
+          <line x1="18" y1="20" x2="13" y2="16" stroke={bg} strokeWidth="1" strokeLinecap="round"/>
+          <line x1="18" y1="20" x2="23" y2="16" stroke={bg} strokeWidth="1" strokeLinecap="round"/>
         </svg>
       );
     case "mug":
@@ -153,7 +153,7 @@ function TileIcon({ type, fg, size }: { type: TileDef["icon"]; fg: string; size:
           <rect x="8" y="10" width="16" height="18" rx="2" fill={fg} opacity="0.9"/>
           <path d="M24 14 C28 14 30 16 30 19 C30 22 28 24 24 24" stroke={fg} strokeWidth="2.5" fill="none" strokeLinecap="round"/>
           <rect x="8" y="10" width="16" height="4" rx="2" fill={fg}/>
-          <rect x="11" y="18" width="4" height="6" rx="1" fill={tile.bg} opacity="0.4"/>
+          <rect x="11" y="18" width="4" height="6" rx="1" fill={bg} opacity="0.4"/>
         </svg>
       );
     default:
