@@ -10,35 +10,34 @@ interface GlobalFooterProps {
 
 interface TileDef {
   bg: string;
-  icon: "hops" | "pint" | "wheat" | "barrel" | "pizza" | "flame" | "pretzel" | "leaf" | "bottle" | "water" | "wisconsin";
-  fg: string;
+  src: string;
 }
 
 const MARQUEE_TILES: TileDef[] = [
-  { bg: "#6ABF4B", icon: "hops",      fg: "#231F20" },
-  { bg: "#231F20", icon: "pint",      fg: "#6ABF4B" },
-  { bg: "#C94B2A", icon: "flame",     fg: "#F5F2EE" },
-  { bg: "#2D4F54", icon: "wheat",     fg: "#D4A017" },
-  { bg: "#D4A017", icon: "pretzel",   fg: "#231F20" },
-  { bg: "#F5F2EE", icon: "pizza",     fg: "#C94B2A" },
-  { bg: "#6ABF4B", icon: "barrel",    fg: "#F5F2EE" },
-  { bg: "#231F20", icon: "wisconsin", fg: "#D4A017" },
-  { bg: "#C94B2A", icon: "water",     fg: "#F5F2EE" },
-  { bg: "#D4A017", icon: "leaf",      fg: "#2D4F54" },
-  { bg: "#2D4F54", icon: "bottle",    fg: "#6ABF4B" },
-  { bg: "#F5F2EE", icon: "hops",      fg: "#C94B2A" },
-  { bg: "#D4A017", icon: "wisconsin", fg: "#2D4F54" },
-  { bg: "#6ABF4B", icon: "pretzel",   fg: "#F5F2EE" },
-  { bg: "#231F20", icon: "flame",     fg: "#C94B2A" },
-  { bg: "#C94B2A", icon: "barrel",    fg: "#D4A017" },
-  { bg: "#2D4F54", icon: "pizza",     fg: "#F5F2EE" },
-  { bg: "#F5F2EE", icon: "wheat",     fg: "#2D4F54" },
-  { bg: "#D4A017", icon: "pint",      fg: "#C94B2A" },
-  { bg: "#6ABF4B", icon: "water",     fg: "#231F20" },
-  { bg: "#231F20", icon: "leaf",      fg: "#6ABF4B" },
-  { bg: "#C94B2A", icon: "bottle",    fg: "#F5F2EE" },
-  { bg: "#2D4F54", icon: "hops",      fg: "#F5F2EE" },
-  { bg: "#F5F2EE", icon: "wisconsin", fg: "#6ABF4B" },
+  { bg: "#6ABF4B", src: "/icons/hops.png"      },
+  { bg: "#231F20", src: "/icons/pint.png"      },
+  { bg: "#C94B2A", src: "/icons/pretzel.png"   },
+  { bg: "#2D4F54", src: "/icons/wheat.png"     },
+  { bg: "#D4A017", src: "/icons/barrel.png"    },
+  { bg: "#F5F2EE", src: "/icons/pizza.png"     },
+  { bg: "#6ABF4B", src: "/icons/bottle.png"    },
+  { bg: "#231F20", src: "/icons/wisconsin.png" },
+  { bg: "#C94B2A", src: "/icons/water.png"     },
+  { bg: "#D4A017", src: "/icons/hops.png"      },
+  { bg: "#2D4F54", src: "/icons/pint.png"      },
+  { bg: "#F5F2EE", src: "/icons/pretzel.png"   },
+  { bg: "#C94B2A", src: "/icons/barrel.png"    },
+  { bg: "#6ABF4B", src: "/icons/wheat.png"     },
+  { bg: "#231F20", src: "/icons/pizza.png"     },
+  { bg: "#D4A017", src: "/icons/wisconsin.png" },
+  { bg: "#2D4F54", src: "/icons/bottle.png"    },
+  { bg: "#F5F2EE", src: "/icons/water.png"     },
+  { bg: "#6ABF4B", src: "/icons/wisconsin.png" },
+  { bg: "#C94B2A", src: "/icons/hops.png"      },
+  { bg: "#D4A017", src: "/icons/pint.png"      },
+  { bg: "#231F20", src: "/icons/wheat.png"     },
+  { bg: "#2D4F54", src: "/icons/pretzel.png"   },
+  { bg: "#F5F2EE", src: "/icons/barrel.png"    },
 ];
 
 const TILE_SIZE = 80;
@@ -58,110 +57,17 @@ function MarqueeTile({ tile }: { tile: TileDef }) {
         borderRadius: 4,
       }}
     >
-      <TileIcon type={tile.icon} fg={tile.fg} bg={tile.bg} size={40} />
+      <img
+        src={tile.src}
+        alt=""
+        width={40}
+        height={40}
+        style={{ filter: "brightness(0) invert(1)", objectFit: "contain" }}
+      />
     </div>
   );
 }
 
-function TileIcon({ type, fg, bg, size }: { type: TileDef["icon"]; fg: string; bg: string; size: number }) {
-  const s = size;
-  switch (type) {
-    case "hops":
-      return (
-        <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
-          <ellipse cx="18" cy="10" rx="5" ry="7" fill={fg} opacity="0.9"/>
-          <ellipse cx="11" cy="20" rx="5" ry="7" fill={fg} opacity="0.7"/>
-          <ellipse cx="25" cy="20" rx="5" ry="7" fill={fg} opacity="0.7"/>
-          <line x1="18" y1="10" x2="18" y2="32" stroke={fg} strokeWidth="1.5" strokeLinecap="round"/>
-          <line x1="11" y1="20" x2="18" y2="26" stroke={fg} strokeWidth="1.5" strokeLinecap="round"/>
-          <line x1="25" y1="20" x2="18" y2="26" stroke={fg} strokeWidth="1.5" strokeLinecap="round"/>
-        </svg>
-      );
-    case "pint":
-      return (
-        <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
-          <path d="M12 6h12l-2 22H14L12 6z" fill={fg} opacity="0.9"/>
-          <rect x="12" y="6" width="12" height="4" rx="1" fill={fg}/>
-          <ellipse cx="18" cy="16" rx="4" ry="2" fill={fg} opacity="0.3"/>
-        </svg>
-      );
-    case "wheat":
-      return (
-        <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
-          <line x1="18" y1="30" x2="18" y2="6" stroke={fg} strokeWidth="2" strokeLinecap="round"/>
-          <ellipse cx="18" cy="9"  rx="3" ry="4" fill={fg}/>
-          <ellipse cx="13" cy="14" rx="3" ry="4" fill={fg} transform="rotate(-30 13 14)"/>
-          <ellipse cx="23" cy="14" rx="3" ry="4" fill={fg} transform="rotate(30 23 14)"/>
-          <ellipse cx="13" cy="21" rx="3" ry="4" fill={fg} transform="rotate(-30 13 21)"/>
-          <ellipse cx="23" cy="21" rx="3" ry="4" fill={fg} transform="rotate(30 23 21)"/>
-        </svg>
-      );
-    case "barrel":
-      return (
-        <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
-          <rect x="10" y="8" width="16" height="20" rx="6" fill={fg} opacity="0.9"/>
-          <line x1="10" y1="14" x2="26" y2="14" stroke={bg} strokeWidth="1.5"/>
-          <line x1="10" y1="22" x2="26" y2="22" stroke={bg} strokeWidth="1.5"/>
-          <line x1="18" y1="8"  x2="18" y2="28" stroke={bg} strokeWidth="1.5"/>
-        </svg>
-      );
-    case "pizza":
-      return (
-        <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
-          <path d="M18 6 L30 28 L6 28 Z" fill={fg} opacity="0.9"/>
-          <circle cx="18" cy="22" r="2" fill={bg}/>
-          <circle cx="14" cy="17" r="1.5" fill={bg}/>
-          <circle cx="22" cy="17" r="1.5" fill={bg}/>
-        </svg>
-      );
-    case "flame":
-      return (
-        <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
-          <path d="M18 30 C10 30 8 22 10 16 C11 12 14 10 14 10 C14 14 16 15 16 15 C16 11 19 7 19 7 C21 10 22 14 20 18 C20 18 23 16 22 12 C26 16 28 22 26 27 C24 31 18 30 18 30Z" fill={fg}/>
-        </svg>
-      );
-    case "pretzel":
-      return (
-        <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
-          <path d="M18 8c-5 0-8 3-8 7 0 3 2 5 5 5l3-5 3 5c3 0 5-2 5-5 0-4-3-7-8-7z" fill={fg} opacity="0.9"/>
-          <path d="M13 20c-1 2-1 4 1 5s4 0 4-2" stroke={fg} strokeWidth="2.5" strokeLinecap="round" fill="none"/>
-          <path d="M23 20c1 2 1 4-1 5s-4 0-4-2" stroke={fg} strokeWidth="2.5" strokeLinecap="round" fill="none"/>
-        </svg>
-      );
-    case "leaf":
-      return (
-        <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
-          <path d="M18 30 C18 30 8 22 8 13 C8 8 13 5 18 8 C23 5 28 8 28 13 C28 22 18 30 18 30Z" fill={fg} opacity="0.9"/>
-          <line x1="18" y1="30" x2="18" y2="14" stroke={bg} strokeWidth="1.5" strokeLinecap="round"/>
-          <line x1="18" y1="22" x2="13" y2="17" stroke={bg} strokeWidth="1" strokeLinecap="round"/>
-          <line x1="18" y1="22" x2="23" y2="17" stroke={bg} strokeWidth="1" strokeLinecap="round"/>
-        </svg>
-      );
-    case "bottle":
-      return (
-        <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
-          <rect x="15" y="4" width="6" height="5" rx="1" fill={fg}/>
-          <path d="M13 9 C10 13 10 16 10 20 L10 29 C10 30.1 10.9 31 12 31 L24 31 C25.1 31 26 30.1 26 29 L26 20 C26 16 26 13 23 9 Z" fill={fg} opacity="0.9"/>
-          <ellipse cx="18" cy="20" rx="4" ry="2" fill={bg} opacity="0.3"/>
-        </svg>
-      );
-    case "water":
-      return (
-        <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
-          <path d="M18 6 C18 6 8 18 8 23 C8 28.5 12.5 32 18 32 C23.5 32 28 28.5 28 23 C28 18 18 6 18 6Z" fill={fg} opacity="0.9"/>
-          <ellipse cx="14" cy="25" rx="2" ry="3" fill={bg} opacity="0.35" transform="rotate(-20 14 25)"/>
-        </svg>
-      );
-    case "wisconsin":
-      return (
-        <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
-          <path d="M8 10 L10 8 L14 9 L16 7 L20 8 L22 7 L26 9 L28 12 L27 16 L29 18 L28 22 L25 24 L24 27 L21 28 L19 26 L16 27 L14 25 L11 26 L9 24 L8 20 L10 17 L8 14 Z" fill={fg} opacity="0.9"/>
-        </svg>
-      );
-    default:
-      return null;
-  }
-}
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
