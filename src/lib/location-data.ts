@@ -39,7 +39,7 @@ export const LOCATION_STATIC_DATA: Record<string, Partial<Location>> = {
       { day: "Friday", open: "11:00 AM", close: "10:00 PM", isClosed: false },
       { day: "Saturday", open: "11:00 AM", close: "10:00 PM", isClosed: false },
     ],
-    sundayHours: { open: "", close: "", isClosed: true },
+    sundayHours: { open: "11:00 AM", close: "4:00 PM", isClosed: false },
   },
 };
 
@@ -50,8 +50,9 @@ export const HOURS_DISPLAY: Record<string, string[]> = {
     "Mon–Tue  Closed",
   ],
   "the-falls": [
+    "Sun  11 AM–4 PM",
     "Tue–Thu  4–10 PM",
     "Fri–Sat  11 AM–10 PM",
-    "Sun–Mon  Closed",
+    "Mon  Closed",
   ],
 };

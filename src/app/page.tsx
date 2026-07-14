@@ -149,7 +149,7 @@ export default async function HomePage() {
             <LocationCard
               name="Menomonee Falls"
               address="N88W16521 Main St, Menomonee Falls WI"
-              hoursNote="Tue–Thu 4–10 PM · Fri–Sat 11 AM–10 PM"
+              hoursNote="Sun 11 AM–4 PM · Tue–Thu 4–10 PM · Fri–Sat 11 AM–10 PM"
               locationHours={theFalls}
               foodHref="/the-falls-food-menu/"
               drinksHref="/the-falls-drinks-menu/"

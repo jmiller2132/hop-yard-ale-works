@@ -20,7 +20,7 @@ const INTENTS: Intent[] = [
   {
     keywords: ["hour", "open", "close", "when", "today", "schedule", "time", "kitchen", "close at", "open at"],
     response: {
-      text: "Here are the hours for both locations. The kitchen closes one hour before closing time.\n\n🍺 Appleton\nWed–Sat: 11 AM–10 PM\nSun: 12–6 PM\nMon–Tue: Closed\n\n🍕 Menomonee Falls\nTue–Thu: 4–10 PM\nFri–Sat: 11 AM–10 PM\nSun–Mon: Closed",
+      text: "Here are the hours for both locations. The kitchen closes one hour before closing time.\n\n🍺 Appleton\nWed–Sat: 11 AM–10 PM\nSun: 12–6 PM\nMon–Tue: Closed\n\n🍕 Menomonee Falls\nSun: 11 AM–4 PM\nTue–Thu: 4–10 PM\nFri–Sat: 11 AM–10 PM\nMon: Closed",
       links: [
         { label: "Appleton details", href: "/appleton/" },
         { label: "The Falls details", href: "/the-falls/" },

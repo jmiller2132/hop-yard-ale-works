@@ -14,11 +14,11 @@ export const revalidate = 900;
 export const metadata: Metadata = {
   title: "Menomonee Falls — Hop Yard Ale Works",
   description:
-    "Visit Hop Yard Ale Works in Menomonee Falls, WI. Craft beer and wood-fired pizza at N88W16521 Main St. Tue–Thu evenings, Fri–Sat all day.",
+    "Visit Hop Yard Ale Works in Menomonee Falls, WI. Craft beer and wood-fired pizza at N88W16521 Main St. Sun 11–4, Tue–Thu evenings, Fri–Sat all day.",
 };
 
 const FALLS_HOURS_ROWS = [
-  { day: "Sunday",    hours: "Closed",    closed: true },
+  { day: "Sunday",    hours: "11 AM–4 PM" },
   { day: "Monday",    hours: "Closed",    closed: true },
   { day: "Tuesday",   hours: "4–10 PM" },
   { day: "Wednesday", hours: "4–10 PM" },
@@ -42,6 +42,7 @@ const JSON_LD = {
   },
   hasMap: "https://maps.app.goo.gl/DWFo5Du6CZfUqkt7A",
   openingHoursSpecification: [
+    { "@type": "OpeningHoursSpecification", dayOfWeek: "Sunday",    opens: "11:00", closes: "16:00" },
     { "@type": "OpeningHoursSpecification", dayOfWeek: "Tuesday",   opens: "16:00", closes: "22:00" },
     { "@type": "OpeningHoursSpecification", dayOfWeek: "Wednesday", opens: "16:00", closes: "22:00" },
     { "@type": "OpeningHoursSpecification", dayOfWeek: "Thursday",  opens: "16:00", closes: "22:00" },

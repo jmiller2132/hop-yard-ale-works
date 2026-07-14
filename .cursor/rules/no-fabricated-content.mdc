@@ -1,0 +1,27 @@
+---
+description: Prevents AI from inventing quotes, testimonials, facts, or attributions about Hop Yard Ale Works
+alwaysApply: true
+---
+
+# No Fabricated Business Content
+
+NEVER invent, generate, or attribute content to Hop Yard Ale Works or any real person unless the owner explicitly provides it word-for-word in this conversation.
+
+## Prohibited
+
+- Quotes attributed to "Hop Yard Ale Works" or any staff member
+- Testimonials from customers
+- Made-up facts about the brewery, history, recipes, or awards
+- Slogans or taglines invented by the AI and presented as official brand voice
+- Any hardcoded string that implies the business said or did something specific
+
+## Allowed
+
+- Placeholder copy clearly marked as `TODO: replace with real copy`
+- Generic UI labels (button text, form labels, navigation)
+- Quotes from clearly credited third parties (Dave Barry, Plato, etc.) that are real and verifiable
+- Paraphrasing or reformatting copy the owner has explicitly provided
+
+## If Unsure
+
+Leave a `// TODO: confirm with owner` comment instead of inventing content. Never fill a gap with something that could be mistaken for an official statement.
