@@ -22,20 +22,34 @@ const MARQUEE_TILES: TileDef[] = [
   { bg: "#D4A017", icon: "pretzel",   fg: "#231F20" },
   { bg: "#F5F2EE", icon: "pizza",     fg: "#C94B2A" },
   { bg: "#6ABF4B", icon: "barrel",    fg: "#F5F2EE" },
-  { bg: "#2D4F54", icon: "bottle",    fg: "#6ABF4B" },
+  { bg: "#231F20", icon: "wisconsin", fg: "#D4A017" },
   { bg: "#C94B2A", icon: "water",     fg: "#F5F2EE" },
   { bg: "#D4A017", icon: "leaf",      fg: "#2D4F54" },
-  { bg: "#231F20", icon: "wisconsin", fg: "#D4A017" },
-  { bg: "#F5F2EE", icon: "hops",      fg: "#2D4F54" },
+  { bg: "#2D4F54", icon: "bottle",    fg: "#6ABF4B" },
+  { bg: "#F5F2EE", icon: "hops",      fg: "#C94B2A" },
+  { bg: "#D4A017", icon: "wisconsin", fg: "#2D4F54" },
+  { bg: "#6ABF4B", icon: "pretzel",   fg: "#F5F2EE" },
+  { bg: "#231F20", icon: "flame",     fg: "#C94B2A" },
+  { bg: "#C94B2A", icon: "barrel",    fg: "#D4A017" },
+  { bg: "#2D4F54", icon: "pizza",     fg: "#F5F2EE" },
+  { bg: "#F5F2EE", icon: "wheat",     fg: "#2D4F54" },
+  { bg: "#D4A017", icon: "pint",      fg: "#C94B2A" },
+  { bg: "#6ABF4B", icon: "water",     fg: "#231F20" },
+  { bg: "#231F20", icon: "leaf",      fg: "#6ABF4B" },
+  { bg: "#C94B2A", icon: "bottle",    fg: "#F5F2EE" },
+  { bg: "#2D4F54", icon: "hops",      fg: "#F5F2EE" },
+  { bg: "#F5F2EE", icon: "wisconsin", fg: "#6ABF4B" },
 ];
 
+const TILE_SIZE = 80;
+const TILE_GAP  = 6;
+
 function MarqueeTile({ tile }: { tile: TileDef }) {
-  const S = 72;
   return (
     <div
       style={{
-        width: S,
-        height: S,
+        width: TILE_SIZE,
+        height: TILE_SIZE,
         backgroundColor: tile.bg,
         display: "flex",
         alignItems: "center",
@@ -44,7 +58,7 @@ function MarqueeTile({ tile }: { tile: TileDef }) {
         borderRadius: 4,
       }}
     >
-      <TileIcon type={tile.icon} fg={tile.fg} bg={tile.bg} size={36} />
+      <TileIcon type={tile.icon} fg={tile.fg} bg={tile.bg} size={40} />
     </div>
   );
 }
@@ -328,20 +342,16 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
         style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
         aria-hidden="true"
       >
-        <div style={{ display: "flex", animation: "marquee 36s linear infinite" }}>
-          {[0, 1].map((copy) => (
-            <div key={copy} style={{ display: "flex", flexShrink: 0, gap: "6px", padding: "6px 3px 6px 3px" }}>
-              {MARQUEE_TILES.map((tile, i) => (
-                <MarqueeTile key={`${copy}-${i}`} tile={tile} />
-              ))}
-            </div>
+        <div style={{ display: "flex", gap: `${TILE_GAP}px`, padding: `${TILE_GAP}px 0`, animation: "marquee 40s linear infinite" }}>
+          {[...MARQUEE_TILES, ...MARQUEE_TILES].map((tile, i) => (
+            <MarqueeTile key={i} tile={tile} />
           ))}
         </div>
       </div>
 
       {/* Bottom bar — extra bottom padding on mobile clears the sticky order bar */}
       <div
-        className="border-t px-4 pt-4 pb-24 sm:pb-4 sm:px-6"
+        className="border-t px-4 pt-4 pb-32 sm:pb-20 sm:px-6"
         style={{ borderColor: "rgba(255,255,255,0.1)" }}
       >
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 text-xs opacity-60 sm:flex-row">
