@@ -11,33 +11,41 @@ interface GlobalFooterProps {
 interface TileDef {
   bg: string;
   src: string;
+  dark?: boolean; // true = black icon (for light/bright backgrounds)
 }
 
 const MARQUEE_TILES: TileDef[] = [
-  { bg: "#6ABF4B", src: "/icons/hops.png"      },
+  // Hops — greens
+  { bg: "#3D7A2D", src: "/icons/hops.png"      },
+  { bg: "#6ABF4B", src: "/icons/hops.png",      dark: true },
+  { bg: "#2D4F54", src: "/icons/hops.png"      },
+  // Water — blues
+  { bg: "#1B6CA8", src: "/icons/water.png"     },
+  { bg: "#0C4A6E", src: "/icons/water.png"     },
+  { bg: "#0284C7", src: "/icons/water.png"     },
+  { bg: "#1D4ED8", src: "/icons/water.png"     },
+  // Wisconsin — Badgers, Packers, Brewers
+  { bg: "#C5050C", src: "/icons/wisconsin.png" },           // Badgers red
+  { bg: "#203731", src: "/icons/wisconsin.png" },           // Packers green
+  { bg: "#12284B", src: "/icons/wisconsin.png" },           // Brewers navy
+  // Pint — amber/warm tones
+  { bg: "#D4A017", src: "/icons/pint.png",      dark: true },
   { bg: "#231F20", src: "/icons/pint.png"      },
+  { bg: "#6ABF4B", src: "/icons/pint.png",      dark: true },
+  // Food & barrel
+  { bg: "#C94B2A", src: "/icons/pizza.png"     },
+  { bg: "#F5F2EE", src: "/icons/pizza.png",     dark: true },
+  { bg: "#4A3520", src: "/icons/barrel.png"    },
+  { bg: "#D4A017", src: "/icons/barrel.png",    dark: true },
+  { bg: "#2D4F54", src: "/icons/barrel.png"    },
+  // Wheat & pretzel
+  { bg: "#8B6914", src: "/icons/wheat.png"     },
+  { bg: "#D4A017", src: "/icons/wheat.png",     dark: true },
+  { bg: "#8B5E3C", src: "/icons/pretzel.png"   },
   { bg: "#C94B2A", src: "/icons/pretzel.png"   },
-  { bg: "#2D4F54", src: "/icons/wheat.png"     },
-  { bg: "#D4A017", src: "/icons/barrel.png"    },
-  { bg: "#F5F2EE", src: "/icons/pizza.png"     },
-  { bg: "#6ABF4B", src: "/icons/bottle.png"    },
-  { bg: "#231F20", src: "/icons/wisconsin.png" },
-  { bg: "#C94B2A", src: "/icons/water.png"     },
-  { bg: "#D4A017", src: "/icons/hops.png"      },
-  { bg: "#2D4F54", src: "/icons/pint.png"      },
-  { bg: "#F5F2EE", src: "/icons/pretzel.png"   },
-  { bg: "#C94B2A", src: "/icons/barrel.png"    },
-  { bg: "#6ABF4B", src: "/icons/wheat.png"     },
-  { bg: "#231F20", src: "/icons/pizza.png"     },
-  { bg: "#D4A017", src: "/icons/wisconsin.png" },
-  { bg: "#2D4F54", src: "/icons/bottle.png"    },
-  { bg: "#F5F2EE", src: "/icons/water.png"     },
-  { bg: "#6ABF4B", src: "/icons/wisconsin.png" },
-  { bg: "#C94B2A", src: "/icons/hops.png"      },
-  { bg: "#D4A017", src: "/icons/pint.png"      },
-  { bg: "#231F20", src: "/icons/wheat.png"     },
-  { bg: "#2D4F54", src: "/icons/pretzel.png"   },
-  { bg: "#F5F2EE", src: "/icons/barrel.png"    },
+  // Bottle
+  { bg: "#1A5C2A", src: "/icons/bottle.png"    },
+  { bg: "#D4A017", src: "/icons/bottle.png",    dark: true },
 ];
 
 const TILE_SIZE = 80;
@@ -55,6 +63,7 @@ function MarqueeTile({ tile }: { tile: TileDef }) {
         justifyContent: "center",
         flexShrink: 0,
         borderRadius: 4,
+        marginRight: TILE_GAP,
       }}
     >
       <img
@@ -62,7 +71,10 @@ function MarqueeTile({ tile }: { tile: TileDef }) {
         alt=""
         width={40}
         height={40}
-        style={{ filter: "brightness(0) invert(1)", objectFit: "contain" }}
+        style={{
+          filter: tile.dark ? "brightness(0)" : "brightness(0) invert(1)",
+          objectFit: "contain",
+        }}
       />
     </div>
   );
@@ -242,22 +254,9 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
         </div>
       </div>
 
-      {/* Marquee icon strip */}
+      {/* Bottom bar */}
       <div
-        className="overflow-hidden"
-        style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
-        aria-hidden="true"
-      >
-        <div style={{ display: "flex", gap: `${TILE_GAP}px`, padding: `${TILE_GAP}px 0`, animation: "marquee 40s linear infinite" }}>
-          {[...MARQUEE_TILES, ...MARQUEE_TILES].map((tile, i) => (
-            <MarqueeTile key={i} tile={tile} />
-          ))}
-        </div>
-      </div>
-
-      {/* Bottom bar — extra bottom padding on mobile clears the sticky order bar */}
-      <div
-        className="border-t px-4 pt-4 pb-32 sm:pb-20 sm:px-6"
+        className="border-t px-4 pt-4 pb-4 sm:px-6"
         style={{ borderColor: "rgba(255,255,255,0.1)" }}
       >
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 text-xs opacity-60 sm:flex-row">
@@ -268,6 +267,15 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
           <a href="/pour/" className="hover:opacity-100 transition-opacity" style={{ opacity: 0.3 }}>
             🍺
           </a>
+        </div>
+      </div>
+
+      {/* Marquee — absolute bottom of the page */}
+      <div className="overflow-hidden" aria-hidden="true">
+        <div style={{ display: "flex", padding: `${TILE_GAP}px 0 0`, animation: "marquee 40s linear infinite" }}>
+          {[...MARQUEE_TILES, ...MARQUEE_TILES].map((tile, i) => (
+            <MarqueeTile key={i} tile={tile} />
+          ))}
         </div>
       </div>
     </footer>
