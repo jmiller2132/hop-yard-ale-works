@@ -473,7 +473,7 @@ function EasterEggToast({ message }: { message: string | null }) {
   if (!message) return null;
 
   return (
-    <div className="fixed bottom-6 left-0 right-0 z-[100] pointer-events-none flex justify-center px-4">
+    <div className="fixed bottom-24 md:bottom-6 left-0 right-0 z-[100] pointer-events-none flex justify-center px-4">
       <div
         className={cn(
           "px-4 py-2 rounded-full text-sm whitespace-nowrap",
