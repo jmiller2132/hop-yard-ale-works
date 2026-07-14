@@ -27,10 +27,6 @@ const QUOTES = [
     text: "The best beer is the one you drink with friends.",
     attribution: "Unknown",
   },
-  {
-    text: "Pizza is the perfect food. Beer proves it.",
-    attribution: "Hop Yard Ale Works",
-  },
 ];
 
 export default function QuoteBanner() {

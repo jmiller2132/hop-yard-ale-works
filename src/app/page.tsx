@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { sanityClient } from "@/lib/sanity/client";
 import { locationsQuery, taproomPhotosQuery, activeSeasonalThemeQuery } from "@/lib/sanity/queries";
-import { computeOpenClosed, isLateNight } from "@/lib/hours";
+import { isLateNight } from "@/lib/hours";
 import { LOCATION_STATIC_DATA } from "@/lib/location-data";
-import OpenClosedBadge from "@/components/ui/OpenClosedBadge";
+import OpenClosedBadgeLive from "@/components/ui/OpenClosedBadgeLive";
 import QuoteBanner from "@/components/ui/QuoteBanner";
 import TaproomPhotoGrid from "@/components/ui/TaproomPhotoGrid";
 import type { Location, TaproomPhoto, SeasonalTheme } from "@/types";
@@ -32,9 +32,6 @@ export default async function HomePage() {
   const theFalls =
     locations.find((l) => l.slug?.current === "the-falls") ??
     (fallsStatic as Location);
-
-  const appletonStatus = appleton?.hours ? computeOpenClosed(appleton) : null;
-  const fallsStatus = theFalls?.hours ? computeOpenClosed(theFalls) : null;
 
   const appletonOrderUrl = appleton?.orderOnlineUrl ?? appletonStatic.orderOnlineUrl!;
   const fallsOrderUrl = theFalls?.orderOnlineUrl ?? fallsStatic.orderOnlineUrl!;
@@ -83,14 +80,14 @@ export default async function HomePage() {
             <LocationHeroCard
               name="Appleton"
               tagline="The original taproom & brewhouse."
-              status={appletonStatus}
+              locationHours={appleton}
               href="/appleton/"
               orderHref={appletonOrderUrl}
             />
             <LocationHeroCard
               name="Menomonee Falls"
               tagline="Craft beer and wood-fired pizza in the heart of the Falls."
-              status={fallsStatus}
+              locationHours={theFalls}
               href="/the-falls/"
               orderHref={fallsOrderUrl}
             />
@@ -142,7 +139,7 @@ export default async function HomePage() {
               name="Appleton"
               address="512 W Northland Ave, Appleton WI"
               hoursNote="Wed–Sat 11 AM–10 PM · Sun 12–6 PM"
-              status={appletonStatus}
+              locationHours={appleton}
               foodHref="/appleton-food-menu/"
               drinksHref="/appleton-drinks-menu/"
               orderHref={appletonOrderUrl}
@@ -153,7 +150,7 @@ export default async function HomePage() {
               name="Menomonee Falls"
               address="N88W16521 Main St, Menomonee Falls WI"
               hoursNote="Tue–Thu 4–10 PM · Fri–Sat 11 AM–10 PM"
-              status={fallsStatus}
+              locationHours={theFalls}
               foodHref="/the-falls-food-menu/"
               drinksHref="/the-falls-drinks-menu/"
               orderHref={fallsOrderUrl}
@@ -285,13 +282,13 @@ export default async function HomePage() {
 function LocationHeroCard({
   name,
   tagline,
-  status,
+  locationHours,
   href,
   orderHref,
 }: {
   name: string;
   tagline: string;
-  status: { isOpen: boolean; label: string } | null;
+  locationHours: { hours?: import("@/types").DayHours[]; sundayHours?: { open: string; close: string; isClosed: boolean }; holidayOverrides?: import("@/types").HolidayOverride[] } | null;
   href: string;
   orderHref: string;
 }) {
@@ -305,9 +302,9 @@ function LocationHeroCard({
     >
       <h2 className="font-heading text-xl font-bold text-white">{name}</h2>
       <p className="mt-1 text-sm text-white/75">{tagline}</p>
-      {status && (
+      {locationHours?.hours && (
         <div className="mt-3">
-          <OpenClosedBadge status={status} />
+          <OpenClosedBadgeLive location={locationHours} />
         </div>
       )}
       <div className="mt-auto pt-4 flex flex-wrap gap-2">
@@ -339,7 +336,7 @@ function LocationCard({
   name,
   address,
   hoursNote,
-  status,
+  locationHours,
   foodHref,
   drinksHref,
   orderHref,
@@ -349,7 +346,7 @@ function LocationCard({
   name: string;
   address: string;
   hoursNote: string;
-  status: { isOpen: boolean; label: string } | null;
+  locationHours: { hours?: import("@/types").DayHours[]; sundayHours?: { open: string; close: string; isClosed: boolean }; holidayOverrides?: import("@/types").HolidayOverride[] } | null;
   foodHref: string;
   drinksHref: string;
   orderHref: string;
@@ -385,9 +382,9 @@ function LocationCard({
         </Link>
       </div>
 
-      {status && (
+      {locationHours?.hours && (
         <div className="mt-3">
-          <OpenClosedBadge status={status} />
+          <OpenClosedBadgeLive location={locationHours} />
         </div>
       )}
 

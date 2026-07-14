@@ -133,6 +133,16 @@ export const faqsByCategoryQuery = groq`
   }
 `;
 
+export const liveMusicTodayQuery = groq`
+  count(*[
+    _type == "event" &&
+    isActive == true &&
+    category == "Live Music" &&
+    date == $today &&
+    location->slug.current == $locationSlug
+  ])
+`;
+
 export const menuItemsByLocationQuery = groq`
   *[_type == "menuItem" && isActive == true && location._ref == $locationId && menuType == $menuType] | order(displayOrder asc, section asc) {
     _id,

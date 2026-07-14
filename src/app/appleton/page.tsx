@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { sanityClient } from "@/lib/sanity/client";
-import { locationBySlugQuery } from "@/lib/sanity/queries";
-import { computeOpenClosed, isSunday } from "@/lib/hours";
+import { locationBySlugQuery, liveMusicTodayQuery } from "@/lib/sanity/queries";
 import { LOCATION_STATIC_DATA } from "@/lib/location-data";
-import OpenClosedBadge from "@/components/ui/OpenClosedBadge";
+import OpenClosedBadgeLive from "@/components/ui/OpenClosedBadgeLive";
 import HoursTable from "@/components/ui/HoursTable";
 import WeatherNudge from "@/components/ui/WeatherNudge";
 import { EmployeePickSection } from "@/components/ui/EmployeePickCard";
@@ -59,8 +58,16 @@ export default async function AppletonPage() {
     .catch(() => null);
 
   const location = cms ?? (LOCATION_STATIC_DATA["appleton"] as Location);
-  const status = location?.hours ? computeOpenClosed(location) : null;
-  const sunday = isSunday();
+
+  const todayChicago = new Date(
+    new Date().toLocaleString("en-US", { timeZone: "America/Chicago" })
+  ).toISOString().split("T")[0];
+
+  const liveMusicCount = await sanityClient
+    .fetch<number>(liveMusicTodayQuery, { today: todayChicago, locationSlug: "appleton" })
+    .catch(() => 0);
+
+  const hasLiveMusicToday = liveMusicCount > 0;
 
   const orderUrl =
     location?.orderOnlineUrl ??
@@ -81,13 +88,16 @@ export default async function AppletonPage() {
       >
         <div className="absolute inset-0 bg-black/20" aria-hidden="true" />
         <div className="relative z-10 mx-auto max-w-7xl w-full px-4 sm:px-6">
+          <p className="text-xs font-semibold uppercase tracking-widest text-white/50 mb-2">
+            Hop Yard Ale Works
+          </p>
           <h1 className="font-heading text-4xl font-bold text-white sm:text-5xl">
             Appleton
           </h1>
           <p className="mt-2 text-white/80 text-lg">The original taproom.</p>
 
           <div className="mt-3 flex items-center gap-3 flex-wrap">
-            {status && <OpenClosedBadge status={status} />}
+            {location?.hours && <OpenClosedBadgeLive location={location} />}
             {sunday && (
               <span
                 className="text-sm font-medium px-2.5 py-1 rounded-full"
@@ -141,7 +151,7 @@ export default async function AppletonPage() {
               </h2>
               <HoursTable rows={APPLETON_HOURS_ROWS} />
               <p className="mt-3 text-xs" style={{ color: "var(--color-muted)" }}>
-                Kitchen closes 30 min before close. Hours subject to change on holidays.
+                Kitchen closes 1 hour before close. Hours subject to change on holidays.
               </p>
               <WeatherNudge locationSlug="appleton" drinksHref="/appleton-drinks-menu/" />
             </div>

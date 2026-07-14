@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { sanityClient } from "@/lib/sanity/client";
 import { locationBySlugQuery } from "@/lib/sanity/queries";
-import { computeOpenClosed } from "@/lib/hours";
 import { LOCATION_STATIC_DATA } from "@/lib/location-data";
-import OpenClosedBadge from "@/components/ui/OpenClosedBadge";
+import OpenClosedBadgeLive from "@/components/ui/OpenClosedBadgeLive";
 import HoursTable from "@/components/ui/HoursTable";
 import WeatherNudge from "@/components/ui/WeatherNudge";
 import { EmployeePickSection } from "@/components/ui/EmployeePickCard";
@@ -59,7 +58,6 @@ export default async function TheFallsPage() {
     .catch(() => null);
 
   const location = cms ?? (LOCATION_STATIC_DATA["the-falls"] as Location);
-  const status = location?.hours ? computeOpenClosed(location) : null;
 
   const orderUrl =
     location?.orderOnlineUrl ??
@@ -80,6 +78,9 @@ export default async function TheFallsPage() {
       >
         <div className="absolute inset-0 bg-black/20" aria-hidden="true" />
         <div className="relative z-10 mx-auto max-w-7xl w-full px-4 sm:px-6">
+          <p className="text-xs font-semibold uppercase tracking-widest text-white/50 mb-2">
+            Hop Yard Ale Works
+          </p>
           <h1 className="font-heading text-4xl font-bold text-white sm:text-5xl">
             Menomonee Falls
           </h1>
@@ -87,9 +88,9 @@ export default async function TheFallsPage() {
             Pizza-forward taproom. New to craft beer? We&rsquo;ll help.
           </p>
 
-          {status && (
+          {location?.hours && (
             <div className="mt-3">
-              <OpenClosedBadge status={status} />
+              <OpenClosedBadgeLive location={location} />
             </div>
           )}
 
@@ -136,7 +137,7 @@ export default async function TheFallsPage() {
               </h2>
               <HoursTable rows={FALLS_HOURS_ROWS} />
               <p className="mt-3 text-xs" style={{ color: "var(--color-muted)" }}>
-                Kitchen closes 30 min before close. Hours subject to change on holidays.
+                Kitchen closes 1 hour before close. Hours subject to change on holidays.
               </p>
               <WeatherNudge locationSlug="the-falls" drinksHref="/the-falls-drinks-menu/" />
             </div>

@@ -238,6 +238,19 @@ export default function GlobalHeader({ activeTheme }: GlobalHeaderProps) {
             </Link>
           </div>
 
+          {/* Mobile: location badge (only on location-specific pages) */}
+          {(pathname.startsWith("/appleton") || pathname.startsWith("/the-falls")) && (
+            <span
+              className="md:hidden inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold text-white mr-1"
+              style={{ backgroundColor: "var(--color-seasonal-cta)" }}
+            >
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+              </svg>
+              {currentLocation}
+            </span>
+          )}
+
           {/* Mobile: hamburger */}
           <button
             className="flex items-center justify-center p-2 rounded-md md:hidden min-h-[44px] min-w-[44px]"
@@ -280,18 +293,22 @@ function LocationSwitcher({
   oppositePath: string;
 }) {
   return (
-    <div className="flex items-center gap-1 text-sm" style={{ color: "var(--color-muted)" }}>
-      <span>Viewing:</span>
-      <span className="font-medium" style={{ color: "var(--color-ink)" }}>
+    <div className="flex items-center gap-2.5">
+      <span
+        className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold text-white"
+        style={{ backgroundColor: "var(--color-seasonal-cta)" }}
+      >
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+        </svg>
         {currentLabel}
       </span>
-      <span>|</span>
       <Link
         href={oppositePath}
-        className="font-medium underline-offset-2 hover:underline transition-colors"
-        style={{ color: "var(--color-seasonal-cta)" }}
+        className="text-xs font-medium transition-opacity hover:opacity-70"
+        style={{ color: "var(--color-muted)" }}
       >
-        {oppositeLabel}
+        Switch to {oppositeLabel} →
       </Link>
     </div>
   );

@@ -117,7 +117,7 @@ const INTENTS: Intent[] = [
   {
     keywords: ["order online", "order", "pickup", "takeout", "take out", "to go", "toast", "delivery"],
     response: {
-      text: "You can order online for pickup at both locations through Toast. We don't offer delivery.",
+      text: "You can order online for pickup or delivery through Toast and third-party delivery services at both locations.",
       links: [
         { label: "Order — Appleton", href: "https://order.toasttab.com/online/hop-yard-ale-works-appleton-512-w-northland-ave" },
         { label: "Order — The Falls", href: "https://order.toasttab.com/online/hop-yard-ale-works-menomonee-falls-n88w16521-main-street" },
