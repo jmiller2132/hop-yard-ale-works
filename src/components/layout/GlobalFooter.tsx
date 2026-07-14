@@ -8,27 +8,158 @@ interface GlobalFooterProps {
   config?: GlobalConfig | null;
 }
 
-// Footer icon strip — real PNG icons, tinted via CSS filter
-const BASE_ICONS = [
-  { id: "pint",      src: "/icons/pint.png",      label: "Pint glass" },
-  { id: "hops",      src: "/icons/hops.png",      label: "Hop cone" },
-  { id: "wheat",     src: "/icons/wheat.png",     label: "Wheat" },
-  { id: "barrel",    src: "/icons/barrel.png",    label: "Barrel" },
-  { id: "bottle",    src: "/icons/bottle.png",    label: "Beer bottle" },
-  { id: "pizza",     src: "/icons/pizza.png",     label: "Pizza" },
-  { id: "pretzel",   src: "/icons/pretzel.png",   label: "Pretzel" },
-  { id: "wisconsin", src: "/icons/wisconsin.png", label: "Wisconsin" },
-  { id: "water",     src: "/icons/water.png",     label: "Water drop" },
+// Marquee tile definitions — colorful SVG tiles inspired by the Cross reference
+interface TileDef {
+  bg: string;
+  icon: "hops" | "pint" | "wheat" | "barrel" | "pizza" | "flame" | "star" | "diamond" | "wave" | "pretzel" | "leaf" | "mug";
+  fg: string;
+}
+
+const MARQUEE_TILES: TileDef[] = [
+  { bg: "#6ABF4B", icon: "hops",     fg: "#231F20" },
+  { bg: "#231F20", icon: "pint",     fg: "#6ABF4B" },
+  { bg: "#C94B2A", icon: "flame",    fg: "#F5F2EE" },
+  { bg: "#2D4F54", icon: "wheat",    fg: "#D4A017" },
+  { bg: "#D4A017", icon: "star",     fg: "#231F20" },
+  { bg: "#F5F2EE", icon: "pizza",    fg: "#C94B2A" },
+  { bg: "#6ABF4B", icon: "barrel",   fg: "#F5F2EE" },
+  { bg: "#2D4F54", icon: "mug",      fg: "#6ABF4B" },
+  { bg: "#C94B2A", icon: "pretzel",  fg: "#F5F2EE" },
+  { bg: "#D4A017", icon: "diamond",  fg: "#2D4F54" },
+  { bg: "#231F20", icon: "wave",     fg: "#D4A017" },
+  { bg: "#F5F2EE", icon: "leaf",     fg: "#2D4F54" },
 ];
 
-const SEASONAL_ICON_MAP: Record<string, { src: string; label: string }> = {
-  halloween:    { src: "/icons/snowflake.png", label: "Snowflake" },
-  christmas:    { src: "/icons/snowflake.png", label: "Snowflake" },
-  summerBright: { src: "/icons/sun.png",       label: "Sun" },
-  fourthOfJuly: { src: "/icons/sun.png",       label: "Sun" },
-  oktoberfest:  { src: "/icons/mapleleaf.png", label: "Maple leaf" },
-  stPatricks:   { src: "/icons/water.png",     label: "Water drop" },
-};
+function MarqueeTile({ tile }: { tile: TileDef }) {
+  const S = 72;
+  return (
+    <div
+      style={{
+        width: S,
+        height: S,
+        backgroundColor: tile.bg,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexShrink: 0,
+        borderRadius: 4,
+      }}
+    >
+      <TileIcon type={tile.icon} fg={tile.fg} size={36} />
+    </div>
+  );
+}
+
+function TileIcon({ type, fg, size }: { type: TileDef["icon"]; fg: string; size: number }) {
+  const s = size;
+  switch (type) {
+    case "hops":
+      return (
+        <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
+          <ellipse cx="18" cy="10" rx="5" ry="7" fill={fg} opacity="0.9"/>
+          <ellipse cx="11" cy="20" rx="5" ry="7" fill={fg} opacity="0.7"/>
+          <ellipse cx="25" cy="20" rx="5" ry="7" fill={fg} opacity="0.7"/>
+          <line x1="18" y1="10" x2="18" y2="32" stroke={fg} strokeWidth="1.5" strokeLinecap="round"/>
+          <line x1="11" y1="20" x2="18" y2="26" stroke={fg} strokeWidth="1.5" strokeLinecap="round"/>
+          <line x1="25" y1="20" x2="18" y2="26" stroke={fg} strokeWidth="1.5" strokeLinecap="round"/>
+        </svg>
+      );
+    case "pint":
+      return (
+        <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
+          <path d="M12 6h12l-2 22H14L12 6z" fill={fg} opacity="0.9"/>
+          <path d="M13 12h10" stroke={fg} strokeWidth="0" opacity="0"/>
+          <rect x="12" y="6" width="12" height="4" rx="1" fill={fg}/>
+          <ellipse cx="18" cy="16" rx="4" ry="2" fill={fg} opacity="0.3"/>
+        </svg>
+      );
+    case "wheat":
+      return (
+        <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
+          <line x1="18" y1="30" x2="18" y2="6" stroke={fg} strokeWidth="2" strokeLinecap="round"/>
+          <ellipse cx="18" cy="9"  rx="3" ry="4" fill={fg}/>
+          <ellipse cx="13" cy="14" rx="3" ry="4" fill={fg} transform="rotate(-30 13 14)"/>
+          <ellipse cx="23" cy="14" rx="3" ry="4" fill={fg} transform="rotate(30 23 14)"/>
+          <ellipse cx="13" cy="21" rx="3" ry="4" fill={fg} transform="rotate(-30 13 21)"/>
+          <ellipse cx="23" cy="21" rx="3" ry="4" fill={fg} transform="rotate(30 23 21)"/>
+        </svg>
+      );
+    case "barrel":
+      return (
+        <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
+          <rect x="10" y="8" width="16" height="20" rx="6" fill={fg} opacity="0.9"/>
+          <line x1="10" y1="14" x2="26" y2="14" stroke={tile.bg} strokeWidth="1.5"/>
+          <line x1="10" y1="22" x2="26" y2="22" stroke={tile.bg} strokeWidth="1.5"/>
+          <line x1="18" y1="8"  x2="18" y2="28" stroke={tile.bg} strokeWidth="1.5"/>
+        </svg>
+      );
+    case "pizza":
+      return (
+        <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
+          <path d="M18 6 L30 28 L6 28 Z" fill={fg} opacity="0.9"/>
+          <circle cx="18" cy="22" r="2" fill={tile.bg}/>
+          <circle cx="14" cy="17" r="1.5" fill={tile.bg}/>
+          <circle cx="22" cy="17" r="1.5" fill={tile.bg}/>
+        </svg>
+      );
+    case "flame":
+      return (
+        <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
+          <path d="M18 6c0 0-8 8-8 16a8 8 0 0 0 16 0c0-4-3-7-3-7s-1 4-3 4c-2 0-2-3-2-3s-2 3-2 5a4 4 0 0 0 8 0c0-2-1-4-1-4s4 2 4 6" fill={fg} opacity="0.9"/>
+          <path d="M18 8c0 0-6 7-6 14a6 6 0 0 0 12 0c0-3-2-5-2-5s-1 3-2 3c-1.5 0-2-2-2-2s-1 2-1 4a3 3 0 0 0 6 0" fill={fg}/>
+        </svg>
+      );
+    case "star":
+      return (
+        <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
+          <polygon points="18,5 21,14 30,14 23,20 26,29 18,23 10,29 13,20 6,14 15,14" fill={fg}/>
+        </svg>
+      );
+    case "diamond":
+      return (
+        <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
+          <rect x="10" y="10" width="16" height="16" rx="2" fill={fg} opacity="0.9" transform="rotate(45 18 18)"/>
+          <rect x="14" y="14" width="8" height="8" rx="1" fill={tile.bg} transform="rotate(45 18 18)"/>
+        </svg>
+      );
+    case "wave":
+      return (
+        <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
+          <path d="M4 18c3-6 5-6 7 0s4 6 7 0 4-6 7 0 4 6 7 0" stroke={fg} strokeWidth="3" strokeLinecap="round" fill="none"/>
+          <path d="M4 24c3-6 5-6 7 0s4 6 7 0 4-6 7 0 4 6 7 0" stroke={fg} strokeWidth="2" strokeLinecap="round" fill="none" opacity="0.5"/>
+          <path d="M4 12c3-6 5-6 7 0s4 6 7 0 4-6 7 0 4 6 7 0" stroke={fg} strokeWidth="2" strokeLinecap="round" fill="none" opacity="0.5"/>
+        </svg>
+      );
+    case "pretzel":
+      return (
+        <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
+          <path d="M18 8c-5 0-8 3-8 7 0 3 2 5 5 5l3-5 3 5c3 0 5-2 5-5 0-4-3-7-8-7z" fill={fg} opacity="0.9"/>
+          <path d="M13 20c-1 2-1 4 1 5s4 0 4-2" stroke={fg} strokeWidth="2.5" strokeLinecap="round" fill="none"/>
+          <path d="M23 20c1 2 1 4-1 5s-4 0-4-2" stroke={fg} strokeWidth="2.5" strokeLinecap="round" fill="none"/>
+        </svg>
+      );
+    case "leaf":
+      return (
+        <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
+          <path d="M18 30 C18 30 8 22 8 13 C8 8 13 5 18 8 C23 5 28 8 28 13 C28 22 18 30 18 30Z" fill={fg} opacity="0.9"/>
+          <line x1="18" y1="30" x2="18" y2="14" stroke={tile.bg} strokeWidth="1.5" strokeLinecap="round"/>
+          <line x1="18" y1="20" x2="13" y2="16" stroke={tile.bg} strokeWidth="1" strokeLinecap="round"/>
+          <line x1="18" y1="20" x2="23" y2="16" stroke={tile.bg} strokeWidth="1" strokeLinecap="round"/>
+        </svg>
+      );
+    case "mug":
+      return (
+        <svg width={s} height={s} viewBox="0 0 36 36" fill="none">
+          <rect x="8" y="10" width="16" height="18" rx="2" fill={fg} opacity="0.9"/>
+          <path d="M24 14 C28 14 30 16 30 19 C30 22 28 24 24 24" stroke={fg} strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+          <rect x="8" y="10" width="16" height="4" rx="2" fill={fg}/>
+          <rect x="11" y="18" width="4" height="6" rx="1" fill={tile.bg} opacity="0.4"/>
+        </svg>
+      );
+    default:
+      return null;
+  }
+}
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
@@ -59,8 +190,6 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
   const [footerMessage, setFooterMessage] = useState<string | null>(null);
   const [emailValue, setEmailValue] = useState("");
   const [emailSubmitted, setEmailSubmitted] = useState(false);
-  const [activeTheme, setActiveTheme] = useState<string | null>(null);
-
   useEffect(() => {
     // Pick a random footer message per page load
     const messages =
@@ -68,15 +197,7 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
       DEFAULT_FOOTER_MESSAGES;
     const idx = Math.floor(Math.random() * messages.length);
     setFooterMessage(messages[idx] ?? null);
-    const themeAttr = document.documentElement.getAttribute("data-theme");
-    setActiveTheme(themeAttr);
   }, [config]);
-
-  // Build strip: base icons + seasonal icon if applicable, tripled for seamless loop
-  const stripIcons = [...BASE_ICONS];
-  const seasonalIcon = activeTheme ? SEASONAL_ICON_MAP[activeTheme] : null;
-  if (seasonalIcon) stripIcons.push({ id: "seasonal", ...seasonalIcon });
-  const tileList = [...stripIcons, ...stripIcons, ...stripIcons];
 
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -219,30 +340,14 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
         style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
         aria-hidden="true"
       >
-        <div
-          className="relative flex"
-          style={{
-            maskImage: "linear-gradient(to right, transparent, black 6%, black 94%, transparent)",
-            WebkitMaskImage: "linear-gradient(to right, transparent, black 6%, black 94%, transparent)",
-          }}
-        >
-          <div className="flex animate-marquee will-change-transform items-center" style={{ gap: "40px", padding: "20px 0" }}>
-            {tileList.map((icon, i) => (
-              <img
-                key={`${icon.id}-${i}`}
-                src={icon.src}
-                alt={icon.label}
-                width={36}
-                height={36}
-                className="flex-shrink-0"
-                style={{
-                  filter: "invert(1)",
-                  opacity: 0.5,
-                  objectFit: "contain",
-                }}
-              />
-            ))}
-          </div>
+        <div className="flex animate-marquee will-change-transform" style={{ width: "max-content" }}>
+          {[0, 1].map((copy) => (
+            <div key={copy} className="flex shrink-0" style={{ gap: "6px", padding: "6px 6px 6px 0" }}>
+              {MARQUEE_TILES.map((tile, i) => (
+                <MarqueeTile key={`${copy}-${i}`} tile={tile} />
+              ))}
+            </div>
+          ))}
         </div>
       </div>
 
