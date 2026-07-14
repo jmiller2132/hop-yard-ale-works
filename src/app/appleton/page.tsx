@@ -98,7 +98,7 @@ export default async function AppletonPage() {
 
           <div className="mt-3 flex items-center gap-3 flex-wrap">
             {location?.hours && <OpenClosedBadgeLive location={location} />}
-            {sunday && (
+            {hasLiveMusicToday && (
               <span
                 className="text-sm font-medium px-2.5 py-1 rounded-full"
                 style={{ backgroundColor: "var(--color-green)", color: "white" }}
