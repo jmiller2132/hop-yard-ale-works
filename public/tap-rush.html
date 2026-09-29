@@ -168,13 +168,11 @@
     text-transform:uppercase;
     transition:color .15s;
     pointer-events:auto;
-    /* large tap target — padding keeps the visible text small */
     padding:12px 16px;
     display:inline-block;
     line-height:1;
   }
   #ig-back:hover{color:var(--lime);}
-  /* touch devices: bigger hit area + slightly more visible since there's no hover */
   @media (hover:none) and (pointer:coarse){
     #ig-back{
       padding:14px 20px;
@@ -251,6 +249,7 @@
   var TIP_R = 24;
   var TIP_BLINK = 3;
   var PATRON_GAP = 34;
+  function gapBetween(a, b){ return PATRON_GAP + ((a.craig || b.craig) ? 28 : 0); }   // Craig is a big guy
   var STORAGE_KEY = 'hopYardTapRush.highScore';
   var isTouch = window.matchMedia && window.matchMedia('(pointer:coarse)').matches;
 
@@ -416,6 +415,11 @@
     clonk: function(){ beep(220, 0.12, 'square', 0.06); setTimeout(function(){ beep(165, 0.2, 'square', 0.05); }, 90); },
     gameover: function(){ [['G4',0],['F#4',.28],['F4',.56],['E4',.84]].forEach(function(n, i){ setTimeout(function(){ beep(freqOf(n[0]), i === 3 ? 0.7 : 0.26, 'triangle', 0.06); }, n[1]*1000); }); },
     fanfare: function(){ [['G4',0],['C5',.12],['E5',.24],['G5',.36],['E5',.5],['G5',.6],['C6',.72]].forEach(function(n){ setTimeout(function(){ beep(freqOf(n[0]), 0.14, 'square', 0.045); }, n[1]*1000); }); },
+    psst: function(){ beep(1800, 0.05, 'square', 0.02); setTimeout(function(){ beep(1400, 0.12, 'square', 0.015); }, 40); },
+    laugh: function(){ [0, .16, .32, .5].forEach(function(d, k){ setTimeout(function(){ beep(k === 3 ? 330 : 440, 0.1, 'square', 0.045); }, d*1000); }); },
+    aw: function(){ beep(392, 0.18, 'triangle', 0.05); setTimeout(function(){ beep(294, 0.4, 'triangle', 0.05); }, 180); },
+    hint: function(){ beep(660, 0.07, 'triangle', 0.04); setTimeout(function(){ beep(880, 0.1, 'triangle', 0.04); }, 80); },
+    fill: function(f){ beep(260 + f*520, 0.05, 'triangle', 0.022); },
     thud: function(){ beep(90, 0.12, 'square', 0.07); },
     woof: function(){ beep(330, 0.07, 'square', 0.05); setTimeout(function(){ beep(300, 0.1, 'square', 0.05); }, 110); },
     gulp: function(){ beep(180, 0.07, 'triangle', 0.05); },
@@ -453,6 +457,38 @@
   var keys = { left:false, right:false };
   var runTarget = null;      // touch/mouse: hold on the bar and Oliver runs toward your finger (logic x)
   var hintCd = 0;
+  // Teaching moments: a short tip the first time a player runs into each mechanic, then never again
+  // on this device. Only one shows at a time.
+  var TIPS_KEY = 'hopYardTapRush.tips';
+  var tipsSeen = {};
+  try{ tipsSeen = JSON.parse(localStorage.getItem(TIPS_KEY) || '{}') || {}; }catch(e){ tipsSeen = {}; }
+  var coach = null, earlyReleases = 0;
+  function markSeen(id){
+    tipsSeen[id] = 1;
+    try{ localStorage.setItem(TIPS_KEY, JSON.stringify(tipsSeen)); }catch(e){}
+  }
+  function teach(id, text, o){
+    if(tipsSeen[id] || coach) return false;
+    markSeen(id);
+    o = o || {};
+    coach = { id:id, text:text, t:0, dur:o.dur || 3.2, lane:o.lane, x:o.x, follow:o.follow || null, top:!!o.top };
+    sfx.hint();
+    return true;
+  }
+  // Secret summons for the Craig & Patti easter egg: type "craig", "patti" or "date", tap the title
+  // five times on a phone, or open the game with ?craig / ?patti / ?date in the address.
+  var forcedCameo = null, cheatBuf = '';
+  try{
+    var q = (String(location.search) + String(location.hash)).toLowerCase();
+    if(/date|craig.*patti|patti.*craig/.test(q)) forcedCameo = 'both';
+    else if(/craig/.test(q)) forcedCameo = 'craig';
+    else if(/patti/.test(q)) forcedCameo = 'patti';
+  }catch(e){}
+  function summonCameo(who){
+    forcedCameo = who;
+    if(state === 'playing'){ craigRound = true; craigDone = false; cameoDone = false; cameoWho = who; }
+    try{ sfx.hint(); }catch(e){}
+  }
   var bartender = 'oliver';                     // 'oliver' or 'amy', picked on the title screen
   var josieReady = true, josie = { active:false, t:0, lane:0 };
   var roundEmpties = 0, roundTips = 0, showDone = false, craigRound = false, craigDone = false, coupleOut = 0, cameoDone = false, cameoWho = 'both', roundTime = 0, stallMul = 1, stallWarned = false;
@@ -485,6 +521,7 @@
     roundEmpties = 0; roundTips = 0; showDone = false;
     craigRound = !cameoDone && Math.random() < TUNING.cameoChance; craigDone = false; coupleOut = 0;
     var cr = Math.random(); cameoWho = cr < 0.4 ? 'craig' : (cr < 0.65 ? 'patti' : 'both');
+    if(forcedCameo){ craigRound = true; cameoWho = forcedCameo; }
     roundTime = 0; stallMul = 1; stallWarned = false;
     spawned = 0;
     quota = quotaFor(level);
@@ -506,7 +543,7 @@
 
   function newGame(){
     score = 0; lives = 3; level = 1;
-    josieReady = true; josie.active = false; cameoDone = false;
+    josieReady = true; josie.active = false; cameoDone = false; coach = null; earlyReleases = 0;
     emptiesSent = 0; lifeIdx = 0; nextLifeAt = TUNING.extraLifeFirst; bonusesPlayed = 0;
     bonus = null;
     player.lane = 1;
@@ -580,6 +617,9 @@
   var lost = { t:0, why:'', cause:'', lane:0, patron:null };
   function loseLife(cause, lane, patron){
     lost.cause = cause || ''; lost.lane = lane || 0; lost.patron = patron || null;
+    lost.explain = !tipsSeen['lost_' + lost.cause];
+    if(lost.explain) markSeen('lost_' + lost.cause);
+    coach = null;
     lives--;
     sfx.lose();
     updateHUD();
@@ -803,10 +843,18 @@
     } else {
       // let go too early and the half-filled mug is thrown away, like the arcade
       sfx.deny();
+      noteEarlyRelease();
       if(hintCd <= 0){ addPopup(player.x, laneY(player.lane)-52, 'Hold until it\u2019s full!', '#F4F2EA'); hintCd = 1; }
     }
   }
 
+  function noteEarlyRelease(){
+    earlyReleases++;
+    if(earlyReleases >= 2){
+      teach('pour', isTouch ? 'HOLD THE TAP UNTIL THE MUG IS FULL!' : 'HOLD SPACE UNTIL THE MUG IS FULL!',
+            { lane: player.lane, x: player.x, dur: 3.6 });
+    }
+  }
   function cancelPour(){
     player.pouring = false; player.fill = 0; player.ready = false;
   }
@@ -864,7 +912,7 @@
       var lim = doorX - 8;
       for(var j=0;j<l.customers.length;j++){
         var o = l.customers[j];
-        if(o !== c && !isExiting(o) && o.x > c.x && o.x - PATRON_GAP < lim) lim = o.x - PATRON_GAP;
+        if(o !== c && !isExiting(o) && o.x > c.x && o.x - gapBetween(o, c) < lim) lim = o.x - gapBetween(o, c);
       }
       c.slideTo = Math.max(c.x, Math.min(c.x + push, lim));
     }
@@ -917,9 +965,9 @@
     // Craig walks in once, somewhere past the first third of the round
     // Craig and Patti walk in together once, somewhere past the first third of the round
     var need = cameoWho === 'both' ? 2 : 1;
-    if(craigRound && !craigDone && spawned >= quota * 0.3 && lane.pending === 0 &&
+    if(craigRound && !craigDone && (forcedCameo || spawned >= quota * 0.3) && lane.pending === 0 &&
        d.maxPerLane - lane.customers.length >= need && quota - spawned >= need){
-      craigDone = true; cameoDone = true;
+      craigDone = true; cameoDone = true; forcedCameo = null;
       lane.craigNext = (cameoWho !== 'patti'); lane.pattiNext = (cameoWho !== 'craig'); group = need;
     }
     if(lane.pending === 0) lane.pendTimer = 0;
@@ -932,6 +980,7 @@
     var d = difficulty();
     var i, k, j, l, c, m, o;
     roundTime += dt;
+    if(coach){ coach.t += dt; if(coach.t > coach.dur) coach = null; }
     if(josie.active){ josie.t += dt; if(josie.t > 1.9) josie.active = false; }
     stallMul = 1 + clamp((roundTime - TUNING.stallAfter) / TUNING.stallRamp, 0, TUNING.stallMax);
     if(stallMul > 1.05 && !stallWarned){ stallWarned = true; addPopup(W/2, laneTop - 30, 'HURRY UP, BARKEEP!', '#ff6a4d'); }
@@ -951,7 +1000,9 @@
     }
     player.moving = (player.x !== px);
     if(player.pouring && player.fill < 1){
+      var steps0 = Math.floor(player.fill * 4);
       player.fill = Math.min(1, player.fill + dt/TUNING.fillTime);
+      if(Math.floor(player.fill * 4) > steps0 && player.fill < 1) sfx.fill(player.fill);
       if(player.fill >= 1 && !player.ready){ player.ready = true; sfx.ready(); }
     }
     if(hintCd > 0) hintCd -= dt;
@@ -1002,7 +1053,7 @@
             var minX = -Infinity;                        // queue up behind whoever is ahead
             for(j=0;j<l.customers.length;j++){
               o = l.customers[j];
-              if(o !== c && !isExiting(o) && o.x < c.x && o.x + PATRON_GAP > minX) minX = o.x + PATRON_GAP;
+              if(o !== c && !isExiting(o) && o.x < c.x && o.x + gapBetween(o, c) > minX) minX = o.x + gapBetween(o, c);
             }
             var nx = c.x - c.speed*dt*stallMul;
             if(nx < minX) nx = Math.min(c.x, minX);
@@ -1026,7 +1077,7 @@
             var lim = c.slideTo;
             for(j=0;j<l.customers.length;j++){
               o = l.customers[j];
-              if(o !== c && !isExiting(o) && o.x > c.x && o.x - PATRON_GAP < lim) lim = o.x - PATRON_GAP;
+              if(o !== c && !isExiting(o) && o.x > c.x && o.x - gapBetween(o, c) < lim) lim = o.x - gapBetween(o, c);
             }
             c.x = Math.max(c.x, Math.min(tx, lim));
             if(t >= 1 || c.x >= lim - 0.5){
@@ -1040,15 +1091,18 @@
             c.drinkT = 1;
             c.foamT = 1.6;
             c.sendT = 0.3;
-            l.emptyMugs.push({ x: c.x - 22 });      // slides the empty back, then keeps advancing
+            var em = { x: c.x - 22 }; l.emptyMugs.push(em);      // slides the empty back, then keeps advancing
+            teach('empty', 'CATCH THE EMPTY BEFORE IT FALLS!', { lane: i, follow: em });
             emptiesSent++;
             roundEmpties++;
             if(c.craig){                                   // Craig always tips
               l.tips.push({ x: Math.min(c.x, playerMaxX), age: 0 });
+              teach('tip', isTouch ? 'HOLD THE BAR TO RUN OVER FOR THE TIP!' : 'RUN WITH < > TO GRAB THE TIP!', { lane: i, x: Math.min(c.x, playerMaxX) });
             } else if(roundTips < TUNING.tipsPerRound &&
                (roundEmpties === TUNING.tipFirst || (roundEmpties > TUNING.tipFirst && Math.random() < TUNING.tipChance))){
               l.tips.push({ x: Math.min(c.x, playerMaxX), age: 0 });
               roundTips++;
+              teach('tip', isTouch ? 'HOLD THE BAR TO RUN OVER FOR THE TIP!' : 'RUN WITH < > TO GRAB THE TIP!', { lane: i, x: Math.min(c.x, playerMaxX) });
             }
             c.state = 'walking';
           }
@@ -1114,7 +1168,8 @@
           sfx.tip();
           addPopup(player.x, laneY(i)-46, 'TIP JAR! +'+TUNING.scoreTip, '#ffe27a');
           addScore(TUNING.scoreTip);
-          if(!showDone){ showDone = true; startDancers(); sfx.band(); }
+          if(!showDone){ showDone = true; startDancers(); sfx.band();
+            teach('band', "THEY'RE WATCHING THE BAND. NO CATCHING BEERS!", { top: true, dur: 3.4 }); }
         } else if(tp.age > TUNING.tipLife){
           l.tips.splice(k,1);
         }
@@ -1155,7 +1210,8 @@
   // Oliver works down the bar left to right, picks up and shakes five of the six cans and
   // skips one. The cans shuffle, and you pick the one he never touched.
   var CAN_W = 36, CAN_H = 54, CAN_BASE = 357;
-  var BONUS = { intro:0.7, walk:0.36, beat:0.26, shake:0.75, pass:0.55, reveal:2.4, pound:0.55 };
+  var BONUS = { intro:0.7, walk:0.36, beat:0.26, shake:0.75, pass:0.55, reveal:3.1, pound:0.55 };
+  var SHAKER_HOME = 95;                // after shaking, the other owner goes to watch from the end of the bar
   function slotX(i){ return 150 + i*120; }
   function oliverSpot(i){ return slotX(i) + 45; }          // where Oliver stands to work can i
 
@@ -1174,7 +1230,8 @@
       swapsLeft: 9,
       swapT: 0,
       swapDur: Math.max(0.24, 0.42 - 0.02*level),
-      sel: 2, chosen: -1, resultT: 0, won: false,
+      sel: 5, chosen: -1, resultT: 0, won: false,
+      px: BONUS_BARKEEP_X, pDir: -1, pMoving: false, pendingOpen: false, shakerFrom: null, fx: {},
       particles: []
     };
     for(var i=0;i<6;i++) bonus.cans.push({ id:i, slot:i, x:slotX(i), fromX:slotX(i), toX:slotX(i), tw:1, hop:0, shakeT:0, highlightT:0 });
@@ -1202,15 +1259,15 @@
   var BONUS_BARKEEP_X = 858;           // where your bartender waits, back turned, at the end of the bar
   function openChosenCan(){
     var b = bonus; b.opened = true;
-    var hx = BONUS_BARKEEP_X - 27 - 18, hy = CAN_BASE - 54 - 30;
-    var n = b.won ? 16 : 50;
+    var hx = b.px - 42, hy = CAN_BASE - 48;          // the can in your bartender's hand
+    var n = b.won ? 14 : 70;
     for(var i=0;i<n;i++){
-      var a = -Math.PI/2 + (b.won ? (Math.random()-0.5)*1.0 : 0.35 + (Math.random()-0.5)*1.4);
-      var sp = (b.won ? 110 : 260) + Math.random()*170;
+      var a = -Math.PI/2 + (b.won ? (Math.random()-0.5)*1.0 : (Math.random()-0.5)*0.7 + 0.15);   // a geyser, right in the face
+      var sp = (b.won ? 90 : 300) + Math.random()*(b.won ? 120 : 260);
       b.particles.push({ x:hx, y:hy, vx:Math.cos(a)*sp, vy:Math.sin(a)*sp, life:0.7+Math.random()*0.5,
                          col: Math.random()<0.5 ? '#f7f2e3' : '#f2b545' });
     }
-    if(b.won){ sfx.win(); addScore(TUNING.scoreBonus); } else sfx.boom();
+    if(b.won){ addScore(TUNING.scoreBonus); } else sfx.boom();
   }
 
   function updateBonus(dt){
@@ -1223,6 +1280,21 @@
         c.x = c.fromX + (c.toX - c.fromX) * smooth(0, 1, c.tw);
         c.hop = Math.sin(c.tw * Math.PI) * c.hopDir;
       } else { c.x = slotX(c.slot); c.hop = 0; }
+    }
+    // your bartender turns around and walks the bar to whichever can you're on
+    if(b.phase === 'pick' || b.phase === 'reveal'){
+      var target = slotX(b.sel), dxp = target - b.px, stp = 420 * dt;
+      b.pMoving = Math.abs(dxp) > 1;
+      if(b.pMoving) b.pDir = dxp > 0 ? 1 : -1;
+      b.px += clamp(dxp, -stp, stp);
+      if(b.phase === 'pick' && b.pendingOpen && Math.abs(target - b.px) < 1) chooseSlot(b.sel);
+    }
+    // after pounding the bar, the shaker heads off to watch from the far end
+    if((b.phase === 'shuffle' && b.t >= BONUS.pound) || b.phase === 'pick' || b.phase === 'reveal'){
+      if(b.shakerFrom === null) b.shakerFrom = b.ox;
+      var su = b.phase === 'shuffle' ? smooth(0, 0.9, b.t - BONUS.pound) : 1;
+      b.ox = b.shakerFrom + (SHAKER_HOME - b.shakerFrom) * su;
+      b.shakerWalking = su > 0 && su < 1;
     }
     if(b.phase === 'rules'){
       b.t = 0;                                   // waits for the player to continue
@@ -1265,7 +1337,14 @@
       }
     } else if(b.phase === 'reveal'){
       b.resultT += dt;
-      if(!b.opened && b.resultT >= 0.45) openChosenCan();
+      if(b.resultT >= 0.3 && !b.fx.psst){ b.fx.psst = 1; sfx.psst(); }
+      if(!b.opened && b.resultT >= 0.5) openChosenCan();
+      if(b.won && b.resultT > 0.6 && b.resultT < 1.6){
+        var gq = Math.floor((b.resultT - 0.6) / 0.25);
+        if(gq >= (b.fx.gulps || 0)){ b.fx.gulps = gq + 1; sfx.gulp(); }
+      }
+      if(b.won && b.resultT > 1.6 && !b.fx.aah){ b.fx.aah = 1; sfx.win(); }
+      if(b.resultT > 0.9 && !b.fx.react){ b.fx.react = 1; if(b.won) sfx.aw(); else sfx.laugh(); }
       if(b.resultT > BONUS.reveal) endBonus();
     }
     for(i=b.particles.length-1;i>=0;i--){
@@ -1288,7 +1367,7 @@
   // Game logic runs with the taps on the left; the renderer mirrors it so Oliver works
   // the taps on the RIGHT and patrons come in through the doors on the LEFT.
   var P = 3;
-  var SPR = {"hopman":{"rows":["......KKKKKK......","....KKKKKKKKKK....","....KKKkkKKKKK....","....KKkkKKKKKK....","....KKkKKKKKKK....","....KKKKKKKKKK....","....KkkkkkkkkK....",".KKKKKKKKKKKKKKKK.","KKKKKKKKKKKKKKKKKK","...KWWWWWWWWWWK...","....WWWWWWWWWW....",".....WWWWWWWW.....",".KK..KKK..KKK..KK.","KLGK.KGGKKGGK.KGLK","KGGGKGLGGGGLGKGGGK",".KGGGGGGKKGGGGGGK.","..KKgGGKGGKGGgKK..","...KGGGKGGKGGGK...","..KGLGgKLGKGLGgK..","..KGGGgKGGKGGGgK..","..KKGgKGGGGKgGKK..","...KKKGLGGLGKKK...","...KGGKGGGGKGGK...","...KGLgKGGKgLGK...","....KGgKGGKgGK....",".....KKGLGGKK.....","......KGGGgK......","......KGGgK.......",".......KGK........","........K........."],"pal":{"G":"#6cc24a","K":"#141414","L":"#9be070","W":"#f7f4ea","g":"#3f7f2a","k":"#4a4a4a"}},"badge":{"rows":["................KKKKKKKK................",".............KKKWWWWWWWWKKK.............","...........KKWWWTTTTTTTTWWWKK...........",".........KKWWTTTTTTTTTTTTTTWWKK.........","........KWWTTTTTTKKKKKKTTTTTTWWK........","......KKWTTTTTTKKKKKKKKKKTTTTTTWKK......",".....KKWTTTTTTTKKKkkKKKKKTTTTTTTWKK.....",".....KWTTTTTTTTKKkkKKKKKKTTTTTTTTWK.....","....KWTTTTTTTKKKKkKKKKKKKKKTTTTTTTWK....","...KWTTTTTTKKWWKKKKKKKKKKWWKKTTTTTTWK...","...KWTTTTTKKWWWKkkkkkkkkKWWWKKTTTTTWK...","..KWTTTTTKKWKKKKKKKKKKKKKKKKWKKTTTTTWK..","..KWTTTTTKWKKKKKKKKKKKKKKKKKKWKTTTTTWK..",".KWTTTTTKWWWWWKWWWWWWWWWWKWWWWWKTTTTTWK.",".KWTTTTTKWWWWWWWWWWWWWWWWWWWWWWKTTTTTWK.",".KWTTTTKWWWWWWWWWWWWWWWWWWWWWWWWKTTTTWK.","KWTTTGTKWWWWKKWWKKKWWKKKWWKKWWWWKTGTTTWK","KWTTGTTKWWWKLGKWKGGKKGGKWKGLKWWWKTTGTTWK","KWTTTTKWWWWKGGGKGLGGGGLGKGGGKWWWWKTTTTWK","KWTTGTKWWWWWKGGGGGGKKGGGGGGKWWWWWKTGTTWK","KWTTTGKWWWWWWKKgGGKGGKGGgKKWWWWWWKGTTTWK","KWTTTTKWWWWWWWKGGGKGGKGGGKWWWWWWWKTTTTWK","KWTTGTTKWWWWWKGLGgKLGKGLGgKWWWWWKTTGTTWK","KWTTTGTKWWWWWKGGGgKGGKGGGgKWWWWWKTGTTTWK",".KWTTTTKWWWWWKKGgKGGGGKgGKKWWWWWKTTTTWK.",".KWTTTTTKWWWWWKKKGLGGLGKKKWWWWWKTTTTTWK.",".KWTTTTTKWWWWWKGGKGGGGKGGKWWWWWKTTTTTWK.","..KWTTTTTKWWWWKGLgKGGKgLGKWWWWKTTTTTWK..","..KWTTTTTKKWWWWKGgKGGKgGKWWWWKKTTTTTWK..","...KWTTTTTKKWWWWKKGLGGKKWWWWKKTTTTTWK...","...KWTTTTTTKKWWWWKGGGgKWWWWKKTTTTTTWK...","....KWTTTTTTTKKWWKGGgKWWWKKTTTTTTTWK....",".....KWTTTTTTTTKKKKGKWKKKTTTTTTTTWK.....",".....KKWTTTTTTTTTTKKKKTTTTTTTTTTWKK.....","......KKWTTTTTTTTTTTTTTTTTTTTTTWKK......","........KWWTTTTTTTTTTTTTTTTTTWWK........",".........KKWWTTTTTTTTTTTTTTWWKK.........","...........KKWWWTTTTTTTTWWWKK...........",".............KKKWWWWWWWWKKK.............","................KKKKKKKK................"],"pal":{"G":"#9be070","K":"#141414","L":"#9be070","T":"#2c4a4f","W":"#f7f4ea","g":"#3f7f2a","k":"#4a4a4a"}},"mug_full":{"rows":["KKKKKK..","KFFFFKK.","KYYYyKKK","KHYYyK.K","KHYYyK.K","KHYYyKKK","KYYYyK..","KKKKKK.."],"pal":{"F":"#ffffff","H":"#e8e8e8","K":"#141414","Y":"#f2b233","y":"#c97d17"}},"mug_empty":{"rows":["KKKKKK..","KggggK..","KgGggKKK","KgGggK.K","KgGggK.K","KgGggKKK","KggggK..","KKKKKK.."],"pal":{"G":"#cfe6eb","K":"#141414","g":"#9cc6cf"}},"mug_tilt":{"rows":["..KKKK...","..K..K...","KKKKKKKKK","KgYYYYFFK","KgYYYYFF.","KgYYYYFF.","KKKKKKKKK"],"pal":{"F":"#ffffff","K":"#141414","Y":"#f2b233","g":"#9cc6cf"}},"can":{"rows":["..KKKKKKKK..",".KSSSSSSSSK.",".KsssssssSK.","KTkTTTTTTTtK","KTkTTKKTTTtK","KTkTKWWKTTtK","KTkTKGGKTTtK","KTkTKgGKTTtK","KTkTTKKTTTtK","KGGGGGGGGGgK","KGGGGGGGGGgK","KTkTTTTTTTtK","KTkTTTTTTTtK","KTkTTTTTTTtK","KTkTTTTTTTtK","KTkTTTTTTTtK",".KsssssssSK.","..KKKKKKKK.."],"pal":{"G":"#6cc24a","K":"#141414","S":"#d6dcdc","T":"#21383C","W":"#f7f4ea","g":"#3f7f2a","k":"#2c4a4f","s":"#9aa3a3","t":"#16272a"}},"tip":{"rows":["KKKKKKKKK","KGGGgGGGK","KGGgGgGGK","KGGGgGGGK","KKKKKKKKK"],"pal":{"G":"#7fcf5a","K":"#141414","g":"#3f7f2a"}},"keg":{"rows":["......KKK.......",".....KGGGK......",".....KGLGK......",".....KGGGK......",".....KGGGK......","......KGK.......","....KKKSKKKK....","...KSSSSSSSSK...","...KSKKKKKKKK...","...KSK..........","...KsK..........","..KKKKKKKKKKKK..",".KSSSSSSSSSSssK.",".KsSSSSSSSSSssK.",".KxxxxxxxxxxxxK.",".KSSSSSSSSSSssK.",".KSSSSSSSSSSssK.",".KSSSSSSSSSSssK.",".KxxxxxxxxxxxxK.",".KsSSSSSSSSSssK.",".KSSSSSSSSSSssK.",".KSSSSSSSSSSssK.",".KxxxxxxxxxxxxK.",".KSSSSSSSSSSssK.","..KKKKKKKKKKKK.."],"pal":{"G":"#6cc24a","K":"#141414","L":"#b6f08f","S":"#d6dcdc","s":"#9aa3a3","x":"#6d7575"}},"keg_pull":{"rows":["................","................","........KKK.....",".......KGGGK....","......KGLGK.....",".....KGGGK......","....KKKSKKKK....","...KSSSSSSSSK...","...KSKKKKKKKK...","...KSK..........","...KsK..........","..KKKKKKKKKKKK..",".KSSSSSSSSSSssK.",".KsSSSSSSSSSssK.",".KxxxxxxxxxxxxK.",".KSSSSSSSSSSssK.",".KSSSSSSSSSSssK.",".KSSSSSSSSSSssK.",".KxxxxxxxxxxxxK.",".KsSSSSSSSSSssK.",".KSSSSSSSSSSssK.",".KSSSSSSSSSSssK.",".KxxxxxxxxxxxxK.",".KSSSSSSSSSSssK.","..KKKKKKKKKKKK.."],"pal":{"G":"#6cc24a","K":"#141414","L":"#b6f08f","S":"#d6dcdc","s":"#9aa3a3","x":"#6d7575"}},"guitar_a":{"rows":["......KKKKKK........",".....KAAAAAAK.......","....KAAAAAAAAK......","....KaaaaaaaaK......","....KSSSSSSSSK......","....KSEWSSEWSK......","....KSSSSSSSSK......","....KHSSKKSSHK......","....KHHHHHHHHK......",".....KHHHHHHK.......","......KKHHKK........","....KKBBbbBBKK......","...KBBbBBbBBbBK.....","..KBBbBBKKKKKKK.....","..KSSKBKGGGGGGK.....","KKKKKKKKGGKKGGGK....","KgggggggGKWWKGGK....","KKKKKKKKGGKKGGGK....","....KBKGGGGGGGGK....","....KBBKGGGGGGKSK...","....KBbBKKKKKKKSK...","....KBBbBBbBBbBK....","....KJJJJJJJJJJK....","....KJJjKKKJJjJK....","....KJJjK..KJJjK....","....KJJjK..KJJjK....","...KFFFFK..KFFFFK...","...KKKKKK..KKKKKK..."],"pal":{"A":"#3f7f2a","B":"#a8412f","E":"#141414","F":"#2a2a2a","G":"#c98a3a","H":"#5a3a22","J":"#3b5586","K":"#141414","S":"#e8b98d","W":"#f7f4ea","a":"#2a5a1c","b":"#7a2e21","g":"#8a5a22","j":"#2a3d63"}},"guitar_b":{"rows":["......KKKKKK........",".....KAAAAAAK.......","....KAAAAAAAAK......","....KaaaaaaaaK......","....KSSSSSSSSK......","....KSEWSSEWSK......","....KSSSSSSSSK......","....KHSSKKSSHK......","....KHHHHHHHHK......",".....KHHHHHHK.......","......KKHHKK........","....KKBBbbBBKK......","...KBBbBBbBBbBK.....","..KBBbBBKKKKKKK.....","..KSSKBKGGGGGGK.....","KKKKKKKKGGKKGGGK....","KgggggggGKWWKGGK....","KKKKKKKKGGKKGGGK....","....KBKGGGGGGGGK....","....KBBKGGGGGGKK.K..","....KBbBKKKKKKSSK...","....KBBbBBbBBbBK....","....KJJJJJJJJJJK....","....KJJjKKKJJjJK....","....KJJjK..KJJjK....","....KJJjK..KJJjK....","...KFFFFK..KFFFFK...","...KKKKKK..KKKKKK..."],"pal":{"A":"#3f7f2a","B":"#a8412f","E":"#141414","F":"#2a2a2a","G":"#c98a3a","H":"#5a3a22","J":"#3b5586","K":"#141414","S":"#e8b98d","W":"#f7f4ea","a":"#2a5a1c","b":"#7a2e21","g":"#8a5a22","j":"#2a3d63"}},"singer_a":{"rows":["....KKKKKKK.........","...KLLLLLLLK........","..KLLLLLLLLLK.......","..KLLSSSSSLLLK......","..KLSEWSEWSLLK......","..KLSSSSSSSLLK......","..KLSSKKKSSLLK......","..KLLSSSSSLLLK......","..KLLKKSSKKLLK......","...KLKRRRRKLK..KKK..","....KRRRRRRK..KMMMK.","...KRRrRRrRRK..KMK..","..KRRRrRRrRRRKKSMK..","..KSKRRRRRRRRKSSK...","..KSKRRrRRrRRKKMK...","..KTKRRRRRRRRK.KMK..","..KTTKRrRRrRK..KMK..","...KKKRRRRRRK..KMK..","....KRRRRRRRRK.KMK..","....KRrRRRRrRK.KMK..","....KRRRRRRRRK.KMK..","....KKKKKKKKKK.KMK..",".....KJJKKJJK..KMK..",".....KJJK.KJJK.KMK..",".....KJJK.KJJK.KmK..",".....KJJK.KJJK.KmK..","....KFFFK.KFFFK.KmK.","....KKKKK.KKKKKKKKKK"],"pal":{"E":"#141414","F":"#2a2a2a","J":"#3b5586","K":"#141414","L":"#e9c46a","M":"#9aa3a3","R":"#d9a0c0","S":"#e8b98d","T":"#ffd23f","W":"#f7f4ea","m":"#6d7575","r":"#b0708f"}},"singer_b":{"rows":["....KKKKKKK.........","...KLLLLLLLK........","..KLLLLLLLLLK.......","..KLLSSSSSLLLK......","..KLSEWSEWSLLK......","..KLSSSSSSSLLK......","..KLSSKKKSSLLK......","..KLLSSSSSLLLK......","..KLLKKSSKKLLK......","...KLKRRRRKLK..KKK..","....KRRRRRRK..KMMMK.","...KRRrRRrRRK..KMK..","..KRRRrRRrRRRKKSMK..","..KSKRRRRRRRRKSSK...",".KTTKRrRRrRRKKMK....",".KTTKRRRRRRRRK.KMK..","..KKKRRrRRrRK..KMK..","...KKKRRRRRRK..KMK..","....KRRRRRRRRK.KMK..","....KRrRRRRrRK.KMK..","....KRRRRRRRRK.KMK..","....KKKKKKKKKK.KMK..",".....KJJKKJJK..KMK..",".....KJJK.KJJK.KMK..",".....KJJK.KJJK.KmK..",".....KJJK.KJJK.KmK..","....KFFFK.KFFFK.KmK.","....KKKKK.KKKKKKKKKK"],"pal":{"E":"#141414","F":"#2a2a2a","J":"#3b5586","K":"#141414","L":"#e9c46a","M":"#9aa3a3","R":"#d9a0c0","S":"#e8b98d","T":"#ffd23f","W":"#f7f4ea","m":"#6d7575","r":"#b0708f"}},"oliver_drink":{"rows":["......KKKKKK......","....KKHpHHpHKK....","...KHHpHHHpHHHKKK.","..KHpHhHHpHhHHKhpK","..KHHhHpHHhHpHKphK","..KHpSSSSSSHpHHKK.","..KHSSSSSSSSSpHK..","..KSKKKSSKKKSSSK..","..KSEWWSSEWWSSsK..","..KSEWWSSEWWSSsK..","..KSSSKNNKSSSSsK..",".KSSSKNNNNKSSSsK..","..KSSGKKKKGSSSK...","..KSGGGGGGGGSSK...","...KSSGMMGSSSK....",".KSSKSSGGGSSK.....",".KDDKKKGGGKK......",".KDDKKKDDDDKKK....",".KDDDDDWKKWDDDKK..",".KDDDDWKKKKWDDDDK.","..KDDDWWWWWWDDKDK.","..KDDDWVVVVWDDKDK.","..KDDDDWVVWDDDKDK.","..KDDDDDWWDDDDKSK.","..KKddddddddddKKK.","....KJJJJJJJJK....","....KJJjKKJjJK....","....KJJjKKJjJK....","...KBBBBKKBBBBK...","...KBBBBKKBBBBK..."],"pal":{"B":"#1c1c1c","D":"#3a3a42","E":"#141414","G":"#4f5357","H":"#a9aeb1","J":"#3b5586","K":"#141414","M":"#8a3b2b","N":"#d4936a","S":"#eab892","V":"#6cc24a","W":"#ffffff","d":"#26262c","h":"#6d7276","j":"#2a3d63","p":"#474b4f","s":"#c58b63"}},"oliver_hold":{"rows":["......KKKKKK......","....KKHpHHpHKK....","...KHHpHHHpHHHKKK.","..KHpHhHHpHhHHKhpK","..KHHhHpHHhHpHKphK","..KHpSSSSSSHpHHKK.","..KHSSSSSSSSSpHK..","..KSKKKSSKKKSSSK..","..KSEWWSSEWWSSsK..","..KSEWWSSEWWSSsK..","..KSSSKNNKSSSSsK..",".KSSSKNNNNKSSSsK..","..KSSGKKKKGSSSK...","..KSGGGGGGGGSSK...","...KSSGMMGSSSK....","....KSSGGGSSK.....",".....KKGGGKK......","....KKKDDDDKKK....","..KKDDDWKKWDDDKK..","KKKDDDWKKKKWDDDDK.","SSKDDDWWWWWWDDKDK.","KKKDDDWVVVVWDDKDK.","...KDDDWVVWDDDKDK.","...KDDDDWWDDDDKSK.","...KddddddddddKKK.","....KJJJJJJJJK....","....KJJjKKJjJK....","....KJJjKKJjJK....","...KBBBBKKBBBBK...","...KBBBBKKBBBBK..."],"pal":{"B":"#1c1c1c","D":"#3a3a42","E":"#141414","G":"#4f5357","H":"#a9aeb1","J":"#3b5586","K":"#141414","M":"#8a3b2b","N":"#d4936a","S":"#eab892","V":"#6cc24a","W":"#ffffff","d":"#26262c","h":"#6d7276","j":"#2a3d63","p":"#474b4f","s":"#c58b63"}},"oliver_idle":{"rows":["......KKKKKK......","....KKHpHHpHKK....","...KHHpHHHpHHHKKK.","..KHpHhHHpHhHHKhpK","..KHHhHpHHhHpHKphK","..KHpSSSSSSHpHHKK.","..KHSSSSSSSSSpHK..","..KSKKKSSKKKSSSK..","..KSEWWSSEWWSSsK..","..KSEWWSSEWWSSsK..","..KSSSKNNKSSSSsK..",".KSSSKNNNNKSSSsK..","..KSSGKKKKGSSSK...","..KSGGGGGGGGSSK...","...KSSGMMGSSSK....","....KSSGGGSSK.....",".....KKGGGKK......","....KKKDDDDKKK....","..KKDDDWKKWDDDKK..",".KDDDDWKKKKWDDDDK.",".KDKDDWWWWWWDDKDK.",".KDKDDWVVVVWDDKDK.",".KDKDDDWVVWDDDKDK.",".KSKDDDDWWDDDDKSK.",".KKKddddddddddKKK.","....KJJJJJJJJK....","....KJJjKKJjJK....","....KJJjKKJjJK....","...KBBBBKKBBBBK...","...KBBBBKKBBBBK..."],"pal":{"B":"#1c1c1c","D":"#3a3a42","E":"#141414","G":"#4f5357","H":"#a9aeb1","J":"#3b5586","K":"#141414","M":"#8a3b2b","N":"#d4936a","S":"#eab892","V":"#6cc24a","W":"#ffffff","d":"#26262c","h":"#6d7276","j":"#2a3d63","p":"#474b4f","s":"#c58b63"}},"oliver_shake":{"rows":["......KKKKKK......","....KKHpHHpHKK....","...KHHpHHHpHHHKKK.","..KHpHhHHpHhHHKhpK","..KHHhHpHHhHpHKphK","..KHpSSSSSSHpHHKK.","..KHSSSSSSSSSpHK..","..KSKKKSSKKKSSSK..","..KSEWWSSEWWSSsK..","..KSEWWSSEWWSSsK..","..KSSSKNNKSSSSsK..",".KSSSKNNNNKSSSsK..","..KSSGKKKKGSSSK...","..KSGGGGGGGGSSK...","...KSSGMMGSSSK....","....KSSGGGSSK.....",".....KKGGGKK......","SSK.KKKDDDDKKK....","KKKKDDDWKKWDDDKK..","..KDDDWKKKKWDDDDK.","..KDDDWWWWWWDDKDK.","..KDDDWVVVVWDDKDK.","..KDDDDWVVWDDDKDK.","..KDDDDDWWDDDDKSK.","..KKddddddddddKKK.","....KJJJJJJJJK....","....KJJjKKJjJK....","....KJJjKKJjJK....","...KBBBBKKBBBBK...","...KBBBBKKBBBBK..."],"pal":{"B":"#1c1c1c","D":"#3a3a42","E":"#141414","G":"#4f5357","H":"#a9aeb1","J":"#3b5586","K":"#141414","M":"#8a3b2b","N":"#d4936a","S":"#eab892","V":"#6cc24a","W":"#ffffff","d":"#26262c","h":"#6d7276","j":"#2a3d63","p":"#474b4f","s":"#c58b63"}},"oliver_walkA":{"rows":["......KKKKKK......","....KKHpHHpHKK....","...KHHpHHHpHHHKKK.","..KHpHhHHpHhHHKhpK","..KHHhHpHHhHpHKphK","..KHpSSSSSSHpHHKK.","..KHSSSSSSSSSpHK..","..KSKKKSSKKKSSSK..","..KSEWWSSEWWSSsK..","..KSEWWSSEWWSSsK..","..KSSSKNNKSSSSsK..",".KSSSKNNNNKSSSsK..","..KSSGKKKKGSSSK...","..KSGGGGGGGGSSK...","...KSSGMMGSSSK....","....KSSGGGSSK.....",".....KKGGGKK......","....KKKDDDDKKK....","..KKDDDWKKWDDDKK..",".KDDDDWKKKKWDDDDK.",".KDKDDWWWWWWDDKDK.",".KDKDDWVVVVWDDKDK.",".KDKDDDWVVWDDDKDK.",".KSKDDDDWWDDDDKSK.",".KKKddddddddddKKK.","....KJJJJJJJJK....","...KJJjKKKJjJK....","..KJJjK...KJjJK...",".KBBBBK...KBBBBK..",".KBBBBK....KBBBBK."],"pal":{"B":"#1c1c1c","D":"#3a3a42","E":"#141414","G":"#4f5357","H":"#a9aeb1","J":"#3b5586","K":"#141414","M":"#8a3b2b","N":"#d4936a","S":"#eab892","V":"#6cc24a","W":"#ffffff","d":"#26262c","h":"#6d7276","j":"#2a3d63","p":"#474b4f","s":"#c58b63"}},"oliver_walkB":{"rows":["......KKKKKK......","....KKHpHHpHKK....","...KHHpHHHpHHHKKK.","..KHpHhHHpHhHHKhpK","..KHHhHpHHhHpHKphK","..KHpSSSSSSHpHHKK.","..KHSSSSSSSSSpHK..","..KSKKKSSKKKSSSK..","..KSEWWSSEWWSSsK..","..KSEWWSSEWWSSsK..","..KSSSKNNKSSSSsK..",".KSSSKNNNNKSSSsK..","..KSSGKKKKGSSSK...","..KSGGGGGGGGSSK...","...KSSGMMGSSSK....","....KSSGGGSSK.....",".....KKGGGKK......","....KKKDDDDKKK....","..KKDDDWKKWDDDKK..",".KDDDDWKKKKWDDDDK.",".KDKDDWWWWWWDDKDK.",".KDKDDWVVVVWDDKDK.",".KDKDDDWVVWDDDKDK.",".KSKDDDDWWDDDDKSK.",".KKKddddddddddKKK.","....KJJJJJJJJK....",".....KJjKKJjK.....",".....KJjKKJjK.....","....KBBBKKBBBK....","....KBBBKKBBBK...."],"pal":{"B":"#1c1c1c","D":"#3a3a42","E":"#141414","G":"#4f5357","H":"#a9aeb1","J":"#3b5586","K":"#141414","M":"#8a3b2b","N":"#d4936a","S":"#eab892","V":"#6cc24a","W":"#ffffff","d":"#26262c","h":"#6d7276","j":"#2a3d63","p":"#474b4f","s":"#c58b63"}},"amy_drink":{"rows":["......KKKKKK......","....KKLLHHHhKK....","...KLLLHHHHHhhK...","..KHLLHHHHHHHhHK..","..KHHHHHHHHHHHhHK.",".KHHHHHHSSSSSHHhHK",".KHHHHSSSSSSSSHHhK","KHHKHSbbbSSbbbSHHK","KHHKSSEWWSSEWWSHhK","KHLKSSEWWSSEWWSHHK","KHLKSSSSSSNSSSSHhK","KHLHKSSSSNNSSSSKHK","KHLHKSSSSSSSSSSKHK","KLLHKSSMWWWWMSSKHK","KLHHHKSSMMMMSSKHHK","KSSKHHKSSSSSSKHHLK","KDDKH.KKSSSSKK.HLK",".KDDKKKDDDDKKKHLHK",".KDDDDDTKKTDDDKHLK",".KDDDDTKKKKTDDDLHK","..KDDDTWWWWTDDKLK.","..KDDDTVVVVTDDKKK.","..KDDDDTVVTDDDKDK.","..KDDDDDTTDDDDKSK.","..KKGGGGGGGGGGKKK.","....KJJJJJJJJK....","....KJJjKKJjJK....","....KJJjKKJjJK....","...KZZZZKKZZZZK...","...KZZZZKKZZZZK..."],"pal":{"D":"#eeeeea","E":"#2c5a74","G":"#2f8a4a","H":"#a8773a","J":"#3b5586","K":"#141414","L":"#c9994f","M":"#c0505a","N":"#e0a883","S":"#f0c09a","T":"#21383C","V":"#6cc24a","W":"#ffffff","Z":"#e2e2e2","b":"#6b4520","h":"#6b4520","j":"#2a3d63"}},"amy_hold":{"rows":["......KKKKKK......","....KKLLHHHhKK....","...KLLLHHHHHhhK...","..KHLLHHHHHHHhHK..","..KHHHHHHHHHHHhHK.",".KHHHHHHSSSSSHHhHK",".KHHHHSSSSSSSSHHhK","KHHKHSbbbSSbbbSHHK","KHHKSSEWWSSEWWSHhK","KHLKSSEWWSSEWWSHHK","KHLKSSSSSSNSSSSHhK","KHLHKSSSSNNSSSSKHK","KHLHKSSSSSSSSSSKHK","KLLHKSSMWWWWMSSKHK","KLHHHKSSMMMMSSKHHK","KLLHHHKSSSSSSKHHLK","KLLLH.KKSSSSKK.HLK","KLLHKKKDDDDKKKHLHK","KLHKDDDTKKTDDDKHLK","KHLDDDTKKKKTDDDLHK","SKLDDDTWWWWTDDKLK.","KKKDDDTVVVVTDDKKK.","...KDDDTVVTDDDKDK.","...KDDDDTTDDDDKSK.","...KGGGGGGGGGGKKK.","....KJJJJJJJJK....","....KJJjKKJjJK....","....KJJjKKJjJK....","...KZZZZKKZZZZK...","...KZZZZKKZZZZK..."],"pal":{"D":"#eeeeea","E":"#2c5a74","G":"#2f8a4a","H":"#a8773a","J":"#3b5586","K":"#141414","L":"#c9994f","M":"#c0505a","N":"#e0a883","S":"#f0c09a","T":"#21383C","V":"#6cc24a","W":"#ffffff","Z":"#e2e2e2","b":"#6b4520","h":"#6b4520","j":"#2a3d63"}},"amy_idle":{"rows":["......KKKKKK......","....KKLLHHHhKK....","...KLLLHHHHHhhK...","..KHLLHHHHHHHhHK..","..KHHHHHHHHHHHhHK.",".KHHHHHHSSSSSHHhHK",".KHHHHSSSSSSSSHHhK","KHHKHSbbbSSbbbSHHK","KHHKSSEWWSSEWWSHhK","KHLKSSEWWSSEWWSHHK","KHLKSSSSSSNSSSSHhK","KHLHKSSSSNNSSSSKHK","KHLHKSSSSSSSSSSKHK","KLLHKSSMWWWWMSSKHK","KLHHHKSSMMMMSSKHHK","KLLHHHKSSSSSSKHHLK","KLLLH.KKSSSSKK.HLK","KLLHKKKDDDDKKKHLHK","KLHKDDDTKKTDDDKHLK","KHLDDDTKKKKTDDDLHK",".KLKDDTWWWWTDDKLK.",".KKKDDTVVVVTDDKKK.",".KDKDDDTVVTDDDKDK.",".KSKDDDDTTDDDDKSK.",".KKKGGGGGGGGGGKKK.","....KJJJJJJJJK....","....KJJjKKJjJK....","....KJJjKKJjJK....","...KZZZZKKZZZZK...","...KZZZZKKZZZZK..."],"pal":{"D":"#eeeeea","E":"#2c5a74","G":"#2f8a4a","H":"#a8773a","J":"#3b5586","K":"#141414","L":"#c9994f","M":"#c0505a","N":"#e0a883","S":"#f0c09a","T":"#21383C","V":"#6cc24a","W":"#ffffff","Z":"#e2e2e2","b":"#6b4520","h":"#6b4520","j":"#2a3d63"}},"amy_shake":{"rows":["......KKKKKK......","....KKLLHHHhKK....","...KLLLHHHHHhhK...","..KHLLHHHHHHHhHK..","..KHHHHHHHHHHHhHK.",".KHHHHHHSSSSSHHhHK",".KHHHHSSSSSSSSHHhK","KHHKHSbbbSSbbbSHHK","KHHKSSEWWSSEWWSHhK","KHLKSSEWWSSEWWSHHK","KHLKSSSSSSNSSSSHhK","KHLHKSSSSNNSSSSKHK","KHLHKSSSSSSSSSSKHK","KLLHKSSMWWWWMSSKHK","KLHHHKSSMMMMSSKHHK","KLLHHHKSSSSSSKHHLK","KLLLH.KKSSSSKK.HLK","SSK.KKKDDDDKKKHLHK","KKKKDDDTKKTDDDKHLK","..KDDDTKKKKTDDDLHK","..KDDDTWWWWTDDKLK.","..KDDDTVVVVTDDKKK.","..KDDDDTVVTDDDKDK.","..KDDDDDTTDDDDKSK.","..KKGGGGGGGGGGKKK.","....KJJJJJJJJK....","....KJJjKKJjJK....","....KJJjKKJjJK....","...KZZZZKKZZZZK...","...KZZZZKKZZZZK..."],"pal":{"D":"#eeeeea","E":"#2c5a74","G":"#2f8a4a","H":"#a8773a","J":"#3b5586","K":"#141414","L":"#c9994f","M":"#c0505a","N":"#e0a883","S":"#f0c09a","T":"#21383C","V":"#6cc24a","W":"#ffffff","Z":"#e2e2e2","b":"#6b4520","h":"#6b4520","j":"#2a3d63"}},"amy_walkA":{"rows":["......KKKKKK......","....KKLLHHHhKK....","...KLLLHHHHHhhK...","..KHLLHHHHHHHhHK..","..KHHHHHHHHHHHhHK.",".KHHHHHHSSSSSHHhHK",".KHHHHSSSSSSSSHHhK","KHHKHSbbbSSbbbSHHK","KHHKSSEWWSSEWWSHhK","KHLKSSEWWSSEWWSHHK","KHLKSSSSSSNSSSSHhK","KHLHKSSSSNNSSSSKHK","KHLHKSSSSSSSSSSKHK","KLLHKSSMWWWWMSSKHK","KLHHHKSSMMMMSSKHHK","KLLHHHKSSSSSSKHHLK","KLLLH.KKSSSSKK.HLK","KLLHKKKDDDDKKKHLHK","KLHKDDDTKKTDDDKHLK","KHLDDDTKKKKTDDDLHK",".KLKDDTWWWWTDDKLK.",".KKKDDTVVVVTDDKKK.",".KDKDDDTVVTDDDKDK.",".KSKDDDDTTDDDDKSK.",".KKKGGGGGGGGGGKKK.","....KJJJJJJJJK....","...KJJjKKKJjJK....","..KJJjK...KJjJK...",".KZZZZK...KZZZZK..",".KZZZZK....KZZZZK."],"pal":{"D":"#eeeeea","E":"#2c5a74","G":"#2f8a4a","H":"#a8773a","J":"#3b5586","K":"#141414","L":"#c9994f","M":"#c0505a","N":"#e0a883","S":"#f0c09a","T":"#21383C","V":"#6cc24a","W":"#ffffff","Z":"#e2e2e2","b":"#6b4520","h":"#6b4520","j":"#2a3d63"}},"amy_walkB":{"rows":["......KKKKKK......","....KKLLHHHhKK....","...KLLLHHHHHhhK...","..KHLLHHHHHHHhHK..","..KHHHHHHHHHHHhHK.",".KHHHHHHSSSSSHHhHK",".KHHHHSSSSSSSSHHhK","KHHKHSbbbSSbbbSHHK","KHHKSSEWWSSEWWSHhK","KHLKSSEWWSSEWWSHHK","KHLKSSSSSSNSSSSHhK","KHLHKSSSSNNSSSSKHK","KHLHKSSSSSSSSSSKHK","KLLHKSSMWWWWMSSKHK","KLHHHKSSMMMMSSKHHK","KLLHHHKSSSSSSKHHLK","KLLLH.KKSSSSKK.HLK","KLLHKKKDDDDKKKHLHK","KLHKDDDTKKTDDDKHLK","KHLDDDTKKKKTDDDLHK",".KLKDDTWWWWTDDKLK.",".KKKDDTVVVVTDDKKK.",".KDKDDDTVVTDDDKDK.",".KSKDDDDTTDDDDKSK.",".KKKGGGGGGGGGGKKK.","....KJJJJJJJJK....",".....KJjKKJjK.....",".....KJjKKJjK.....","....KZZZKKZZZK....","....KZZZKKZZZK...."],"pal":{"D":"#eeeeea","E":"#2c5a74","G":"#2f8a4a","H":"#a8773a","J":"#3b5586","K":"#141414","L":"#c9994f","M":"#c0505a","N":"#e0a883","S":"#f0c09a","T":"#21383C","V":"#6cc24a","W":"#ffffff","Z":"#e2e2e2","b":"#6b4520","h":"#6b4520","j":"#2a3d63"}},"craig_down_closed":{"rows":["....................","......KKKKKKKK......","....KKAPAAAPAAKKK...","...KAAPAAAPAAAPAAKK.","...KaaaaaaaaaaaaaaaK","...KSSSSSSSSSSSSKK..","...KSbbSSSSSbbSSK...","...KSKKSSSSSKKSSK...","...KrSSSSKNKSSSrK...",".K.KrSSSKNNNKSSrK.K.","KMKKSSMMMMMMMMSSKKMK","KMMMMMMMMMMMMMMMMMMK",".KKKBBMMKKKKMMBBKKK.","...KBBBBBMMMBBBBBK..","...KBBbBBBBBBbBBBK..","...KBBBBXBBBXBBBBK..","..KCKBBbBBBBBbBBKCK.",".KCCKBBBBXBBBBBKCCK.",".KCCCKBBBBBBbBKCCCCK",".KcCCCKBBXBBBKCCCCCK",".KcCCCCKBBBBBKCCCCCK",".KcCCCCKKBBBKKCCCCCK",".KcCCCCCCKBKCCCCCCCK",".KcCCCCCCCKCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK"],"pal":{"A":"#8fa0b5","B":"#e2e1dc","C":"#2f55a8","K":"#141414","M":"#e8e5dc","N":"#d99a78","P":"#d8c9a4","S":"#efbc98","X":"#8e8e8a","a":"#66758a","b":"#a9a8a3","c":"#22418a","r":"#e3897a"}},"craig_down_open":{"rows":["....................","......KKKKKKKK......","....KKAPAAAPAAKKK...","...KAAPAAAPAAAPAAKK.","...KaaaaaaaaaaaaaaaK","...KSSSSSSSSSSSSKK..","...KSbbSSSSSbbSSK...","...KSWESSSSSWESSK...","...KrSSSSKNKSSSrK...",".K.KrSSSKNNNKSSrK.K.","KMKKSSMMMMMMMMSSKKMK","KMMMMMMMMMMMMMMMMMMK",".KKKBBMMKKKKMMBBKKK.","...KBBBBBMMMBBBBBK..","...KBBbBBBBBBbBBBK..","...KBBBBXBBBXBBBBK..","..KCKBBbBBBBBbBBKCK.",".KCCKBBBBXBBBBBKCCK.",".KCCCKBBBBBBbBKCCCCK",".KcCCCKBBXBBBKCCCCCK",".KcCCCCKBBBBBKCCCCCK",".KcCCCCKKBBBKKCCCCCK",".KcCCCCCCKBKCCCCCCCK",".KcCCCCCCCKCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK"],"pal":{"A":"#8fa0b5","B":"#e2e1dc","C":"#2f55a8","E":"#3d6fa8","K":"#141414","M":"#e8e5dc","N":"#d99a78","P":"#d8c9a4","S":"#efbc98","W":"#ffffff","X":"#8e8e8a","a":"#66758a","b":"#a9a8a3","c":"#22418a","r":"#e3897a"}},"craig_down_up":{"rows":["....................","......KKKKKKKK......","....KKAPAAAPAAKKK...","...KAAPAAAPAAAPAAKK.","...KaaaaaaaaaaaaaaaK","...KSSSSSSSSSSSSKK..","...KSbbSSSSSbbSSK...","...KSEWSSSSSEWSSK...","...KrSSSSKNKSSSrK...",".K.KrSSSKNNNKSSrK.K.","KMKKSSMMMMMMMMSSKKMK","KMMMMMMMMMMMMMMMMMMK",".KKKBBMMKKKKMMBBKKK.","...KBBBBBMMMBBBBBK..","...KBBbBBBBBBbBBBK..","...KBBBBXBBBXBBBBK..","..KCKBBbBBBBBbBBKCK.",".KCCKBBBBXBBBBBKCCK.",".KCCCKBBBBBBbBKCCCCK",".KcCCCKBBXBBBKCCCCCK",".KcCCCCKBBBBBKCCCCCK",".KcCCCCKKBBBKKCCCCCK",".KcCCCCCCKBKCCCCCCCK",".KcCCCCCCCKCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK"],"pal":{"A":"#8fa0b5","B":"#e2e1dc","C":"#2f55a8","E":"#3d6fa8","K":"#141414","M":"#e8e5dc","N":"#d99a78","P":"#d8c9a4","S":"#efbc98","W":"#ffffff","X":"#8e8e8a","a":"#66758a","b":"#a9a8a3","c":"#22418a","r":"#e3897a"}},"craig_drink_closed":{"rows":["....................","......KKKKKKKK......","....KKAPAAAPAAKKK...","...KAAPAAAPAAAPAAKK.","...KaaaaaaaaaaaaaaaK","...KSSSSSSSSSSSSKK..","...KSbbSSSSSbbSSK...","...KSKKSSSSSKKSSK...","...KrSSSSKNKSSSrK...",".K.KrSSSKNNNKSSrK.K.","KMKKSSMMMMMMMMSSKKMK","KMMMMMMMMMMMMMMMMMMK",".KKKBBMMKKKKMMBBKSK.","...KBBBBBMMMBBBBKSK.","...KBBbBBBBBBbBBKCK.","...KBBBBXBBBXBBBKCK.","..KCKBBbBBBBBbBBKCK.",".KCCKBBBBXBBBBBKCCK.",".KCCCKBBBBBBbBKCCCCK",".KcCCCKBBXBBBKCCCCCK",".KcCCCCKBBBBBKCCCCCK",".KcCCCCKKBBBKKCCCCCK",".KcCCCCCCKBKCCCCCCCK",".KcCCCCCCCKCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK"],"pal":{"A":"#8fa0b5","B":"#e2e1dc","C":"#2f55a8","K":"#141414","M":"#e8e5dc","N":"#d99a78","P":"#d8c9a4","S":"#efbc98","X":"#8e8e8a","a":"#66758a","b":"#a9a8a3","c":"#22418a","r":"#e3897a"}},"craig_drink_open":{"rows":["....................","......KKKKKKKK......","....KKAPAAAPAAKKK...","...KAAPAAAPAAAPAAKK.","...KaaaaaaaaaaaaaaaK","...KSSSSSSSSSSSSKK..","...KSbbSSSSSbbSSK...","...KSWESSSSSWESSK...","...KrSSSSKNKSSSrK...",".K.KrSSSKNNNKSSrK.K.","KMKKSSMMMMMMMMSSKKMK","KMMMMMMMMMMMMMMMMMMK",".KKKBBMMKKKKMMBBKSK.","...KBBBBBMMMBBBBKSK.","...KBBbBBBBBBbBBKCK.","...KBBBBXBBBXBBBKCK.","..KCKBBbBBBBBbBBKCK.",".KCCKBBBBXBBBBBKCCK.",".KCCCKBBBBBBbBKCCCCK",".KcCCCKBBXBBBKCCCCCK",".KcCCCCKBBBBBKCCCCCK",".KcCCCCKKBBBKKCCCCCK",".KcCCCCCCKBKCCCCCCCK",".KcCCCCCCCKCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK"],"pal":{"A":"#8fa0b5","B":"#e2e1dc","C":"#2f55a8","E":"#3d6fa8","K":"#141414","M":"#e8e5dc","N":"#d99a78","P":"#d8c9a4","S":"#efbc98","W":"#ffffff","X":"#8e8e8a","a":"#66758a","b":"#a9a8a3","c":"#22418a","r":"#e3897a"}},"craig_drink_up":{"rows":["....................","......KKKKKKKK......","....KKAPAAAPAAKKK...","...KAAPAAAPAAAPAAKK.","...KaaaaaaaaaaaaaaaK","...KSSSSSSSSSSSSKK..","...KSbbSSSSSbbSSK...","...KSEWSSSSSEWSSK...","...KrSSSSKNKSSSrK...",".K.KrSSSKNNNKSSrK.K.","KMKKSSMMMMMMMMSSKKMK","KMMMMMMMMMMMMMMMMMMK",".KKKBBMMKKKKMMBBKSK.","...KBBBBBMMMBBBBKSK.","...KBBbBBBBBBbBBKCK.","...KBBBBXBBBXBBBKCK.","..KCKBBbBBBBBbBBKCK.",".KCCKBBBBXBBBBBKCCK.",".KCCCKBBBBBBbBKCCCCK",".KcCCCKBBXBBBKCCCCCK",".KcCCCCKBBBBBKCCCCCK",".KcCCCCKKBBBKKCCCCCK",".KcCCCCCCKBKCCCCCCCK",".KcCCCCCCCKCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK"],"pal":{"A":"#8fa0b5","B":"#e2e1dc","C":"#2f55a8","E":"#3d6fa8","K":"#141414","M":"#e8e5dc","N":"#d99a78","P":"#d8c9a4","S":"#efbc98","W":"#ffffff","X":"#8e8e8a","a":"#66758a","b":"#a9a8a3","c":"#22418a","r":"#e3897a"}},"craig_hold_closed":{"rows":["....................","......KKKKKKKK......","....KKAPAAAPAAKKK...","...KAAPAAAPAAAPAAKK.","...KaaaaaaaaaaaaaaaK","...KSSSSSSSSSSSSKK..","...KSbbSSSSSbbSSK...","...KSKKSSSSSKKSSK...","...KrSSSSKNKSSSrK...",".K.KrSSSKNNNKSSrK.K.","KMKKSSMMMMMMMMSSKKMK","KMMMMMMMMMMMMMMMMMMK",".KKKBBMMKKKKMMBBKKK.","...KBBBBBMMMBBBBBK..","...KBBbBBBBBBbBBBK..","...KBBBBXBBBXBBBBK..","..KCKBBbBBBBBbBBKCK.",".KCCKBBBBXBBBBBKCCK.",".KCCCKBBBBBBbBKCCCCK",".KcCCCKBBXBBBKCCCCCK",".KcCCCCKBBBBBKCCCKKK",".KcCCCCKKBBBKKCCKSSK",".KcCCCCCCKBKCCCCKKKK",".KcCCCCCCCKCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK"],"pal":{"A":"#8fa0b5","B":"#e2e1dc","C":"#2f55a8","K":"#141414","M":"#e8e5dc","N":"#d99a78","P":"#d8c9a4","S":"#efbc98","X":"#8e8e8a","a":"#66758a","b":"#a9a8a3","c":"#22418a","r":"#e3897a"}},"craig_hold_open":{"rows":["....................","......KKKKKKKK......","....KKAPAAAPAAKKK...","...KAAPAAAPAAAPAAKK.","...KaaaaaaaaaaaaaaaK","...KSSSSSSSSSSSSKK..","...KSbbSSSSSbbSSK...","...KSWESSSSSWESSK...","...KrSSSSKNKSSSrK...",".K.KrSSSKNNNKSSrK.K.","KMKKSSMMMMMMMMSSKKMK","KMMMMMMMMMMMMMMMMMMK",".KKKBBMMKKKKMMBBKKK.","...KBBBBBMMMBBBBBK..","...KBBbBBBBBBbBBBK..","...KBBBBXBBBXBBBBK..","..KCKBBbBBBBBbBBKCK.",".KCCKBBBBXBBBBBKCCK.",".KCCCKBBBBBBbBKCCCCK",".KcCCCKBBXBBBKCCCCCK",".KcCCCCKBBBBBKCCCKKK",".KcCCCCKKBBBKKCCKSSK",".KcCCCCCCKBKCCCCKKKK",".KcCCCCCCCKCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK"],"pal":{"A":"#8fa0b5","B":"#e2e1dc","C":"#2f55a8","E":"#3d6fa8","K":"#141414","M":"#e8e5dc","N":"#d99a78","P":"#d8c9a4","S":"#efbc98","W":"#ffffff","X":"#8e8e8a","a":"#66758a","b":"#a9a8a3","c":"#22418a","r":"#e3897a"}},"craig_hold_up":{"rows":["....................","......KKKKKKKK......","....KKAPAAAPAAKKK...","...KAAPAAAPAAAPAAKK.","...KaaaaaaaaaaaaaaaK","...KSSSSSSSSSSSSKK..","...KSbbSSSSSbbSSK...","...KSEWSSSSSEWSSK...","...KrSSSSKNKSSSrK...",".K.KrSSSKNNNKSSrK.K.","KMKKSSMMMMMMMMSSKKMK","KMMMMMMMMMMMMMMMMMMK",".KKKBBMMKKKKMMBBKKK.","...KBBBBBMMMBBBBBK..","...KBBbBBBBBBbBBBK..","...KBBBBXBBBXBBBBK..","..KCKBBbBBBBBbBBKCK.",".KCCKBBBBXBBBBBKCCK.",".KCCCKBBBBBBbBKCCCCK",".KcCCCKBBXBBBKCCCCCK",".KcCCCCKBBBBBKCCCKKK",".KcCCCCKKBBBKKCCKSSK",".KcCCCCCCKBKCCCCKKKK",".KcCCCCCCCKCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK"],"pal":{"A":"#8fa0b5","B":"#e2e1dc","C":"#2f55a8","E":"#3d6fa8","K":"#141414","M":"#e8e5dc","N":"#d99a78","P":"#d8c9a4","S":"#efbc98","W":"#ffffff","X":"#8e8e8a","a":"#66758a","b":"#a9a8a3","c":"#22418a","r":"#e3897a"}},"craig_shove_closed":{"rows":["....................","......KKKKKKKK......","....KKAPAAAPAAKKK...","...KAAPAAAPAAAPAAKK.","...KaaaaaaaaaaaaaaaK","...KSSSSSSSSSSSSKK..","...KSbbSSSSSbbSSK...","...KSKKSSSSSKKSSK...","...KrSSSSKNKSSSrK...",".K.KrSSSKNNNKSSrK.K.","KMKKSSMMMMMMMMSSKKMK","KMMMMMMMMMMMMMMMMMMK",".KKKBBMMKKKKMMBBKKK.","...KBBBBBMMMBBBBBK..","...KBBbBBBBBBbBBBK..","...KBBBBXBBBXBBBBK..","..KCKBBbBBBBBbBBKCK.",".KCCKBBBBXBBBBBKCCK.",".KCCCKBBBBBBbBKCCCCK",".KcCCCKBBXBBBKCCCCCK",".KcCCCCKBBBBBKCCCKKK",".KcCCCCKKBBBKKCCCCSS",".KcCCCCCCKBKCCCCKKKK",".KcCCCCCCCKCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK"],"pal":{"A":"#8fa0b5","B":"#e2e1dc","C":"#2f55a8","K":"#141414","M":"#e8e5dc","N":"#d99a78","P":"#d8c9a4","S":"#efbc98","X":"#8e8e8a","a":"#66758a","b":"#a9a8a3","c":"#22418a","r":"#e3897a"}},"craig_shove_open":{"rows":["....................","......KKKKKKKK......","....KKAPAAAPAAKKK...","...KAAPAAAPAAAPAAKK.","...KaaaaaaaaaaaaaaaK","...KSSSSSSSSSSSSKK..","...KSbbSSSSSbbSSK...","...KSWESSSSSWESSK...","...KrSSSSKNKSSSrK...",".K.KrSSSKNNNKSSrK.K.","KMKKSSMMMMMMMMSSKKMK","KMMMMMMMMMMMMMMMMMMK",".KKKBBMMKKKKMMBBKKK.","...KBBBBBMMMBBBBBK..","...KBBbBBBBBBbBBBK..","...KBBBBXBBBXBBBBK..","..KCKBBbBBBBBbBBKCK.",".KCCKBBBBXBBBBBKCCK.",".KCCCKBBBBBBbBKCCCCK",".KcCCCKBBXBBBKCCCCCK",".KcCCCCKBBBBBKCCCKKK",".KcCCCCKKBBBKKCCCCSS",".KcCCCCCCKBKCCCCKKKK",".KcCCCCCCCKCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK"],"pal":{"A":"#8fa0b5","B":"#e2e1dc","C":"#2f55a8","E":"#3d6fa8","K":"#141414","M":"#e8e5dc","N":"#d99a78","P":"#d8c9a4","S":"#efbc98","W":"#ffffff","X":"#8e8e8a","a":"#66758a","b":"#a9a8a3","c":"#22418a","r":"#e3897a"}},"craig_shove_up":{"rows":["....................","......KKKKKKKK......","....KKAPAAAPAAKKK...","...KAAPAAAPAAAPAAKK.","...KaaaaaaaaaaaaaaaK","...KSSSSSSSSSSSSKK..","...KSbbSSSSSbbSSK...","...KSEWSSSSSEWSSK...","...KrSSSSKNKSSSrK...",".K.KrSSSKNNNKSSrK.K.","KMKKSSMMMMMMMMSSKKMK","KMMMMMMMMMMMMMMMMMMK",".KKKBBMMKKKKMMBBKKK.","...KBBBBBMMMBBBBBK..","...KBBbBBBBBBbBBBK..","...KBBBBXBBBXBBBBK..","..KCKBBbBBBBBbBBKCK.",".KCCKBBBBXBBBBBKCCK.",".KCCCKBBBBBBbBKCCCCK",".KcCCCKBBXBBBKCCCCCK",".KcCCCCKBBBBBKCCCKKK",".KcCCCCKKBBBKKCCCCSS",".KcCCCCCCKBKCCCCKKKK",".KcCCCCCCCKCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK",".KcCCCCCCCCCCCCCCCCK"],"pal":{"A":"#8fa0b5","B":"#e2e1dc","C":"#2f55a8","E":"#3d6fa8","K":"#141414","M":"#e8e5dc","N":"#d99a78","P":"#d8c9a4","S":"#efbc98","W":"#ffffff","X":"#8e8e8a","a":"#66758a","b":"#a9a8a3","c":"#22418a","r":"#e3897a"}},"josie_duck":{"rows":["..........................","..........................",".........................K","....KKKKK...............KW","...KTWTTTK.............KWT","..KTTWTTTTKKKKKKKKKKK.KTTK","..KTEWTeeeTBBBBBBBBBBKTKK.","KKKTTWTeeeTBBBBBBBBBBTK...","NNWWWWTeeeWBBBBBBBBBBTK...","NWWWWWWeeeWTTTTTTTTTTTK...","WWWWWWWeeeWTTTTTTTTTTTK...","WWWWWWWeeeWTWWWWWWWWWTK...","KKKKKKKeWWOWKKKKKWWKWWK...",".......KWWOWK...KWWKWWK...",".......KWWOWK...KWWKWWK...",".......KWWWWK..KWWKKWWK...","........KKKK....KK..KK...."],"pal":{"B":"#3a302a","E":"#141414","K":"#141414","N":"#141414","O":"#b5562c","T":"#c47a30","W":"#f6f2ea","e":"#6e4019"}},"josie_leap":{"rows":["....KKKKK.................","...KTWTTTK................","..KTTWTTTTK..............K","..KTEWTeeeK.............KW","KKKTTWTeeeK............KWT","NNWWWWTeeeTKKKKKKKKKK.KTTK","NWWWWWWeeeTBBBBBBBBBBKTKK.","WWWWWWWeeeWBBBBBBBBBBTK...","WWWWWWWeeeWBBBBBBBBBBTK...","KKKKKKKeeOOTTTTTTTTTTTK...","......KWeOOTTTTTTTTTTTK...","......KWWWOTWWWWWWWWWTK...",".....KWWWKKKKKKKKKKWWWWK..","....KWWKK..........KKKWWK.",".....KK...............KK..","..........................",".........................."],"pal":{"B":"#3a302a","E":"#141414","K":"#141414","N":"#141414","O":"#b5562c","T":"#c47a30","W":"#f6f2ea","e":"#6e4019"}},"josie_runA":{"rows":["....KKKKK...............K.","...KTWTTTK.............KWK","..KTTWTTTTK...........KWWK","..KTEWTeeeK...........KTK.","KKKTTWTeeeK...........KTK.","NNWWWWTeeeTKKKKKKKKKKKTK..","NWWWWWWeeeTBBBBBBBBBBKTK..","WWWWWWWeeeWBBBBBBBBBBTK...","WWWWWWWeeeWBBBBBBBBBBTK...","KKKKKKKeeOOTTTTTTTTTTTK...","......KWeOOTTTTTTTTTTTK...","......KWWWOTWWWWWWWWWTK...",".......KWWKWKKKKKWWKWWK...",".......KWWKWK...KWWKWWK...",".......KWWKWK...KWWKWWK...",".......KWWWWK..KWWKKWWK...","........KKKK....KK..KK...."],"pal":{"B":"#3a302a","E":"#141414","K":"#141414","N":"#141414","O":"#b5562c","T":"#c47a30","W":"#f6f2ea","e":"#6e4019"}},"josie_runB":{"rows":["....KKKKK...............K.","...KTWTTTK.............KWK","..KTTWTTTTK...........KWWK","..KTEWTeeeK...........KTK.","KKKTTWTeeeK...........KTK.","NNWWWWTeeeTKKKKKKKKKKKTK..","NWWWWWWeeeTBBBBBBBBBBKTK..","WWWWWWWeeeWBBBBBBBBBBTK...","WWWWWWWeeeWBBBBBBBBBBTK...","KKKKKKKeeOOTTTTTTTTTTTK...","......KWeOOTTTTTTTTTTTK...","......KWWWOTWWWWWWWWWTK...","......KWKWWKKKKKKKWWKWK...","......KWKWWK.....KWWKWK...","......KWKWWK.....KWWKWK...",".....KWWKWWK.....KWWKKWK..","......KK.KK.......KK..K..."],"pal":{"B":"#3a302a","E":"#141414","K":"#141414","N":"#141414","O":"#b5562c","T":"#c47a30","W":"#f6f2ea","e":"#6e4019"}},"josie_sitA":{"rows":["....KKKKK...............K.","...KTWTTTK.............KWK","..KTTWTTTTK...........KWWK","..KTEWTeeeK...........KTK.","KKKTTWTeeeK...........KTK.","NNWWWWTeeeTKKKKKKKKKKKTK..","NWWWWWWeeeTBBBBBBBBBBKTK..","WWWWWWWeeeWBBBBBBBBBBTK...","WWWWWWWeeeWBBBBBBBBBBTK...","KKKKKKKeeOOTTTTTTTTTTTK...","......KWeOOTTTTTTTTTTTK...","......KWWWOTWWWWWWWWWTK...",".......KWWKWKKKKKWWKWWK...",".......KWWKWK...KWWKWWK...",".......KWWKWK...KWWKWWK...",".......KWWWWK..KWWKKWWK...","........KKKK....KK..KK...."],"pal":{"B":"#3a302a","E":"#141414","K":"#141414","N":"#141414","O":"#b5562c","T":"#c47a30","W":"#f6f2ea","e":"#6e4019"}},"josie_sitB":{"rows":["....KKKKK.................","...KTWTTTK................","..KTTWTTTTK..............K","..KTEWTeeeK.............KW","KKKTTWTeeeK............KWT","NNWWWWTeeeTKKKKKKKKKK.KTTK","NWWWWWWeeeTBBBBBBBBBBKTKK.","WWWWWWWeeeWBBBBBBBBBBTK...","WWWWWWWeeeWBBBBBBBBBBTK...","KKKKKKKeeOOTTTTTTTTTTTK...","......KWeOOTTTTTTTTTTTK...","......KWWWOTWWWWWWWWWTK...",".......KWWKWKKKKKWWKWWK...",".......KWWKWK...KWWKWWK...",".......KWWKWK...KWWKWWK...",".......KWWWWK..KWWKKWWK...","........KKKK....KK..KK...."],"pal":{"B":"#3a302a","E":"#141414","K":"#141414","N":"#141414","O":"#b5562c","T":"#c47a30","W":"#f6f2ea","e":"#6e4019"}}};
+  var SPR = {"hopman":{"rows":["......KKKKKK......","....KKKKKKKKKK....","....KKKkkKKKKK....","....KKkkKKKKKK....","....KKkKKKKKKK....","....KKKKKKKKKK....","....KkkkkkkkkK....",".KKKKKKKKKKKKKKKK.","KKKKKKKKKKKKKKKKKK","...KWWWWWWWWWWK...","....WWWWWWWWWW....",".....WWWWWWWW.....",".KK..KKK..KKK..KK.","KLGK.KGGKKGGK.KGLK","KGGGKGLGGGGLGKGGGK",".KGGGGGGKKGGGGGGK.","..KKgGGKGGKGGgKK..","...KGGGKGGKGGGK...","..KGLGgKLGKGLGgK..","..KGGGgKGGKGGGgK..","..KKGgKGGGGKgGKK..","...KKKGLGGLGKKK...","...KGGKGGGGKGGK...","...KGLgKGGKgLGK...","....KGgKGGKgGK....",".....KKGLGGKK.....","......KGGGgK......","......KGGgK.......",".......KGK........","........K........."],"pal":{"G":"#6cc24a","K":"#141414","L":"#9be070","W":"#f7f4ea","g":"#3f7f2a","k":"#4a4a4a"}},"badge":{"rows":["................KKKKKKKK................",".............KKKWWWWWWWWKKK.............","...........KKWWWTTTTTTTTWWWKK...........",".........KKWWTTTTTTTTTTTTTTWWKK.........","........KWWTTTTTTKKKKKKTTTTTTWWK........","......KKWTTTTTTKKKKKKKKKKTTTTTTWKK......",".....KKWTTTTTTTKKKkkKKKKKTTTTTTTWKK.....",".....KWTTTTTTTTKKkkKKKKKKTTTTTTTTWK.....","....KWTTTTTTTKKKKkKKKKKKKKKTTTTTTTWK....","...KWTTTTTTKKWWKKKKKKKKKKWWKKTTTTTTWK...","...KWTTTTTKKWWWKkkkkkkkkKWWWKKTTTTTWK...","..KWTTTTTKKWKKKKKKKKKKKKKKKKWKKTTTTTWK..","..KWTTTTTKWKKKKKKKKKKKKKKKKKKWKTTTTTWK..",".KWTTTTTKWWWWWKWWWWWWWWWWKWWWWWKTTTTTWK.",".KWTTTTTKWWWWWWWWWWWWWWWWWWWWWWKTTTTTWK.",".KWTTTTKWWWWWWWWWWWWWWWWWWWWWWWWKTTTTWK.","KWTTTGTKWWWWKKWWKKKWWKKKWWKKWWWWKTGTTTWK","KWTTGTTKWWWKLGKWKGGKKGGKWKGLKWWWKTTGTTWK","KWTTTTKWWWWKGGGKGLGGGGLGKGGGKWWWWKTTTTWK","KWTTGTKWWWWWKGGGGGGKKGGGGGGKWWWWWKTGTTWK","KWTTTGKWWWWWWKKgGGKGGKGGgKKWWWWWWKGTTTWK","KWTTTTKWWWWWWWKGGGKGGKGGGKWWWWWWWKTTTTWK","KWTTGTTKWWWWWKGLGgKLGKGLGgKWWWWWKTTGTTWK","KWTTTGTKWWWWWKGGGgKGGKGGGgKWWWWWKTGTTTWK",".KWTTTTKWWWWWKKGgKGGGGKgGKKWWWWWKTTTTWK.",".KWTTTTTKWWWWWKKKGLGGLGKKKWWWWWKTTTTTWK.",".KWTTTTTKWWWWWKGGKGGGGKGGKWWWWWKTTTTTWK.","..KWTTTTTKWWWWKGLgKGGKgLGKWWWWKTTTTTWK..","..KWTTTTTKKWWWWKGgKGGKgGKWWWWKKTTTTTWK..","...KWTTTTTKKWWWWKKGLGGKKWWWWKKTTTTTWK...","...KWTTTTTTKKWWWWKGGGgKWWWWKKTTTTTTWK...","....KWTTTTTTTKKWWKGGgKWWWKKTTTTTTTWK....",".....KWTTTTTTTTKKKKGKWKKKTTTTTTTTWK.....",".....KKWTTTTTTTTTTKKKKTTTTTTTTTTWKK.....","......KKWTTTTTTTTTTTTTTTTTTTTTTWKK......","........KWWTTTTTTTTTTTTTTTTTTWWK........",".........KKWWTTTTTTTTTTTTTTWWKK.........","...........KKWWWTTTTTTTTWWWKK...........",".............KKKWWWWWWWWKKK.............","................KKKKKKKK................"],"pal":{"G":"#9be070","K":"#141414","L":"#9be070","T":"#2c4a4f","W":"#f7f4ea","g":"#3f7f2a","k":"#4a4a4a"}},"mug_full":{"rows":["KKKKKK..","KFFFFKK.","KYYYyKKK","KHYYyK.K","KHYYyK.K","KHYYyKKK","KYYYyK..","KKKKKK.."],"pal":{"F":"#ffffff","H":"#e8e8e8","K":"#141414","Y":"#f2b233","y":"#c97d17"}},"mug_empty":{"rows":["KKKKKK..","KggggK..","KgGggKKK","KgGggK.K","KgGggK.K","KgGggKKK","KggggK..","KKKKKK.."],"pal":{"G":"#cfe6eb","K":"#141414","g":"#9cc6cf"}},"mug_tilt":{"rows":["..KKKK...","..K..K...","KKKKKKKKK","KgYYYYFFK","KgYYYYFF.","KgYYYYFF.","KKKKKKKKK"],"pal":{"F":"#ffffff","K":"#141414","Y":"#f2b233","g":"#9cc6cf"}},"can":{"rows":["..KKKKKKKK..",".KSSSSSSSSK.",".KsssssssSK.","KTkTTTTTTTtK","KTkTTKKTTTtK","KTkTKWWKTTtK","KTkTKGGKTTtK","KTkTKgGKTTtK","KTkTTKKTTTtK","KGGGGGGGGGgK","KGGGGGGGGGgK","KTkTTTTTTTtK","KTkTTTTTTTtK","KTkTTTTTTTtK","KTkTTTTTTTtK","KTkTTTTTTTtK",".KsssssssSK.","..KKKKKKKK.."],"pal":{"G":"#6cc24a","K":"#141414","S":"#d6dcdc","T":"#21383C","W":"#f7f4ea","g":"#3f7f2a","k":"#2c4a4f","s":"#9aa3a3","t":"#16272a"}},"tip":{"rows":["KKKKKKKKK","KGGGgGGGK","KGGgGgGGK","KGGGgGGGK","KKKKKKKKK"],"pal":{"G":"#7fcf5a","K":"#141414","g":"#3f7f2a"}},"keg":{"rows":["......KKK.......",".....KGGGK......",".....KGLGK......",".....KGGGK......",".....KGGGK......","......KGK.......","....KKKSKKKK....","...KSSSSSSSSK...","...KSKKKKKKKK...","...KSK..........","...KsK..........","..KKKKKKKKKKKK..",".KSSSSSSSSSSssK.",".KsSSSSSSSSSssK.",".KxxxxxxxxxxxxK.",".KSSSSSSSSSSssK.",".KSSSSSSSSSSssK.",".KSSSSSSSSSSssK.",".KxxxxxxxxxxxxK.",".KsSSSSSSSSSssK.",".KSSSSSSSSSSssK.",".KSSSSSSSSSSssK.",".KxxxxxxxxxxxxK.",".KSSSSSSSSSSssK.","..KKKKKKKKKKKK.."],"pal":{"G":"#6cc24a","K":"#141414","L":"#b6f08f","S":"#d6dcdc","s":"#9aa3a3","x":"#6d7575"}},"keg_pull":{"rows":["................","................","........KKK.....",".......KGGGK....","......KGLGK.....",".....KGGGK......","....KKKSKKKK....","...KSSSSSSSSK...","...KSKKKKKKKK...","...KSK..........","...KsK..........","..KKKKKKKKKKKK..",".KSSSSSSSSSSssK.",".KsSSSSSSSSSssK.",".KxxxxxxxxxxxxK.",".KSSSSSSSSSSssK.",".KSSSSSSSSSSssK.",".KSSSSSSSSSSssK.",".KxxxxxxxxxxxxK.",".KsSSSSSSSSSssK.",".KSSSSSSSSSSssK.",".KSSSSSSSSSSssK.",".KxxxxxxxxxxxxK.",".KSSSSSSSSSSssK.","..KKKKKKKKKKKK.."],"pal":{"G":"#6cc24a","K":"#141414","L":"#b6f08f","S":"#d6dcdc","s":"#9aa3a3","x":"#6d7575"}},"guitar_a":{"rows":["......KKKKKK........",".....KAAAAAAK.......","....KAAAAAAAAK......","....KaaaaaaaaK......","....KSSSSSSSSK......","....KSEWSSEWSK......","....KSSSSSSSSK......","....KHSSKKSSHK......","....KHHHHHHHHK......",".....KHHHHHHK.......","......KKHHKK........","....KKBBbbBBKK......","...KBBbBBbBBbBK.....","..KBBbBBKKKKKKK.....","..KSSKBKGGGGGGK.....","KKKKKKKKGGKKGGGK....","KgggggggGKWWKGGK....","KKKKKKKKGGKKGGGK....","....KBKGGGGGGGGK....","....KBBKGGGGGGKSK...","....KBbBKKKKKKKSK...","....KBBbBBbBBbBK....","....KJJJJJJJJJJK....","....KJJjKKKJJjJK....","....KJJjK..KJJjK....","....KJJjK..KJJjK....","...KFFFFK..KFFFFK...","...KKKKKK..KKKKKK..."],"pal":{"A":"#3f7f2a","B":"#a8412f","E":"#141414","F":"#2a2a2a","G":"#c98a3a","H":"#5a3a22","J":"#3b5586","K":"#141414","S":"#e8b98d","W":"#f7f4ea","a":"#2a5a1c","b":"#7a2e21","g":"#8a5a22","j":"#2a3d63"}},"guitar_b":{"rows":["......KKKKKK........",".....KAAAAAAK.......","....KAAAAAAAAK......","....KaaaaaaaaK......","....KSSSSSSSSK......","....KSEWSSEWSK......","....KSSSSSSSSK......","....KHSSKKSSHK......","....KHHHHHHHHK......",".....KHHHHHHK.......","......KKHHKK........","....KKBBbbBBKK......","...KBBbBBbBBbBK.....","..KBBbBBKKKKKKK.....","..KSSKBKGGGGGGK.....","KKKKKKKKGGKKGGGK....","KgggggggGKWWKGGK....","KKKKKKKKGGKKGGGK....","....KBKGGGGGGGGK....","....KBBKGGGGGGKK.K..","....KBbBKKKKKKSSK...","....KBBbBBbBBbBK....","....KJJJJJJJJJJK....","....KJJjKKKJJjJK....","....KJJjK..KJJjK....","....KJJjK..KJJjK....","...KFFFFK..KFFFFK...","...KKKKKK..KKKKKK..."],"pal":{"A":"#3f7f2a","B":"#a8412f","E":"#141414","F":"#2a2a2a","G":"#c98a3a","H":"#5a3a22","J":"#3b5586","K":"#141414","S":"#e8b98d","W":"#f7f4ea","a":"#2a5a1c","b":"#7a2e21","g":"#8a5a22","j":"#2a3d63"}},"singer_a":{"rows":["....KKKKKKK.........","...KLLLLLLLK........","..KLLLLLLLLLK.......","..KLLSSSSSLLLK......","..KLSEWSEWSLLK......","..KLSSSSSSSLLK......","..KLSSKKKSSLLK......","..KLLSSSSSLLLK......","..KLLKKSSKKLLK......","...KLKRRRRKLK..KKK..","....KRRRRRRK..KMMMK.","...KRRrRRrRRK..KMK..","..KRRRrRRrRRRKKSMK..","..KSKRRRRRRRRKSSK...","..KSKRRrRRrRRKKMK...","..KTKRRRRRRRRK.KMK..","..KTTKRrRRrRK..KMK..","...KKKRRRRRRK..KMK..","....KRRRRRRRRK.KMK..","....KRrRRRRrRK.KMK..","....KRRRRRRRRK.KMK..","....KKKKKKKKKK.KMK..",".....KJJKKJJK..KMK..",".....KJJK.KJJK.KMK..",".....KJJK.KJJK.KmK..",".....KJJK.KJJK.KmK..","....KFFFK.KFFFK.KmK.","....KKKKK.KKKKKKKKKK"],"pal":{"E":"#141414","F":"#2a2a2a","J":"#3b5586","K":"#141414","L":"#e9c46a","M":"#9aa3a3","R":"#d9a0c0","S":"#e8b98d","T":"#ffd23f","W":"#f7f4ea","m":"#6d7575","r":"#b0708f"}},"singer_b":{"rows":["....KKKKKKK.........","...KLLLLLLLK........","..KLLLLLLLLLK.......","..KLLSSSSSLLLK......","..KLSEWSEWSLLK......","..KLSSSSSSSLLK......","..KLSSKKKSSLLK......","..KLLSSSSSLLLK......","..KLLKKSSKKLLK......","...KLKRRRRKLK..KKK..","....KRRRRRRK..KMMMK.","...KRRrRRrRRK..KMK..","..KRRRrRRrRRRKKSMK..","..KSKRRRRRRRRKSSK...",".KTTKRrRRrRRKKMK....",".KTTKRRRRRRRRK.KMK..","..KKKRRrRRrRK..KMK..","...KKKRRRRRRK..KMK..","....KRRRRRRRRK.KMK..","....KRrRRRRrRK.KMK..","....KRRRRRRRRK.KMK..","....KKKKKKKKKK.KMK..",".....KJJKKJJK..KMK..",".....KJJK.KJJK.KMK..",".....KJJK.KJJK.KmK..",".....KJJK.KJJK.KmK..","....KFFFK.KFFFK.KmK.","....KKKKK.KKKKKKKKKK"],"pal":{"E":"#141414","F":"#2a2a2a","J":"#3b5586","K":"#141414","L":"#e9c46a","M":"#9aa3a3","R":"#d9a0c0","S":"#e8b98d","T":"#ffd23f","W":"#f7f4ea","m":"#6d7575","r":"#b0708f"}},"oliver_drink":{"rows":["......KKKKKK......","....KKHpHHpHKK....","...KHHpHHHpHHHKKK.","..KHpHhHHpHhHHKhpK","..KHHhHpHHhHpHKphK","..KHpSSSSSSHpHHKK.","..KHSSSSSSSSSpHK..","..KSKKKSSKKKSSSK..","..KSEWWSSEWWSSsK..","..KSEWWSSEWWSSsK..","..KSSSKNNKSSSSsK..",".KSSSKNNNNKSSSsK..","..KSSGKKKKGSSSK...","..KSGGGGGGGGSSK...","...KSSGMMGSSSK....",".KSSKSSGGGSSK.....",".KDDKKKGGGKK......",".KDDKKKDDDDKKK....",".KDDDDDWKKWDDDKK..",".KDDDDWKKKKWDDDDK.","..KDDDWWWWWWDDKDK.","..KDDDWVVVVWDDKDK.","..KDDDDWVVWDDDKDK.","..KDDDDDWWDDDDKSK.","..KKddddddddddKKK.","....KJJJJJJJJK....","....KJJjKKJjJK....","....KJJjKKJjJK....","...KBBBBKKBBBBK...","...KBBBBKKBBBBK..."],"pal":{"B":"#1c1c1c","D":"#3a3a42","E":"#141414","G":"#4f5357","H":"#a9aeb1","J":"#3b5586","K":"#141414","M":"#8a3b2b","N":"#d4936a","S":"#eab892","V":"#6cc24a","W":"#ffffff","d":"#26262c","h":"#6d7276","j":"#2a3d63","p":"#474b4f","s":"#c58b63"}},"oliver_hold":{"rows":["......KKKKKK......","....KKHpHHpHKK....","...KHHpHHHpHHHKKK.","..KHpHhHHpHhHHKhpK","..KHHhHpHHhHpHKphK","..KHpSSSSSSHpHHKK.","..KHSSSSSSSSSpHK..","..KSKKKSSKKKSSSK..","..KSEWWSSEWWSSsK..","..KSEWWSSEWWSSsK..","..KSSSKNNKSSSSsK..",".KSSSKNNNNKSSSsK..","..KSSGKKKKGSSSK...","..KSGGGGGGGGSSK...","...KSSGMMGSSSK....","....KSSGGGSSK.....",".....KKGGGKK......","....KKKDDDDKKK....","..KKDDDWKKWDDDKK..","KKKDDDWKKKKWDDDDK.","SSKDDDWWWWWWDDKDK.","KKKDDDWVVVVWDDKDK.","...KDDDWVVWDDDKDK.","...KDDDDWWDDDDKSK.","...KddddddddddKKK.","....KJJJJJJJJK....","....KJJjKKJjJK....","....KJJjKKJjJK....","...KBBBBKKBBBBK...","...KBBBBKKBBBBK..."],"pal":{"B":"#1c1c1c","D":"#3a3a42","E":"#141414","G":"#4f5357","H":"#a9aeb1","J":"#3b5586","K":"#141414","M":"#8a3b2b","N":"#d4936a","S":"#eab892","V":"#6cc24a","W":"#ffffff","d":"#26262c","h":"#6d7276","j":"#2a3d63","p":"#474b4f","s":"#c58b63"}},"oliver_idle":{"rows":["......KKKKKK......","....KKHpHHpHKK....","...KHHpHHHpHHHKKK.","..KHpHhHHpHhHHKhpK","..KHHhHpHHhHpHKphK","..KHpSSSSSSHpHHKK.","..KHSSSSSSSSSpHK..","..KSKKKSSKKKSSSK..","..KSEWWSSEWWSSsK..","..KSEWWSSEWWSSsK..","..KSSSKNNKSSSSsK..",".KSSSKNNNNKSSSsK..","..KSSGKKKKGSSSK...","..KSGGGGGGGGSSK...","...KSSGMMGSSSK....","....KSSGGGSSK.....",".....KKGGGKK......","....KKKDDDDKKK....","..KKDDDWKKWDDDKK..",".KDDDDWKKKKWDDDDK.",".KDKDDWWWWWWDDKDK.",".KDKDDWVVVVWDDKDK.",".KDKDDDWVVWDDDKDK.",".KSKDDDDWWDDDDKSK.",".KKKddddddddddKKK.","....KJJJJJJJJK....","....KJJjKKJjJK....","....KJJjKKJjJK....","...KBBBBKKBBBBK...","...KBBBBKKBBBBK..."],"pal":{"B":"#1c1c1c","D":"#3a3a42","E":"#141414","G":"#4f5357","H":"#a9aeb1","J":"#3b5586","K":"#141414","M":"#8a3b2b","N":"#d4936a","S":"#eab892","V":"#6cc24a","W":"#ffffff","d":"#26262c","h":"#6d7276","j":"#2a3d63","p":"#474b4f","s":"#c58b63"}},"oliver_shake":{"rows":["......KKKKKK......","....KKHpHHpHKK....","...KHHpHHHpHHHKKK.","..KHpHhHHpHhHHKhpK","..KHHhHpHHhHpHKphK","..KHpSSSSSSHpHHKK.","..KHSSSSSSSSSpHK..","..KSKKKSSKKKSSSK..","..KSEWWSSEWWSSsK..","..KSEWWSSEWWSSsK..","..KSSSKNNKSSSSsK..",".KSSSKNNNNKSSSsK..","..KSSGKKKKGSSSK...","..KSGGGGGGGGSSK...","...KSSGMMGSSSK....","....KSSGGGSSK.....",".....KKGGGKK......","SSK.KKKDDDDKKK....","KKKKDDDWKKWDDDKK..","..KDDDWKKKKWDDDDK.","..KDDDWWWWWWDDKDK.","..KDDDWVVVVWDDKDK.","..KDDDDWVVWDDDKDK.","..KDDDDDWWDDDDKSK.","..KKddddddddddKKK.","....KJJJJJJJJK....","....KJJjKKJjJK....","....KJJjKKJjJK....","...KBBBBKKBBBBK...","...KBBBBKKBBBBK..."],"pal":{"B":"#1c1c1c","D":"#3a3a42","E":"#141414","G":"#4f5357","H":"#a9aeb1","J":"#3b5586","K":"#141414","M":"#8a3b2b","N":"#d4936a","S":"#eab892","V":"#6cc24a","W":"#ffffff","d":"#26262c","h":"#6d7276","j":"#2a3d63","p":"#474b4f","s":"#c58b63"}},"oliver_walkA":{"rows":["......KKKKKK......","....KKHpHHpHKK....","...KHHpHHHpHHHKKK.","..KHpHhHHpHhHHKhpK","..KHHhHpHHhHpHKphK","..KHpSSSSSSHpHHKK.","..KHSSSSSSSSSpHK..","..KSKKKSSKKKSSSK..","..KSEWWSSEWWSSsK..","..KSEWWSSEWWSSsK..","..KSSSKNNKSSSSsK..",".KSSSKNNNNKSSSsK..","..KSSGKKKKGSSSK...","..KSGGGGGGGGSSK...","...KSSGMMGSSSK....","....KSSGGGSSK.....",".....KKGGGKK......","....KKKDDDDKKK....","..KKDDDWKKWDDDKK..",".KDDDDWKKKKWDDDDK.",".KDKDDWWWWWWDDKDK.",".KDKDDWVVVVWDDKDK.",".KDKDDDWVVWDDDKDK.",".KSKDDDDWWDDDDKSK.",".KKKddddddddddKKK.","....KJJJJJJJJK....","...KJJjKKKJjJK....","..KJJjK...KJjJK...",".KBBBBK...KBBBBK..",".KBBBBK....KBBBBK."],"pal":{"B":"#1c1c1c","D":"#3a3a42","E":"#141414","G":"#4f5357","H":"#a9aeb1","J":"#3b5586","K":"#141414","M":"#8a3b2b","N":"#d4936a","S":"#eab892","V":"#6cc24a","W":"#ffffff","d":"#26262c","h":"#6d7276","j":"#2a3d63","p":"#474b4f","s":"#c58b63"}},"oliver_walkB":{"rows":["......KKKKKK......","....KKHpHHpHKK....","...KHHpHHHpHHHKKK.","..KHpHhHHpHhHHKhpK","..KHHhHpHHhHpHKphK","..KHpSSSSSSHpHHKK.","..KHSSSSSSSSSpHK..","..KSKKKSSKKKSSSK..","..KSEWWSSEWWSSsK..","..KSEWWSSEWWSSsK..","..KSSSKNNKSSSSsK..",".KSSSKNNNNKSSSsK..","..KSSGKKKKGSSSK...","..KSGGGGGGGGSSK...","...KSSGMMGSSSK....","....KSSGGGSSK.....",".....KKGGGKK......","....KKKDDDDKKK....","..KKDDDWKKWDDDKK..",".KDDDDWKKKKWDDDDK.",".KDKDDWWWWWWDDKDK.",".KDKDDWVVVVWDDKDK.",".KDKDDDWVVWDDDKDK.",".KSKDDDDWWDDDDKSK.",".KKKddddddddddKKK.","....KJJJJJJJJK....",".....KJjKKJjK.....",".....KJjKKJjK.....","....KBBBKKBBBK....","....KBBBKKBBBK...."],"pal":{"B":"#1c1c1c","D":"#3a3a42","E":"#141414","G":"#4f5357","H":"#a9aeb1","J":"#3b5586","K":"#141414","M":"#8a3b2b","N":"#d4936a","S":"#eab892","V":"#6cc24a","W":"#ffffff","d":"#26262c","h":"#6d7276","j":"#2a3d63","p":"#474b4f","s":"#c58b63"}},"amy_drink":{"rows":["......KKKKKK......","....KKLLHHHhKK....","...KLLLHHHHHhhK...","..KHLLHHHHHHHhHK..","..KHHHHHHHHHHHhHK.",".KHHHHHHSSSSSHHhHK",".KHHHHSSSSSSSSHHhK","KHHKHSbbbSSbbbSHHK","KHHKSSEWWSSEWWSHhK","KHLKSSEWWSSEWWSHHK","KHLKSSSSSSNSSSSHhK","KHLHKSSSSNNSSSSKHK","KHLHKSSSSSSSSSSKHK","KLLHKSSMWWWWMSSKHK","KLHHHKSSMMMMSSKHHK","KSSKHHKSSSSSSKHHLK","KDDKH.KKSSSSKK.HLK",".KDDKKKDDDDKKKHLHK",".KDDDDDTKKTDDDKHLK",".KDDDDTKKKKTDDDLHK","..KDDDTWWWWTDDKLK.","..KDDDTVVVVTDDKKK.","..KDDDDTVVTDDDKDK.","..KDDDDDTTDDDDKSK.","..KKGGGGGGGGGGKKK.","....KJJJJJJJJK....","....KJJjKKJjJK....","....KJJjKKJjJK....","...KZZZZKKZZZZK...","...KZZZZKKZZZZK..."],"pal":{"D":"#eeeeea","E":"#2c5a74","G":"#2f8a4a","H":"#a8773a","J":"#3b5586","K":"#141414","L":"#c9994f","M":"#c0505a","N":"#e0a883","S":"#f0c09a","T":"#21383C","V":"#6cc24a","W":"#ffffff","Z":"#e2e2e2","b":"#6b4520","h":"#6b4520","j":"#2a3d63"}},"amy_hold":{"rows":["......KKKKKK......","....KKLLHHHhKK....","...KLLLHHHHHhhK...","..KHLLHHHHHHHhHK..","..KHHHHHHHHHHHhHK.",".KHHHHHHSSSSSHHhHK",".KHHHHSSSSSSSSHHhK","KHHKHSbbbSSbbbSHHK","KHHKSSEWWSSEWWSHhK","KHLKSSEWWSSEWWSHHK","KHLKSSSSSSNSSSSHhK","KHLHKSSSSNNSSSSKHK","KHLHKSSSSSSSSSSKHK","KLLHKSSMWWWWMSSKHK","KLHHHKSSMMMMSSKHHK","KLLHHHKSSSSSSKHHLK","KLLLH.KKSSSSKK.HLK","KLLHKKKDDDDKKKHLHK","KLHKDDDTKKTDDDKHLK","KHLDDDTKKKKTDDDLHK","SKLDDDTWWWWTDDKLK.","KKKDDDTVVVVTDDKKK.","...KDDDTVVTDDDKDK.","...KDDDDTTDDDDKSK.","...KGGGGGGGGGGKKK.","....KJJJJJJJJK....","....KJJjKKJjJK....","....KJJjKKJjJK....","...KZZZZKKZZZZK...","...KZZZZKKZZZZK..."],"pal":{"D":"#eeeeea","E":"#2c5a74","G":"#2f8a4a","H":"#a8773a","J":"#3b5586","K":"#141414","L":"#c9994f","M":"#c0505a","N":"#e0a883","S":"#f0c09a","T":"#21383C","V":"#6cc24a","W":"#ffffff","Z":"#e2e2e2","b":"#6b4520","h":"#6b4520","j":"#2a3d63"}},"amy_idle":{"rows":["......KKKKKK......","....KKLLHHHhKK....","...KLLLHHHHHhhK...","..KHLLHHHHHHHhHK..","..KHHHHHHHHHHHhHK.",".KHHHHHHSSSSSHHhHK",".KHHHHSSSSSSSSHHhK","KHHKHSbbbSSbbbSHHK","KHHKSSEWWSSEWWSHhK","KHLKSSEWWSSEWWSHHK","KHLKSSSSSSNSSSSHhK","KHLHKSSSSNNSSSSKHK","KHLHKSSSSSSSSSSKHK","KLLHKSSMWWWWMSSKHK","KLHHHKSSMMMMSSKHHK","KLLHHHKSSSSSSKHHLK","KLLLH.KKSSSSKK.HLK","KLLHKKKDDDDKKKHLHK","KLHKDDDTKKTDDDKHLK","KHLDDDTKKKKTDDDLHK",".KLKDDTWWWWTDDKLK.",".KKKDDTVVVVTDDKKK.",".KDKDDDTVVTDDDKDK.",".KSKDDDDTTDDDDKSK.",".KKKGGGGGGGGGGKKK.","....KJJJJJJJJK....","....KJJjKKJjJK....","....KJJjKKJjJK....","...KZZZZKKZZZZK...","...KZZZZKKZZZZK..."],"pal":{"D":"#eeeeea","E":"#2c5a74","G":"#2f8a4a","H":"#a8773a","J":"#3b5586","K":"#141414","L":"#c9994f","M":"#c0505a","N":"#e0a883","S":"#f0c09a","T":"#21383C","V":"#6cc24a","W":"#ffffff","Z":"#e2e2e2","b":"#6b4520","h":"#6b4520","j":"#2a3d63"}},"amy_shake":{"rows":["......KKKKKK......","....KKLLHHHhKK....","...KLLLHHHHHhhK...","..KHLLHHHHHHHhHK..","..KHHHHHHHHHHHhHK.",".KHHHHHHSSSSSHHhHK",".KHHHHSSSSSSSSHHhK","KHHKHSbbbSSbbbSHHK","KHHKSSEWWSSEWWSHhK","KHLKSSEWWSSEWWSHHK","KHLKSSSSSSNSSSSHhK","KHLHKSSSSNNSSSSKHK","KHLHKSSSSSSSSSSKHK","KLLHKSSMWWWWMSSKHK","KLHHHKSSMMMMSSKHHK","KLLHHHKSSSSSSKHHLK","KLLLH.KKSSSSKK.HLK","SSK.KKKDDDDKKKHLHK","KKKKDDDTKKTDDDKHLK","..KDDDTKKKKTDDDLHK","..KDDDTWWWWTDDKLK.","..KDDDTVVVVTDDKKK.","..KDDDDTVVTDDDKDK.","..KDDDDDTTDDDDKSK.","..KKGGGGGGGGGGKKK.","....KJJJJJJJJK....","....KJJjKKJjJK....","....KJJjKKJjJK....","...KZZZZKKZZZZK...","...KZZZZKKZZZZK..."],"pal":{"D":"#eeeeea","E":"#2c5a74","G":"#2f8a4a","H":"#a8773a","J":"#3b5586","K":"#141414","L":"#c9994f","M":"#c0505a","N":"#e0a883","S":"#f0c09a","T":"#21383C","V":"#6cc24a","W":"#ffffff","Z":"#e2e2e2","b":"#6b4520","h":"#6b4520","j":"#2a3d63"}},"amy_walkA":{"rows":["......KKKKKK......","....KKLLHHHhKK....","...KLLLHHHHHhhK...","..KHLLHHHHHHHhHK..","..KHHHHHHHHHHHhHK.",".KHHHHHHSSSSSHHhHK",".KHHHHSSSSSSSSHHhK","KHHKHSbbbSSbbbSHHK","KHHKSSEWWSSEWWSHhK","KHLKSSEWWSSEWWSHHK","KHLKSSSSSSNSSSSHhK","KHLHKSSSSNNSSSSKHK","KHLHKSSSSSSSSSSKHK","KLLHKSSMWWWWMSSKHK","KLHHHKSSMMMMSSKHHK","KLLHHHKSSSSSSKHHLK","KLLLH.KKSSSSKK.HLK","KLLHKKKDDDDKKKHLHK","KLHKDDDTKKTDDDKHLK","KHLDDDTKKKKTDDDLHK",".KLKDDTWWWWTDDKLK.",".KKKDDTVVVVTDDKKK.",".KDKDDDTVVTDDDKDK.",".KSKDDDDTTDDDDKSK.",".KKKGGGGGGGGGGKKK.","....KJJJJJJJJK....","...KJJjKKKJjJK....","..KJJjK...KJjJK...",".KZZZZK...KZZZZK..",".KZZZZK....KZZZZK."],"pal":{"D":"#eeeeea","E":"#2c5a74","G":"#2f8a4a","H":"#a8773a","J":"#3b5586","K":"#141414","L":"#c9994f","M":"#c0505a","N":"#e0a883","S":"#f0c09a","T":"#21383C","V":"#6cc24a","W":"#ffffff","Z":"#e2e2e2","b":"#6b4520","h":"#6b4520","j":"#2a3d63"}},"amy_walkB":{"rows":["......KKKKKK......","....KKLLHHHhKK....","...KLLLHHHHHhhK...","..KHLLHHHHHHHhHK..","..KHHHHHHHHHHHhHK.",".KHHHHHHSSSSSHHhHK",".KHHHHSSSSSSSSHHhK","KHHKHSbbbSSbbbSHHK","KHHKSSEWWSSEWWSHhK","KHLKSSEWWSSEWWSHHK","KHLKSSSSSSNSSSSHhK","KHLHKSSSSNNSSSSKHK","KHLHKSSSSSSSSSSKHK","KLLHKSSMWWWWMSSKHK","KLHHHKSSMMMMSSKHHK","KLLHHHKSSSSSSKHHLK","KLLLH.KKSSSSKK.HLK","KLLHKKKDDDDKKKHLHK","KLHKDDDTKKTDDDKHLK","KHLDDDTKKKKTDDDLHK",".KLKDDTWWWWTDDKLK.",".KKKDDTVVVVTDDKKK.",".KDKDDDTVVTDDDKDK.",".KSKDDDDTTDDDDKSK.",".KKKGGGGGGGGGGKKK.","....KJJJJJJJJK....",".....KJjKKJjK.....",".....KJjKKJjK.....","....KZZZKKZZZK....","....KZZZKKZZZK...."],"pal":{"D":"#eeeeea","E":"#2c5a74","G":"#2f8a4a","H":"#a8773a","J":"#3b5586","K":"#141414","L":"#c9994f","M":"#c0505a","N":"#e0a883","S":"#f0c09a","T":"#21383C","V":"#6cc24a","W":"#ffffff","Z":"#e2e2e2","b":"#6b4520","h":"#6b4520","j":"#2a3d63"}},"craig_down_closed":{"rows":["................................",".........KKKKKKKKKKKK...........","........KAPAAAPAAAPAAKK.........",".......KAAAPAAAPAAAPAAAK........",".......KAAAPAAAPAAAPAAAAK.......","......KAAAAAPAAAPAAAPAAAAKKK....",".......KaaaaaaaaaaaaaaaaaaaaK...",".......KSmmmmSSmmmmSSSKKKKKK....","....KK.KSSSSSNNNSSSSSSK.KK......","...KMMKsSSKKKNNNKKKSSSsKMMK.....","..KMKKKsSrrSSNNNSSSrrSsKKKMK....","..KMKKKsSrrSsNNNsSSrrSsKKKMK....","...KMMMMMMMMMMMMMMMMMMMMMMK.....","....KKKBMMMMMMMMMMMMMMBKKK......","...KKKKBKKKKKmmmmKKKKKBKKKK.....","..KCCCCBBBBBBbBBbBBbBBBCCCCK....","..KCCCCBBBbBBBBBbBBbBBBCCCCCK...",".KccCCCBBBbBBbBBBBBbBBBCCCCCK...",".KccCCCBBbBBbBBbBBBBBBBCCCCCK...",".KcccCCBBBBBbBBbBBbBBBBCCcCCK...",".KcccCCBBbBBBBBbBBbBBBBCCcCCK...",".KcccCCCBBbBBbBBBBBbBBCCCcCCK...",".KcccCCCBBbBBbBBbBBBBBCCCcCCK...",".KcccCCCBBBBBbBBbBBbBBCCCcCCK...",".KcccCCCBbBBBBBbBBbBBBCCCcCCK...",".KcccCCCCbBBbBBBBBbBBCCCCcCCK...",".KcccCCCCbBBbBBbBBBBBCCCCcCCK...",".KcccCCCCBBBBbBBbBBbBCCCCcCCK...",".KcccCCCCCbBBBBBbBBbCCCCCcCCK...",".KcccCCCCCbBBbBBBBBbCCCCCcCCK...",".KcccCCCCCCCBBBBBBCCCCCCCcCCK...",".KcccCCCCCCCBBBBBBCCCCCCCcCCK..."],"pal":{"A":"#707784","B":"#dcd7ca","C":"#2f55a8","K":"#141414","M":"#e9d29b","N":"#e7a585","P":"#a4abb7","S":"#efbd98","a":"#4e545d","b":"#a9a294","c":"#22418a","m":"#b99b5f","r":"#e2837a","s":"#cf9474"}},"craig_down_open":{"rows":["................................",".........KKKKKKKKKKKK...........","........KAPAAAPAAAPAAKK.........",".......KAAAPAAAPAAAPAAAK........",".......KAAAPAAAPAAAPAAAAK.......","......KAAAAAPAAAPAAAPAAAAKKK....",".......KaaaaaaaaaaaaaaaaaaaaK...",".......KSmmmmSSmmmmSSSKKKKKK....","....KK.KSSWWENNNWWESSSK.KK......","...KMMKsSSWSENNNWSESSSsKMMK.....","..KMKKKsSrrSSNNNSSSrrSsKKKMK....","..KMKKKsSrrSsNNNsSSrrSsKKKMK....","...KMMMMMMMMMMMMMMMMMMMMMMK.....","....KKKBMMMMMMMMMMMMMMBKKK......","...KKKKBKKKKKmmmmKKKKKBKKKK.....","..KCCCCBBBBBBbBBbBBbBBBCCCCK....","..KCCCCBBBbBBBBBbBBbBBBCCCCCK...",".KccCCCBBBbBBbBBBBBbBBBCCCCCK...",".KccCCCBBbBBbBBbBBBBBBBCCCCCK...",".KcccCCBBBBBbBBbBBbBBBBCCcCCK...",".KcccCCBBbBBBBBbBBbBBBBCCcCCK...",".KcccCCCBBbBBbBBBBBbBBCCCcCCK...",".KcccCCCBBbBBbBBbBBBBBCCCcCCK...",".KcccCCCBBBBBbBBbBBbBBCCCcCCK...",".KcccCCCBbBBBBBbBBbBBBCCCcCCK...",".KcccCCCCbBBbBBBBBbBBCCCCcCCK...",".KcccCCCCbBBbBBbBBBBBCCCCcCCK...",".KcccCCCCBBBBbBBbBBbBCCCCcCCK...",".KcccCCCCCbBBBBBbBBbCCCCCcCCK...",".KcccCCCCCbBBbBBBBBbCCCCCcCCK...",".KcccCCCCCCCBBBBBBCCCCCCCcCCK...",".KcccCCCCCCCBBBBBBCCCCCCCcCCK..."],"pal":{"A":"#707784","B":"#dcd7ca","C":"#2f55a8","E":"#3d6fa8","K":"#141414","M":"#e9d29b","N":"#e7a585","P":"#a4abb7","S":"#efbd98","W":"#ffffff","a":"#4e545d","b":"#a9a294","c":"#22418a","m":"#b99b5f","r":"#e2837a","s":"#cf9474"}},"craig_down_up":{"rows":["................................",".........KKKKKKKKKKKK...........","........KAPAAAPAAAPAAKK.........",".......KAAAPAAAPAAAPAAAK........",".......KAAAPAAAPAAAPAAAAK.......","......KAAAAAPAAAPAAAPAAAAKKK....",".......KaaaaaaaaaaaaaaaaaaaaK...",".......KSmmmmSSmmmmSSSKKKKKK....","....KK.KSSWWENNNWWESSSK.KK......","...KMMKsSSWSENNNWSESSSsKMMK.....","..KMKKKsSrrSSNNNSSSrrSsKKKMK....","..KMKKKsSrrSsNNNsSSrrSsKKKMK....","...KMMMMMMMMMMMMMMMMMMMMMMK.....","....KKKBMMMMMMMMMMMMMMBKKK......","...KKKKBKKKKKmmmmKKKKKBKKKK.....","..KCCCCBBBBBBbBBbBBbBBBCCCCK....","..KCCCCBBBbBBBBBbBBbBBBCCCCCK...",".KccCCCBBBbBBbBBBBBbBBBCCCCCK...",".KccCCCBBbBBbBBbBBBBBBBCCCCCK...",".KcccCCBBBBBbBBbBBbBBBBCCcCCK...",".KcccCCBBbBBBBBbBBbBBBBCCcCCK...",".KcccCCCBBbBBbBBBBBbBBCCCcCCK...",".KcccCCCBBbBBbBBbBBBBBCCCcCCK...",".KcccCCCBBBBBbBBbBBbBBCCCcCCK...",".KcccCCCBbBBBBBbBBbBBBCCCcCCK...",".KcccCCCCbBBbBBBBBbBBCCCCcCCK...",".KcccCCCCbBBbBBbBBBBBCCCCcCCK...",".KcccCCCCBBBBbBBbBBbBCCCCcCCK...",".KcccCCCCCbBBBBBbBBbCCCCCcCCK...",".KcccCCCCCbBBbBBBBBbCCCCCcCCK...",".KcccCCCCCCCBBBBBBCCCCCCCcCCK...",".KcccCCCCCCCBBBBBBCCCCCCCcCCK..."],"pal":{"A":"#707784","B":"#dcd7ca","C":"#2f55a8","E":"#3d6fa8","K":"#141414","M":"#e9d29b","N":"#e7a585","P":"#a4abb7","S":"#efbd98","W":"#ffffff","a":"#4e545d","b":"#a9a294","c":"#22418a","m":"#b99b5f","r":"#e2837a","s":"#cf9474"}},"craig_drink_closed":{"rows":["................................",".........KKKKKKKKKKKK...........","........KAPAAAPAAAPAAKK.........",".......KAAAPAAAPAAAPAAAK........",".......KAAAPAAAPAAAPAAAAK.......","......KAAAAAPAAAPAAAPAAAAKKK....",".......KaaaaaaaaaaaaaaaaaaaaK...",".......KSmmmmSSmmmmSSSKKKKKK....","....KK.KSSSSSNNNSSSSSSK.KK......","...KMMKsSSKKKNNNKKKSSSsKMMK.....","..KMKKKsSrrSSNNNSSSrrSsKKKMK....","..KMKKKsSrrSsNNNsSSrrSsKKKMK....","...KMMMMMMMMMMMMMMMMMMMMMMK.....","....KKKBMMMMMMMMMMMMMMSSSK......","...KKKKBKKKKKmmmmKKKKKSSSKK.....","..KCCCCBBBBBBbBBbBBbBBBCCCCK....","..KCCCCBBBbBBBBBbBBbBBBCCCCCK...",".KccCCCBBBbBBbBBBBBbBBBCCCCCK...",".KccCCCBBbBBbBBbBBBBBBBCCCCCK...",".KcccCCBBBBBbBBbBBbBBBBCCCCCK...",".KcccCCBBbBBBBBbBBbBBBBCCCCCK...",".KcccCCCBBbBBbBBBBBbBBCCCCCCK...",".KcccCCCBBbBBbBBbBBBBBCCCcCCK...",".KcccCCCBBBBBbBBbBBbBBCCCcCCK...",".KcccCCCBbBBBBBbBBbBBBCCCcCCK...",".KcccCCCCbBBbBBBBBbBBCCCCcCCK...",".KcccCCCCbBBbBBbBBBBBCCCCcCCK...",".KcccCCCCBBBBbBBbBBbBCCCCcCCK...",".KcccCCCCCbBBBBBbBBbCCCCCcCCK...",".KcccCCCCCbBBbBBBBBbCCCCCcCCK...",".KcccCCCCCCCBBBBBBCCCCCCCcCCK...",".KcccCCCCCCCBBBBBBCCCCCCCcCCK..."],"pal":{"A":"#707784","B":"#dcd7ca","C":"#2f55a8","K":"#141414","M":"#e9d29b","N":"#e7a585","P":"#a4abb7","S":"#efbd98","a":"#4e545d","b":"#a9a294","c":"#22418a","m":"#b99b5f","r":"#e2837a","s":"#cf9474"}},"craig_drink_open":{"rows":["................................",".........KKKKKKKKKKKK...........","........KAPAAAPAAAPAAKK.........",".......KAAAPAAAPAAAPAAAK........",".......KAAAPAAAPAAAPAAAAK.......","......KAAAAAPAAAPAAAPAAAAKKK....",".......KaaaaaaaaaaaaaaaaaaaaK...",".......KSmmmmSSmmmmSSSKKKKKK....","....KK.KSSWWENNNWWESSSK.KK......","...KMMKsSSWSENNNWSESSSsKMMK.....","..KMKKKsSrrSSNNNSSSrrSsKKKMK....","..KMKKKsSrrSsNNNsSSrrSsKKKMK....","...KMMMMMMMMMMMMMMMMMMMMMMK.....","....KKKBMMMMMMMMMMMMMMSSSK......","...KKKKBKKKKKmmmmKKKKKSSSKK.....","..KCCCCBBBBBBbBBbBBbBBBCCCCK....","..KCCCCBBBbBBBBBbBBbBBBCCCCCK...",".KccCCCBBBbBBbBBBBBbBBBCCCCCK...",".KccCCCBBbBBbBBbBBBBBBBCCCCCK...",".KcccCCBBBBBbBBbBBbBBBBCCCCCK...",".KcccCCBBbBBBBBbBBbBBBBCCCCCK...",".KcccCCCBBbBBbBBBBBbBBCCCCCCK...",".KcccCCCBBbBBbBBbBBBBBCCCcCCK...",".KcccCCCBBBBBbBBbBBbBBCCCcCCK...",".KcccCCCBbBBBBBbBBbBBBCCCcCCK...",".KcccCCCCbBBbBBBBBbBBCCCCcCCK...",".KcccCCCCbBBbBBbBBBBBCCCCcCCK...",".KcccCCCCBBBBbBBbBBbBCCCCcCCK...",".KcccCCCCCbBBBBBbBBbCCCCCcCCK...",".KcccCCCCCbBBbBBBBBbCCCCCcCCK...",".KcccCCCCCCCBBBBBBCCCCCCCcCCK...",".KcccCCCCCCCBBBBBBCCCCCCCcCCK..."],"pal":{"A":"#707784","B":"#dcd7ca","C":"#2f55a8","E":"#3d6fa8","K":"#141414","M":"#e9d29b","N":"#e7a585","P":"#a4abb7","S":"#efbd98","W":"#ffffff","a":"#4e545d","b":"#a9a294","c":"#22418a","m":"#b99b5f","r":"#e2837a","s":"#cf9474"}},"craig_drink_up":{"rows":["................................",".........KKKKKKKKKKKK...........","........KAPAAAPAAAPAAKK.........",".......KAAAPAAAPAAAPAAAK........",".......KAAAPAAAPAAAPAAAAK.......","......KAAAAAPAAAPAAAPAAAAKKK....",".......KaaaaaaaaaaaaaaaaaaaaK...",".......KSmmmmSSmmmmSSSKKKKKK....","....KK.KSSWWENNNWWESSSK.KK......","...KMMKsSSWSENNNWSESSSsKMMK.....","..KMKKKsSrrSSNNNSSSrrSsKKKMK....","..KMKKKsSrrSsNNNsSSrrSsKKKMK....","...KMMMMMMMMMMMMMMMMMMMMMMK.....","....KKKBMMMMMMMMMMMMMMSSSK......","...KKKKBKKKKKmmmmKKKKKSSSKK.....","..KCCCCBBBBBBbBBbBBbBBBCCCCK....","..KCCCCBBBbBBBBBbBBbBBBCCCCCK...",".KccCCCBBBbBBbBBBBBbBBBCCCCCK...",".KccCCCBBbBBbBBbBBBBBBBCCCCCK...",".KcccCCBBBBBbBBbBBbBBBBCCCCCK...",".KcccCCBBbBBBBBbBBbBBBBCCCCCK...",".KcccCCCBBbBBbBBBBBbBBCCCCCCK...",".KcccCCCBBbBBbBBbBBBBBCCCcCCK...",".KcccCCCBBBBBbBBbBBbBBCCCcCCK...",".KcccCCCBbBBBBBbBBbBBBCCCcCCK...",".KcccCCCCbBBbBBBBBbBBCCCCcCCK...",".KcccCCCCbBBbBBbBBBBBCCCCcCCK...",".KcccCCCCBBBBbBBbBBbBCCCCcCCK...",".KcccCCCCCbBBBBBbBBbCCCCCcCCK...",".KcccCCCCCbBBbBBBBBbCCCCCcCCK...",".KcccCCCCCCCBBBBBBCCCCCCCcCCK...",".KcccCCCCCCCBBBBBBCCCCCCCcCCK..."],"pal":{"A":"#707784","B":"#dcd7ca","C":"#2f55a8","E":"#3d6fa8","K":"#141414","M":"#e9d29b","N":"#e7a585","P":"#a4abb7","S":"#efbd98","W":"#ffffff","a":"#4e545d","b":"#a9a294","c":"#22418a","m":"#b99b5f","r":"#e2837a","s":"#cf9474"}},"craig_hold_closed":{"rows":["................................",".........KKKKKKKKKKKK...........","........KAPAAAPAAAPAAKK.........",".......KAAAPAAAPAAAPAAAK........",".......KAAAPAAAPAAAPAAAAK.......","......KAAAAAPAAAPAAAPAAAAKKK....",".......KaaaaaaaaaaaaaaaaaaaaK...",".......KSmmmmSSmmmmSSSKKKKKK....","....KK.KSSSSSNNNSSSSSSK.KK......","...KMMKsSSKKKNNNKKKSSSsKMMK.....","..KMKKKsSrrSSNNNSSSrrSsKKKMK....","..KMKKKsSrrSsNNNsSSrrSsKKKMK....","...KMMMMMMMMMMMMMMMMMMMMMMK.....","....KKKBMMMMMMMMMMMMMMBKKK......","...KKKKBKKKKKmmmmKKKKKBKKKK.....","..KCCCCBBBBBBbBBbBBbBBBCCCCK....","..KCCCCBBBbBBBBBbBBbBBBCCCCCK...",".KccCCCBBBbBBbBBBBBbBBBCCCCCK...",".KccCCCBBbBBbBBbBBBBBBBCCCCCK...",".KcccCCBBBBBbBBbBBbBBBBCCcCCK...",".KcccCCBBbBBBBBbBBbBBBBCCcCCKKKK",".KcccCCCBBbBBbBBBBBbBBCCCcCCCCSS",".KcccCCCBBbBBbBBbBBBBBCCCcCCCCSS",".KcccCCCBBBBBbBBbBBbBBCCCcCCKKKK",".KcccCCCBbBBBBBbBBbBBBCCCcCCK...",".KcccCCCCbBBbBBBBBbBBCCCCcCCK...",".KcccCCCCbBBbBBbBBBBBCCCCcCCK...",".KcccCCCCBBBBbBBbBBbBCCCCcCCK...",".KcccCCCCCbBBBBBbBBbCCCCCcCCK...",".KcccCCCCCbBBbBBBBBbCCCCCcCCK...",".KcccCCCCCCCBBBBBBCCCCCCCcCCK...",".KcccCCCCCCCBBBBBBCCCCCCCcCCK..."],"pal":{"A":"#707784","B":"#dcd7ca","C":"#2f55a8","K":"#141414","M":"#e9d29b","N":"#e7a585","P":"#a4abb7","S":"#efbd98","a":"#4e545d","b":"#a9a294","c":"#22418a","m":"#b99b5f","r":"#e2837a","s":"#cf9474"}},"craig_hold_open":{"rows":["................................",".........KKKKKKKKKKKK...........","........KAPAAAPAAAPAAKK.........",".......KAAAPAAAPAAAPAAAK........",".......KAAAPAAAPAAAPAAAAK.......","......KAAAAAPAAAPAAAPAAAAKKK....",".......KaaaaaaaaaaaaaaaaaaaaK...",".......KSmmmmSSmmmmSSSKKKKKK....","....KK.KSSWWENNNWWESSSK.KK......","...KMMKsSSWSENNNWSESSSsKMMK.....","..KMKKKsSrrSSNNNSSSrrSsKKKMK....","..KMKKKsSrrSsNNNsSSrrSsKKKMK....","...KMMMMMMMMMMMMMMMMMMMMMMK.....","....KKKBMMMMMMMMMMMMMMBKKK......","...KKKKBKKKKKmmmmKKKKKBKKKK.....","..KCCCCBBBBBBbBBbBBbBBBCCCCK....","..KCCCCBBBbBBBBBbBBbBBBCCCCCK...",".KccCCCBBBbBBbBBBBBbBBBCCCCCK...",".KccCCCBBbBBbBBbBBBBBBBCCCCCK...",".KcccCCBBBBBbBBbBBbBBBBCCcCCK...",".KcccCCBBbBBBBBbBBbBBBBCCcCCKKKK",".KcccCCCBBbBBbBBBBBbBBCCCcCCCCSS",".KcccCCCBBbBBbBBbBBBBBCCCcCCCCSS",".KcccCCCBBBBBbBBbBBbBBCCCcCCKKKK",".KcccCCCBbBBBBBbBBbBBBCCCcCCK...",".KcccCCCCbBBbBBBBBbBBCCCCcCCK...",".KcccCCCCbBBbBBbBBBBBCCCCcCCK...",".KcccCCCCBBBBbBBbBBbBCCCCcCCK...",".KcccCCCCCbBBBBBbBBbCCCCCcCCK...",".KcccCCCCCbBBbBBBBBbCCCCCcCCK...",".KcccCCCCCCCBBBBBBCCCCCCCcCCK...",".KcccCCCCCCCBBBBBBCCCCCCCcCCK..."],"pal":{"A":"#707784","B":"#dcd7ca","C":"#2f55a8","E":"#3d6fa8","K":"#141414","M":"#e9d29b","N":"#e7a585","P":"#a4abb7","S":"#efbd98","W":"#ffffff","a":"#4e545d","b":"#a9a294","c":"#22418a","m":"#b99b5f","r":"#e2837a","s":"#cf9474"}},"craig_hold_up":{"rows":["................................",".........KKKKKKKKKKKK...........","........KAPAAAPAAAPAAKK.........",".......KAAAPAAAPAAAPAAAK........",".......KAAAPAAAPAAAPAAAAK.......","......KAAAAAPAAAPAAAPAAAAKKK....",".......KaaaaaaaaaaaaaaaaaaaaK...",".......KSmmmmSSmmmmSSSKKKKKK....","....KK.KSSWWENNNWWESSSK.KK......","...KMMKsSSWSENNNWSESSSsKMMK.....","..KMKKKsSrrSSNNNSSSrrSsKKKMK....","..KMKKKsSrrSsNNNsSSrrSsKKKMK....","...KMMMMMMMMMMMMMMMMMMMMMMK.....","....KKKBMMMMMMMMMMMMMMBKKK......","...KKKKBKKKKKmmmmKKKKKBKKKK.....","..KCCCCBBBBBBbBBbBBbBBBCCCCK....","..KCCCCBBBbBBBBBbBBbBBBCCCCCK...",".KccCCCBBBbBBbBBBBBbBBBCCCCCK...",".KccCCCBBbBBbBBbBBBBBBBCCCCCK...",".KcccCCBBBBBbBBbBBbBBBBCCcCCK...",".KcccCCBBbBBBBBbBBbBBBBCCcCCKKKK",".KcccCCCBBbBBbBBBBBbBBCCCcCCCCSS",".KcccCCCBBbBBbBBbBBBBBCCCcCCCCSS",".KcccCCCBBBBBbBBbBBbBBCCCcCCKKKK",".KcccCCCBbBBBBBbBBbBBBCCCcCCK...",".KcccCCCCbBBbBBBBBbBBCCCCcCCK...",".KcccCCCCbBBbBBbBBBBBCCCCcCCK...",".KcccCCCCBBBBbBBbBBbBCCCCcCCK...",".KcccCCCCCbBBBBBbBBbCCCCCcCCK...",".KcccCCCCCbBBbBBBBBbCCCCCcCCK...",".KcccCCCCCCCBBBBBBCCCCCCCcCCK...",".KcccCCCCCCCBBBBBBCCCCCCCcCCK..."],"pal":{"A":"#707784","B":"#dcd7ca","C":"#2f55a8","E":"#3d6fa8","K":"#141414","M":"#e9d29b","N":"#e7a585","P":"#a4abb7","S":"#efbd98","W":"#ffffff","a":"#4e545d","b":"#a9a294","c":"#22418a","m":"#b99b5f","r":"#e2837a","s":"#cf9474"}},"craig_shove_closed":{"rows":["................................",".........KKKKKKKKKKKK...........","........KAPAAAPAAAPAAKK.........",".......KAAAPAAAPAAAPAAAK........",".......KAAAPAAAPAAAPAAAAK.......","......KAAAAAPAAAPAAAPAAAAKKK....",".......KaaaaaaaaaaaaaaaaaaaaK...",".......KSmmmmSSmmmmSSSKKKKKK....","....KK.KSSSSSNNNSSSSSSK.KK......","...KMMKsSSKKKNNNKKKSSSsKMMK.....","..KMKKKsSrrSSNNNSSSrrSsKKKMK....","..KMKKKsSrrSsNNNsSSrrSsKKKMK....","...KMMMMMMMMMMMMMMMMMMMMMMK.....","....KKKBMMMMMMMMMMMMMMBKKK......","...KKKKBKKKKKmmmmKKKKKBKKKK.....","..KCCCCBBBBBBbBBbBBbBBBCCCCK....","..KCCCCBBBbBBBBBbBBbBBBCCCCCK...",".KccCCCBBBbBBbBBBBBbBBBCCCCCK...",".KccCCCBBbBBbBBbBBBBBBBCCCCCK...",".KcccCCBBBBBbBBbBBbBBBBCCcCCK...",".KcccCCBBbBBBBBbBBbBBBBCCcCCK...",".KcccCCCBBbBBbBBBBBbBBCCCcCCKKKK",".KcccCCCBBbBBbBBbBBBBBCCCcCCCCSS",".KcccCCCBBBBBbBBbBBbBBCCCcCCCCSS",".KcccCCCBbBBBBBbBBbBBBCCCcCCKKKK",".KcccCCCCbBBbBBBBBbBBCCCCcCCK...",".KcccCCCCbBBbBBbBBBBBCCCCcCCK...",".KcccCCCCBBBBbBBbBBbBCCCCcCCK...",".KcccCCCCCbBBBBBbBBbCCCCCcCCK...",".KcccCCCCCbBBbBBBBBbCCCCCcCCK...",".KcccCCCCCCCBBBBBBCCCCCCCcCCK...",".KcccCCCCCCCBBBBBBCCCCCCCcCCK..."],"pal":{"A":"#707784","B":"#dcd7ca","C":"#2f55a8","K":"#141414","M":"#e9d29b","N":"#e7a585","P":"#a4abb7","S":"#efbd98","a":"#4e545d","b":"#a9a294","c":"#22418a","m":"#b99b5f","r":"#e2837a","s":"#cf9474"}},"craig_shove_open":{"rows":["................................",".........KKKKKKKKKKKK...........","........KAPAAAPAAAPAAKK.........",".......KAAAPAAAPAAAPAAAK........",".......KAAAPAAAPAAAPAAAAK.......","......KAAAAAPAAAPAAAPAAAAKKK....",".......KaaaaaaaaaaaaaaaaaaaaK...",".......KSmmmmSSmmmmSSSKKKKKK....","....KK.KSSWWENNNWWESSSK.KK......","...KMMKsSSWSENNNWSESSSsKMMK.....","..KMKKKsSrrSSNNNSSSrrSsKKKMK....","..KMKKKsSrrSsNNNsSSrrSsKKKMK....","...KMMMMMMMMMMMMMMMMMMMMMMK.....","....KKKBMMMMMMMMMMMMMMBKKK......","...KKKKBKKKKKmmmmKKKKKBKKKK.....","..KCCCCBBBBBBbBBbBBbBBBCCCCK....","..KCCCCBBBbBBBBBbBBbBBBCCCCCK...",".KccCCCBBBbBBbBBBBBbBBBCCCCCK...",".KccCCCBBbBBbBBbBBBBBBBCCCCCK...",".KcccCCBBBBBbBBbBBbBBBBCCcCCK...",".KcccCCBBbBBBBBbBBbBBBBCCcCCK...",".KcccCCCBBbBBbBBBBBbBBCCCcCCKKKK",".KcccCCCBBbBBbBBbBBBBBCCCcCCCCSS",".KcccCCCBBBBBbBBbBBbBBCCCcCCCCSS",".KcccCCCBbBBBBBbBBbBBBCCCcCCKKKK",".KcccCCCCbBBbBBBBBbBBCCCCcCCK...",".KcccCCCCbBBbBBbBBBBBCCCCcCCK...",".KcccCCCCBBBBbBBbBBbBCCCCcCCK...",".KcccCCCCCbBBBBBbBBbCCCCCcCCK...",".KcccCCCCCbBBbBBBBBbCCCCCcCCK...",".KcccCCCCCCCBBBBBBCCCCCCCcCCK...",".KcccCCCCCCCBBBBBBCCCCCCCcCCK..."],"pal":{"A":"#707784","B":"#dcd7ca","C":"#2f55a8","E":"#3d6fa8","K":"#141414","M":"#e9d29b","N":"#e7a585","P":"#a4abb7","S":"#efbd98","W":"#ffffff","a":"#4e545d","b":"#a9a294","c":"#22418a","m":"#b99b5f","r":"#e2837a","s":"#cf9474"}},"craig_shove_up":{"rows":["................................",".........KKKKKKKKKKKK...........","........KAPAAAPAAAPAAKK.........",".......KAAAPAAAPAAAPAAAK........",".......KAAAPAAAPAAAPAAAAK.......","......KAAAAAPAAAPAAAPAAAAKKK....",".......KaaaaaaaaaaaaaaaaaaaaK...",".......KSmmmmSSmmmmSSSKKKKKK....","....KK.KSSWWENNNWWESSSK.KK......","...KMMKsSSWSENNNWSESSSsKMMK.....","..KMKKKsSrrSSNNNSSSrrSsKKKMK....","..KMKKKsSrrSsNNNsSSrrSsKKKMK....","...KMMMMMMMMMMMMMMMMMMMMMMK.....","....KKKBMMMMMMMMMMMMMMBKKK......","...KKKKBKKKKKmmmmKKKKKBKKKK.....","..KCCCCBBBBBBbBBbBBbBBBCCCCK....","..KCCCCBBBbBBBBBbBBbBBBCCCCCK...",".KccCCCBBBbBBbBBBBBbBBBCCCCCK...",".KccCCCBBbBBbBBbBBBBBBBCCCCCK...",".KcccCCBBBBBbBBbBBbBBBBCCcCCK...",".KcccCCBBbBBBBBbBBbBBBBCCcCCK...",".KcccCCCBBbBBbBBBBBbBBCCCcCCKKKK",".KcccCCCBBbBBbBBbBBBBBCCCcCCCCSS",".KcccCCCBBBBBbBBbBBbBBCCCcCCCCSS",".KcccCCCBbBBBBBbBBbBBBCCCcCCKKKK",".KcccCCCCbBBbBBBBBbBBCCCCcCCK...",".KcccCCCCbBBbBBbBBBBBCCCCcCCK...",".KcccCCCCBBBBbBBbBBbBCCCCcCCK...",".KcccCCCCCbBBBBBbBBbCCCCCcCCK...",".KcccCCCCCbBBbBBBBBbCCCCCcCCK...",".KcccCCCCCCCBBBBBBCCCCCCCcCCK...",".KcccCCCCCCCBBBBBBCCCCCCCcCCK..."],"pal":{"A":"#707784","B":"#dcd7ca","C":"#2f55a8","E":"#3d6fa8","K":"#141414","M":"#e9d29b","N":"#e7a585","P":"#a4abb7","S":"#efbd98","W":"#ffffff","a":"#4e545d","b":"#a9a294","c":"#22418a","m":"#b99b5f","r":"#e2837a","s":"#cf9474"}},"josie_duck":{"rows":["..........................","..........................",".........................K","....KKKKK...............KW","...KTWTTTK.............KWT","..KTTWTTTTKKKKKKKKKKK.KTTK","..KTEWTeeeTBBBBBBBBBBKTKK.","KKKTTWTeeeTBBBBBBBBBBTK...","NNWWWWTeeeWBBBBBBBBBBTK...","NWWWWWWeeeWTTTTTTTTTTTK...","WWWWWWWeeeWTTTTTTTTTTTK...","WWWWWWWeeeWTWWWWWWWWWTK...","KKKKKKKeWWOWKKKKKWWKWWK...",".......KWWOWK...KWWKWWK...",".......KWWOWK...KWWKWWK...",".......KWWWWK..KWWKKWWK...","........KKKK....KK..KK...."],"pal":{"B":"#3a302a","E":"#141414","K":"#141414","N":"#141414","O":"#b5562c","T":"#c47a30","W":"#f6f2ea","e":"#6e4019"}},"josie_leap":{"rows":["....KKKKK.................","...KTWTTTK................","..KTTWTTTTK..............K","..KTEWTeeeK.............KW","KKKTTWTeeeK............KWT","NNWWWWTeeeTKKKKKKKKKK.KTTK","NWWWWWWeeeTBBBBBBBBBBKTKK.","WWWWWWWeeeWBBBBBBBBBBTK...","WWWWWWWeeeWBBBBBBBBBBTK...","KKKKKKKeeOOTTTTTTTTTTTK...","......KWeOOTTTTTTTTTTTK...","......KWWWOTWWWWWWWWWTK...",".....KWWWKKKKKKKKKKWWWWK..","....KWWKK..........KKKWWK.",".....KK...............KK..","..........................",".........................."],"pal":{"B":"#3a302a","E":"#141414","K":"#141414","N":"#141414","O":"#b5562c","T":"#c47a30","W":"#f6f2ea","e":"#6e4019"}},"josie_runA":{"rows":["....KKKKK...............K.","...KTWTTTK.............KWK","..KTTWTTTTK...........KWWK","..KTEWTeeeK...........KTK.","KKKTTWTeeeK...........KTK.","NNWWWWTeeeTKKKKKKKKKKKTK..","NWWWWWWeeeTBBBBBBBBBBKTK..","WWWWWWWeeeWBBBBBBBBBBTK...","WWWWWWWeeeWBBBBBBBBBBTK...","KKKKKKKeeOOTTTTTTTTTTTK...","......KWeOOTTTTTTTTTTTK...","......KWWWOTWWWWWWWWWTK...",".......KWWKWKKKKKWWKWWK...",".......KWWKWK...KWWKWWK...",".......KWWKWK...KWWKWWK...",".......KWWWWK..KWWKKWWK...","........KKKK....KK..KK...."],"pal":{"B":"#3a302a","E":"#141414","K":"#141414","N":"#141414","O":"#b5562c","T":"#c47a30","W":"#f6f2ea","e":"#6e4019"}},"josie_runB":{"rows":["....KKKKK...............K.","...KTWTTTK.............KWK","..KTTWTTTTK...........KWWK","..KTEWTeeeK...........KTK.","KKKTTWTeeeK...........KTK.","NNWWWWTeeeTKKKKKKKKKKKTK..","NWWWWWWeeeTBBBBBBBBBBKTK..","WWWWWWWeeeWBBBBBBBBBBTK...","WWWWWWWeeeWBBBBBBBBBBTK...","KKKKKKKeeOOTTTTTTTTTTTK...","......KWeOOTTTTTTTTTTTK...","......KWWWOTWWWWWWWWWTK...","......KWKWWKKKKKKKWWKWK...","......KWKWWK.....KWWKWK...","......KWKWWK.....KWWKWK...",".....KWWKWWK.....KWWKKWK..","......KK.KK.......KK..K..."],"pal":{"B":"#3a302a","E":"#141414","K":"#141414","N":"#141414","O":"#b5562c","T":"#c47a30","W":"#f6f2ea","e":"#6e4019"}},"josie_sitA":{"rows":["....KKKKK...............K.","...KTWTTTK.............KWK","..KTTWTTTTK...........KWWK","..KTEWTeeeK...........KTK.","KKKTTWTeeeK...........KTK.","NNWWWWTeeeTKKKKKKKKKKKTK..","NWWWWWWeeeTBBBBBBBBBBKTK..","WWWWWWWeeeWBBBBBBBBBBTK...","WWWWWWWeeeWBBBBBBBBBBTK...","KKKKKKKeeOOTTTTTTTTTTTK...","......KWeOOTTTTTTTTTTTK...","......KWWWOTWWWWWWWWWTK...",".......KWWKWKKKKKWWKWWK...",".......KWWKWK...KWWKWWK...",".......KWWKWK...KWWKWWK...",".......KWWWWK..KWWKKWWK...","........KKKK....KK..KK...."],"pal":{"B":"#3a302a","E":"#141414","K":"#141414","N":"#141414","O":"#b5562c","T":"#c47a30","W":"#f6f2ea","e":"#6e4019"}},"josie_sitB":{"rows":["....KKKKK.................","...KTWTTTK................","..KTTWTTTTK..............K","..KTEWTeeeK.............KW","KKKTTWTeeeK............KWT","NNWWWWTeeeTKKKKKKKKKK.KTTK","NWWWWWWeeeTBBBBBBBBBBKTKK.","WWWWWWWeeeWBBBBBBBBBBTK...","WWWWWWWeeeWBBBBBBBBBBTK...","KKKKKKKeeOOTTTTTTTTTTTK...","......KWeOOTTTTTTTTTTTK...","......KWWWOTWWWWWWWWWTK...",".......KWWKWKKKKKWWKWWK...",".......KWWKWK...KWWKWWK...",".......KWWKWK...KWWKWWK...",".......KWWWWK..KWWKKWWK...","........KKKK....KK..KK...."],"pal":{"B":"#3a302a","E":"#141414","K":"#141414","N":"#141414","O":"#b5562c","T":"#c47a30","W":"#f6f2ea","e":"#6e4019"}}};
   var PAT = {"base":["..................","..................",".....KKKKKK.......","...KKSSSSSSKK.....","..KSSSSSSSSSSK....",".KSSSSSSSSSSSSK...",".KsSSSSSSSSSSSK...",".KsSSKKKSSKKKSK...",".KsSSWWESSWWESK...",".KsSSWWESSWWESK...",".KsSSSSSKNNKSSK...",".KsSSSSKNNNNKSSK..","..KsSSSSKKKKSSK...","...KsSSSMMMSSK....","....KKSSSSSSKK....","......KKSSKK......","...KKCCCCCCCCKK...","..KcCCCCCCCCCCCK..","..KcCCCCCCCCCCCK..","..KcCCCCCCCCKCCK..","..KcCCCCCCCCKCCK..","..KcCCCCCCCCKSSK..","..KcCCCCCCCCKKKK..","..KcCCCCCCCCCCCK.."],"hair":{"bald":[],"short":[[1,"......KKKK........"],[2,"....KKHHHHKKK....."],[3,"...KHHHHHHHHHK...."],[4,"..KHHHHHHHHHHHK..."],[5,".KHHHHSSSSHHHHK..."],[6,".KHHH............."],[7,".KHH.............."],[8,".KH..............."]],"long":[[1,"......KKKK........"],[2,"....KKHHHHKKK....."],[3,"...KHHHHHHHHHK...."],[4,"..KHHHHHHHHHHHK..."],[5,".KHHHHSSSSHHHHK..."],[6,"KHHHH............."],[7,"KHHH.............."],[8,"KHHH.............."],[9,"KHHH.............."],[10,"KHHH.............."],[11,"KHHHK............."],[12,"KHHHK............."],[13,".KKK.............."]],"bun":[[0,"...KKK............"],[1,"..KHHHKKKK........"],[2,"..KHHKHHHHKKK....."],[3,"...KHHHHHHHHHK...."],[4,"..KHHHHHHHHHHHK..."],[5,".KHHHHSSSSHHHHK..."],[6,".KHHH............."],[7,".KHH.............."]],"curly":[[0,".....KKKKKKK......"],[1,"...KKHhHHhHHKK...."],[2,"..KHhHHhHHhHHhK..."],[3,".KHHhHHhHHhHHHHK.."],[4,".KhHHhHHhHHhHHhK.."],[5,"KHHhHHSShSSHhHHK.."],[6,"KHhHH.........K..."],[7,"KHHhK............."],[8,"KhHHK............."],[9,".KKK.............."]],"ponytail":[[1,"......KKKK........"],[2,"....KKHHHHKKK....."],[3,"...KHHHHHHHHHK...."],[4,".KKHHHHHHHHHHHK..."],[5,"KHKHHHSSSSHHHHK..."],[6,"KHKHH............."],[7,"KHKH.............."],[8,"KHHK.............."],[9,"KHK..............."],[10,".KK..............."]],"cap":[[1,"......KKKK........"],[2,"....KKAAAAKKK....."],[3,"...KAAAAAAAAAK...."],[4,"..KAAAAAAAAAAAK..."],[5,".KaaaaaaaaaaaaaKKK"],[6,".KHHH.....KKKKKK.."],[7,".KHH.............."]],"beanie":[[0,"......KKKK........"],[1,".....KAAAAK......."],[2,"...KKAAAAAAKK....."],[3,"..KAAAAAAAAAAK...."],[4,".KAAAAAAAAAAAAK..."],[5,".KaaaaaaaaaaaaK..."],[6,".KHHH............."]],"patti":[[0,".....KKKKKK......."],[1,"...KKHHhhHHHKK...."],[2,"..KHHHHhhhHHHHK..."],[3,".KHHHHHHhhHHHHHK.."],[4,".KHHLHHHHHhHHHHHK."],[5,".KHHHLLHHHHHHhSSK."],[6,".KHHHKKLLHHHKSSK.."],[7,".KHHK.......SSK..."],[8,".KHK.............."]]},"facial":{"none":[],"stache":[[12,"........KHHHHK...."]],"beard":[[10,".KHH.............."],[11,".KHHH............."],[12,"..KHHHHHKKKKHHK..."],[13,"...KHHHHMMMHHK...."],[14,"....KHHHHHHHK....."],[15,"......KHHHK......."]]},"glasses":[[7,"....KKKKKKKKKK...."],[8,"....K...KK...K...."],[9,"....K...KK...K...."]],"poses":{"down":[],"hold":[[16,"...KKCCCCCCCKKKKKK"],[17,"..KcCCCCCCCCCCKSSK"],[18,"..KcCCCCCCCCCCKKKK"],[19,"..KcCCCCCCCCCCCK.."],[20,"..KcCCCCCCCCCCCK.."],[21,"..KcCCCCCCCCCCCK.."],[22,"..KcCCCCCCCCCCCK.."]],"drink":[[14,"....KKSSSSSSKKSK.."],[15,"......KKSSKK.KSK.."],[16,"...KKCCCCCCCCKCK.."],[17,"..KcCCCCCCCCKCCK.."],[19,"..KcCCCCCCCCCCCK.."],[20,"..KcCCCCCCCCCCCK.."],[21,"..KcCCCCCCCCCCCK.."],[22,"..KcCCCCCCCCCCCK.."]],"shove":[[16,"...KKCCCCCCCKKKKKK"],[17,"..KcCCCCCCCCCCCSSS"],[18,"..KcCCCCCCCKKKKKKK"],[19,"..KcCCCCCCCCCCCK.."],[20,"..KcCCCCCCCCCCCK.."],[21,"..KcCCCCCCCCCCCK.."],[22,"..KcCCCCCCCCCCCK.."]]},"eyes":{"closed":[[8,".....SSSSSSSS....."],[9,".....KKKSSKKK....."]],"up":[[8,".....WEWSSWEW....."],[9,".....WWWSSWWW....."]]},"foam":[[12,"........WWWWW....."]],"patti":[[12,"..KsSSSSsNNsSSK..."],[13,"...KsSSMWWWMSK...."],[7,"....RRRR..RRRR...."],[8,"....R...RR...R...."],[9,"....R...RR...R...."],[10,".....RRR..RRR....."],[11,"OO................"],[12,"O.O..............."],[13,"O.O..............."],[14,".O................"]]};
   var FONT = {"A":[14,17,17,31,17,17,17],"B":[30,17,17,30,17,17,30],"C":[14,17,16,16,16,17,14],"D":[30,17,17,17,17,17,30],"E":[31,16,16,30,16,16,31],"F":[31,16,16,30,16,16,16],"G":[14,17,16,23,17,17,15],"H":[17,17,17,31,17,17,17],"I":[14,4,4,4,4,4,14],"J":[7,2,2,2,2,18,12],"K":[17,18,20,24,20,18,17],"L":[16,16,16,16,16,16,31],"M":[17,27,21,21,17,17,17],"N":[17,17,25,21,19,17,17],"O":[14,17,17,17,17,17,14],"P":[30,17,17,30,16,16,16],"Q":[14,17,17,17,21,18,13],"R":[30,17,17,30,20,18,17],"S":[15,16,16,14,1,1,30],"T":[31,4,4,4,4,4,4],"U":[17,17,17,17,17,17,14],"V":[17,17,17,17,17,10,4],"W":[17,17,17,21,21,21,10],"X":[17,17,10,4,10,17,17],"Y":[17,17,10,4,4,4,4],"Z":[31,1,2,4,8,16,31],"0":[14,17,19,21,25,17,14],"1":[4,12,4,4,4,4,14],"2":[14,17,1,2,4,8,31],"3":[30,1,1,14,1,1,30],"4":[2,6,10,18,31,2,2],"5":[31,16,30,1,1,17,14],"6":[6,8,16,30,17,17,14],"7":[31,1,2,4,8,8,8],"8":[14,17,17,14,17,17,14],"9":[14,17,17,15,1,2,12],"!":[4,4,4,4,4,0,4],"+":[0,4,4,31,4,4,0],"-":[0,0,0,31,0,0,0],".":[0,0,0,0,0,12,12],",":[0,0,0,0,12,4,8],"'":[4,4,8,0,0,0,0],"?":[14,17,1,2,4,0,4],":":[0,12,12,0,12,12,0],"/":[1,2,2,4,8,8,16],"&":[12,18,20,8,21,18,13],"$":[4,15,20,14,5,30,4],"(":[2,4,8,8,8,4,2],")":[8,4,2,2,2,4,8],"<":[0,4,8,31,8,4,0],">":[0,4,2,31,2,4,0],"^":[4,14,21,4,4,4,0],"v":[0,4,4,4,21,14,4],"~":[6,5,4,4,12,28,8],"#":[10,10,31,10,31,10,10]," ":[0,0,0,0,0,0,0]};
   var C = {
@@ -1457,7 +1536,10 @@
     if(dancers.t > 0) return;            // the dancers take the stage while they perform
     if(state === 'lifelost'){
       drawText('OOPS!' + (lost.why ? '  ' + lost.why : ''), 450, 5*P, {s:2, align:'center', col:C.red, sh:C.ink});
-      drawText('ROUND ' + level + ' STARTS OVER', 450, 26*P, {align:'center', col:C.cream, sh:C.ink});
+      var why = { thirsty: 'SERVE THEM BEFORE THEY REACH THE TAP', smash: 'CATCH EMPTIES BEFORE THEY FALL',
+                  wasted: "ONLY POUR WHEN SOMEONE'S WAITING" }[lost.cause];
+      if(lost.explain && why) drawText(why, 450, 31*P, {align:'center', col:C.gold, sh:C.ink});
+      else drawText('ROUND ' + level + ' STARTS OVER', 450, 26*P, {align:'center', col:C.cream, sh:C.ink});
       return;
     }
     if(state === 'roundclear'){
@@ -1538,8 +1620,10 @@
   }
 
   function drawCraig(c, i){
+    // Craig is a big man: a 32x32 sprite that stands a head taller than everyone at the bar,
+    // so his shoulders and chest show above the counter.
     var r = cellRow(i);
-    var top = (r - 3) * P, left = sx(c.x) - 30;
+    var top = (r - 6) * P, left = sx(c.x) - 48;
     var pose = 'down', eyes = 'open', mug = null, mx = 0, my = 0, bob = 0;
     var urgent = (c.state === 'walking' && !c.distracted && c.x < barLeft + 150);
     if(c.state === 'walking'){
@@ -1547,14 +1631,14 @@
       else bob = (Math.floor(c.x / 11) % 2) ? -P : 0;
       if(c.sendT > 0) pose = 'shove';
     } else if(c.state === 'sliding'){
-      pose = 'hold'; mug = mugCanvas(6); mx = left + 19*P; my = top + 15*P;
+      pose = 'hold'; mug = mugCanvas(6); mx = left + 32*P; my = top + 16*P;
     } else if(c.state === 'drinking'){
       var p = c.drinkT;
-      if(p < 0.15){ pose = 'hold'; mug = mugCanvas(6); mx = left + 19*P; my = top + 15*P; }
-      else if(p < 0.3){ pose = 'drink'; mug = mugCanvas(6); mx = left + 11*P; my = top + 7*P; }
-      else if(p < 0.86){ pose = 'drink'; eyes = 'closed'; mug = tiltCanvas(p > 0.6); mx = left + 9*P; my = top + 8*P;
+      if(p < 0.15){ pose = 'hold'; mug = mugCanvas(6); mx = left + 32*P; my = top + 16*P; }
+      else if(p < 0.3){ pose = 'drink'; mug = mugCanvas(6); mx = left + 19*P; my = top + 8*P; }
+      else if(p < 0.86){ pose = 'drink'; eyes = 'closed'; mug = tiltCanvas(p > 0.6); mx = left + 17*P; my = top + 10*P;
                          bob = (Math.floor(now*6) % 2) ? -P : 0; }
-      else { pose = 'drink'; mug = mugCanvas(0); mx = left + 11*P; my = top + 7*P; }
+      else { pose = 'drink'; mug = mugCanvas(0); mx = left + 19*P; my = top + 8*P; }
     }
     var fade = clamp((905 - c.x) / 30, 0, 1);
     if(fade <= 0) return;
@@ -1562,8 +1646,8 @@
     blit(spr('craig_' + pose + '_' + eyes), left, top + bob);
     if(mug) blit(mug, mx, my + bob, true);
     ctx.globalAlpha = 1;
-    if(c.distracted) drawText('~', left + 1*P, top - 3*P, {col:C.gold, sh:C.ink});
-    if(urgent && Math.floor(now*6) % 2 === 0) drawText('!', left + 9*P, top - 4*P, {col:C.red, sh:C.ink});
+    if(c.distracted) drawText('~', left + 3*P, top - 1*P, {col:C.gold, sh:C.ink});
+    if(urgent && Math.floor(now*6) % 2 === 0) drawText('!', left + 15*P, top - 2*P, {col:C.red, sh:C.ink});
   }
 
   function drawCustomer(c, i){
@@ -1766,6 +1850,7 @@
       blit(mugCanvas(k < lives ? 6 : 0), rx - (n - k)*10*P + 2*P, 12*P);
       ctx.globalAlpha = 1;
     }
+    // fixed spot just right of MENOMONEE FALLS (the embed close button only sits up top)
     if(josieReady) blit(spr((Math.floor(now*2) % 2) ? 'josie_sitA' : 'josie_sitB'), 270*P, 23*P);
     drawText(muted ? '~ SOUND OFF' : '~ SOUND ON', 4*P, 22*P, {col: muted ? C.red : C.dim, sh:C.ink});
   }
@@ -1783,6 +1868,31 @@
       drawText(pu.text, x, pu.y - 12, {align:'center', col:pu.color, sh:C.ink});
     }
   }
+  // A teaching tip: a boxed callout near what it's about, with a little pointer.
+  function drawCoach(){
+    if(!coach || (state !== 'playing' && state !== 'lifelost')) return;
+    if(coach.t < 0.12 && Math.floor(now*20) % 2) return;                 // pop in
+    var w = textW(coach.text, 1) + 8*P, h = 13*P, x, y, px2 = null, py2 = null;
+    if(coach.top){ x = W/2; y = 44*P; }
+    else {
+      var r = cellRow(coach.lane == null ? player.lane : coach.lane);
+      var tx = coach.follow ? sx(coach.follow.x) : sx(coach.x == null ? player.x : coach.x);
+      x = tx; y = (r - 14) * P; px2 = tx; py2 = (r + 7) * P;
+    }
+    x = clamp(x, w/2 + 6, W - w/2 - 6);
+    if(y < 42*P) y = 42*P;
+    var X = snap(x - w/2), Y = snap(y);
+    ctx.fillStyle = 'rgba(13,23,24,.95)'; ctx.fillRect(X, Y, w, h);
+    var edge = (Math.floor(now*4) % 2) ? C.gold : C.lime;
+    ctx.fillStyle = edge;
+    ctx.fillRect(X, Y, w, P); ctx.fillRect(X, Y + h - P, w, P); ctx.fillRect(X, Y, P, h); ctx.fillRect(X + w - P, Y, P, h);
+    if(px2 !== null){
+      var ax = snap(clamp(px2, X + 3*P, X + w - 4*P));
+      ctx.fillRect(ax, Y + h, P, P); ctx.fillRect(ax - P, Y + h + P, 3*P, P); ctx.fillRect(ax, Y + h + 2*P, P, Math.max(P, py2 - (Y + h + 2*P) - 6*P));
+    }
+    drawText(coach.text, X + w/2, Y + 3*P, {align:'center', col:C.cream, sh:C.ink});
+  }
+
   function drawBanner(title, sub, subCol){
     box(0, 64, 300, 42, 'rgba(13,23,24,.9)');
     box(0, 64, 300, 1, C.ink); box(0, 105, 300, 1, C.ink);
@@ -1871,36 +1981,63 @@
     var b = bonus, i;
     drawBonusBar();
 
-    // Oliver, behind the bar. His lower half is hidden by the counter drawn after him.
+    // The other owner (the shaker), behind the bar. Lower half hidden by the counter drawn after.
     var shaking = null, curId = (b.phase === 'show') ? b.order[b.visitIdx] : -1;
     if(curId >= 0 && b.cans[curId].shakeT > 0) shaking = b.cans[curId];
-    var frame = bs('idle'), flip = false;
+    var frame = bs('idle'), flip = false, sBob = 0, sSay = null, sCol = C.gold;
     if(shaking) frame = (Math.floor(now*14) % 2) ? bs('shake') : bs('hold');
     else if(b.phase === 'shuffle' && b.t < BONUS.pound) frame = (Math.floor(b.t / (BONUS.pound/4)) % 2) ? bs('shake') : bs('hold');
     else if(b.phase === 'intro' || (b.phase === 'show' && b.visitT < BONUS.walk)){
       frame = (Math.floor(now*10) % 2) ? bs('walkA') : bs('walkB');
-      flip = true;                                 // walking right, down the row
+      flip = true;                                  // walking right, down the row
+    } else if(b.shakerWalking){
+      frame = (Math.floor(now*10) % 2) ? bs('walkA') : bs('walkB');   // off to the end of the bar to watch
+    } else if(b.phase === 'shuffle' || b.phase === 'pick'){
+      flip = true;                                  // watching you from the end of the bar
+    } else if(b.phase === 'reveal'){
+      flip = true;
+      if(b.opened && b.resultT > 0.8){
+        if(b.won){ frame = (Math.floor(now*9) % 2) ? bs('shake') : bs('hold'); sSay = 'AW, NUTS!'; sCol = C.red; }   // stomping
+        else { sBob = (Math.floor(now*10) % 2) ? -2*P : 0; sSay = 'HA HA HA!'; }                                    // doubled over laughing
+      }
     }
-    var ox = b.ox, oleft = ox - 27, otop = (BAR - 24) * P;
-    if(b.phase === 'reveal' && b.won) otop -= (Math.floor(now*6) % 2) ? 2*P : 0;
+    var ox = b.ox, oleft = ox - 27, otop = (BAR - 24) * P + sBob;
     blit(spr(frame), oleft, otop, flip);
-    // your bartender waits at the end of the bar with their back turned, then opens the can you pick
-    var kx = BONUS_BARKEEP_X, kLeft = kx - 27, kTop = (BAR - 24) * P;
-    var kFrame = 'idle', kFlip = true;                                    // facing away while the cans are shaken
-    if(b.phase === 'pick'){ kFlip = false; }
-    if(b.phase === 'reveal'){ kFlip = false; kFrame = (b.won || !b.opened) ? 'hold' : 'idle'; }
-    if(b.phase === 'reveal' && b.won && b.opened) kTop -= (Math.floor(now*6) % 2) ? P : 0;
-    blit(spr(bt(kFrame)), kLeft, kTop, kFlip);
-    if(b.phase === 'reveal' && !b.won && b.opened && b.resultT > 0.55){
-      var fx0 = Math.round(kx / P), fy0 = BAR - 24;                       // sprayed: foam face, new hairdo
-      [[-6,0,8,3],[-8,2,4,3],[1,1,6,3],[-4,6,5,3],[2,7,4,2],[-7,9,3,2],[-1,11,5,2]].forEach(function(q){
+    if(sSay){ var sw = textW(sSay, 1); drawText(sSay, clamp(ox, sw/2 + 8, W - sw/2 - 8), otop - 9*P, {align:'center', col:sCol, sh:C.ink}); }
+
+    // Your bartender: back turned at the end of the bar while the cans are shaken and shuffled,
+    // then walks the bar under your control and opens the can you choose.
+    var kx = b.px, kLeft = kx - 27, kTop = (BAR - 24) * P, kFrame = 'idle', kFlip = true, kBob = 0;
+    var t = b.resultT;
+    if(b.phase === 'pick'){
+      kFlip = b.pMoving && b.pDir > 0;
+      if(b.pMoving) kFrame = (Math.floor(now*10) % 2) ? 'walkA' : 'walkB';
+    } else if(b.phase === 'reveal'){
+      kFlip = false;
+      if(t < 0.5) kFrame = 'hold';
+      else if(b.won){
+        if(t < 1.6){ kFrame = 'drink'; kBob = (Math.floor((t - 0.6) / 0.125) % 2) ? -P : 0; }
+        else { kFrame = 'hold'; kBob = (Math.floor(now*6) % 2) ? -P : 0; }
+      } else {
+        kFrame = 'idle';
+        if(t < 1.4) kFlip = (Math.floor(t / 0.11) % 2) === 0;      // shaking the foam off
+      }
+    }
+    blit(spr(bt(kFrame)), kLeft, kTop + kBob, kFlip);
+    if(b.phase === 'reveal' && !b.won && b.opened && t > 0.55){
+      var fx0 = Math.round(kx / P), fy0 = BAR - 24;                  // doused: foam all over, new hairdo, dripping
+      [[-6,-1,9,3],[-8,1,4,4],[1,0,7,3],[-4,6,5,3],[2,7,4,2],[-7,9,3,2],[-1,11,5,2],[4,3,3,2]].forEach(function(q){
         box(fx0 + q[0], fy0 + q[1], q[2], q[3], '#ffffff');
       });
+      for(var dq=0; dq<5; dq++){
+        box(fx0 + [-7,-3,1,4,-5][dq], fy0 + 13 + Math.floor((t*18 + dq*3) % 9), 1, 1, '#ffffff');
+      }
     }
+    if(b.phase === 'reveal' && b.won && t > 1.6) drawText('AAH!', kx, kTop - 9*P, {align:'center', col:C.gold, sh:C.ink});
 
     drawBonusCounter();
     var jf = (b.phase === 'reveal' && !b.won) ? 'josie_duck' : ((Math.floor(now * (b.phase === 'reveal' ? 8 : 2)) % 2) ? 'josie_sitA' : 'josie_sitB');
-    blit(spr(jf), 14*P, (BAR - 16)*P + ((b.phase === 'reveal' && b.won && Math.floor(now*8) % 2) ? -2*P : 0));
+    blit(spr(jf), 262*P, (BAR - 16)*P + ((b.phase === 'reveal' && b.won && Math.floor(now*8) % 2) ? -2*P : 0), true);
 
     var canImg = spr('can');
     for(i=0;i<b.cans.length;i++){
@@ -1913,13 +2050,16 @@
         Y = otop + ((up ? 17 : 20) - 9) * P;
       }
       if(b.phase === 'reveal' && c.id === b.chosen){
-        var u = clamp(b.resultT / 0.4, 0, 1);
-        var hX = BONUS_BARKEEP_X - 27 - 11*P, hY = (BAR - 24 + 20 - 9) * P;
-        X = X + (hX - X) * u; Y = Y + (hY - Y) * u - Math.sin(u * Math.PI) * 10*P;
+        var hX = kLeft - 11*P, hY = kTop + (20 - 9) * P;
+        if(t < 0.3){ var u = t / 0.3; X = X + (hX - X) * u; Y = Y + (hY - Y) * u; }        // picks it up
+        else if(t < 0.5 || (!b.won && t < 0.7)){ X = hX; Y = hY; }                         // cracks it open
+        else if(b.won && t < 1.6){ X = kLeft - 5*P; Y = kTop + 5*P + kBob; }                // chugging it
+        else if(b.won){ X = hX; Y = hY + kBob; }
+        else { X = c.x - CAN_W/2; Y = CAN_BASE - CAN_H; }                                   // dropped back on the bar
       }
       var frameCol = null;
       if(b.phase === 'reveal' && c.id === b.good && (b.won || Math.floor(now*6) % 2 === 0)) frameCol = C.lime;
-      if(b.phase === 'pick' && canAtSlot(b.sel) === c) frameCol = C.gold;
+      if(b.phase === 'pick' && canAtSlot(b.sel) === c && Math.floor(now*4) % 2 === 0) frameCol = C.gold;
       if(frameCol){
         var fx = snap(X)/P - 2, fy = snap(Y)/P - 2, fw = CAN_W/P + 4, fh = CAN_H/P + 4;
         box(fx, fy, fw, 1, frameCol); box(fx, fy + fh - 1, fw, 1, frameCol);
@@ -1944,7 +2084,7 @@
       box(34, 24, 1, 104, C.lime); box(265, 24, 1, 104, C.lime);
       drawText('BONUS ROUND', 450, 32*P, {s:2, align:'center', col:C.lime, sh:C.ink});
       var lines = [shakerName() + ' SHAKES 5 OF THESE 6 CANS.', 'WATCH FOR THE ONE ' + shakerHe() + ' SKIPS.',
-                   'THEN THE CANS GET SHUFFLED.', 'PICK THE UNSHAKEN CAN',
+                   'THEN THE CANS GET SHUFFLED.', 'WALK OVER AND OPEN THE UNSHAKEN ONE',
                    'FOR ' + TUNING.scoreBonus + ' POINTS.'];
       for(var li=0; li<lines.length; li++){
         drawText(lines[li], 450, (54 + li*11)*P, {align:'center', col: li === 4 ? C.gold : C.cream, sh:C.ink});
@@ -1960,7 +2100,7 @@
     if(b.phase === 'intro'){ m1 = 'BONUS ROUND'; m2 = 'WATCH WHICH CAN ' + shakerName() + ' SKIPS'; }
     else if(b.phase === 'show'){ m1 = 'WATCH WHICH CAN ' + shakerName() + ' SKIPS'; m2 = curId === b.good && b.visitT > BONUS.walk ? shakerHe() + ' SKIPPED THAT ONE!' : ''; c2 = C.gold; }
     else if(b.phase === 'shuffle'){ m1 = 'KEEP YOUR EYE ON IT'; }
-    else if(b.phase === 'pick'){ m1 = 'WHICH CAN DIDN\'T ' + shakerHe() + ' SHAKE?'; m2 = isTouch ? 'TAP A CAN' : '< > THEN SPACE, OR CLICK IT'; c2 = C.dim; }
+    else if(b.phase === 'pick'){ m1 = 'WHICH CAN DIDN\'T ' + shakerHe() + ' SHAKE?'; m2 = isTouch ? 'TAP A CAN TO OPEN IT' : '< > WALK   SPACE OPENS IT'; c2 = C.dim; }
     else if(!b.opened){ m1 = 'LET\'S SEE...'; }
     else if(b.won){ m1 = "THIS ONE'S FOR YOU"; m2 = TUNING.scoreBonus + ' PTS'; c2 = C.gold; }
     else { m1 = 'BLAM! THAT ONE WAS SHAKEN'; m2 = '0 PTS'; c2 = C.red; }
@@ -1994,6 +2134,7 @@
     drawHUD();
     drawFooter();
     drawPopups();
+    drawCoach();
 
     if(state === 'paused'){
       box(0, 0, 300, 180, 'rgba(13,23,24,.72)');
@@ -2040,9 +2181,9 @@
   function bonusKey(code){
     var b = bonus;
     if(!b || b.phase !== 'pick') return;
-    if(code==='ArrowLeft' || code==='KeyA') b.sel = clamp(b.sel-1,0,5);
-    else if(code==='ArrowRight' || code==='KeyD') b.sel = clamp(b.sel+1,0,5);
-    else if(code==='Space' || code==='Enter') chooseSlot(b.sel);
+    if(code==='ArrowLeft' || code==='KeyA'){ b.sel = clamp(b.sel-1,0,5); b.pendingOpen = false; }
+    else if(code==='ArrowRight' || code==='KeyD'){ b.sel = clamp(b.sel+1,0,5); b.pendingOpen = false; }
+    else if(code==='Space' || code==='Enter') b.pendingOpen = true;       // walk there (if needed) and open it
   }
 
   function initialsKey(e){
@@ -2068,6 +2209,12 @@
   // The screen is mirrored (taps on the right), so the left/right keys map to logic right/left.
   window.addEventListener('keydown', function(e){
     var code = e.code;
+    if(state !== 'initials' && e.key && e.key.length === 1 && /[a-z]/i.test(e.key)){
+      cheatBuf = (cheatBuf + e.key.toLowerCase()).slice(-5);
+      if(/craig$/.test(cheatBuf)) summonCameo('craig');
+      else if(/patti$/.test(cheatBuf)) summonCameo('patti');
+      else if(/date$/.test(cheatBuf)) summonCameo('both');
+    }
     if(state === 'initials'){ initialsKey(e); return; }
     if(code==='KeyM'){ muted = !muted; return; }
     if(state === 'bonus'){
@@ -2120,7 +2267,14 @@
   //   tap anywhere on another bar                 -> jump to that bar's tap
   //   press and hold along the bar                -> run toward your finger (for tips and empties)
   var TAP_ZONE_X = 736;                       // screen x where a bar's tap end starts
-  var pointerMode = null, pointerDownAt = 0, activePointer = null;
+  var pointerMode = null, pointerDownAt = 0, activePointer = null, pointerJumped = false;
+  // Hold on the bar to run: the bartender keeps running toward the side you pressed until
+  // you let go (or reach the end of the bar). Slide past them to turn around.
+  function runToward(fingerX){
+    if(fingerX > player.x + 10) return playerMaxX;
+    if(fingerX < player.x - 10) return playerMinX;
+    return runTarget;
+  }
 
   canvas.addEventListener('pointerdown', function(e){
     try{ window.focus(); }catch(err){}
@@ -2132,7 +2286,7 @@
       if(bonus.phase === 'rules'){ continueFromRules(); e.preventDefault(); return; }
       if(bonus.phase === 'pick' && pt.y > CAN_BASE - CAN_H - 20 && pt.y < CAN_BASE + 10){
         for(var s=0;s<6;s++){
-          if(Math.abs(pt.x - slotX(s)) < CAN_W/2 + 12){ bonus.sel = s; chooseSlot(s); break; }
+          if(Math.abs(pt.x - slotX(s)) < CAN_W/2 + 12){ bonus.sel = s; bonus.pendingOpen = true; break; }
         }
       }
       return;
@@ -2156,12 +2310,13 @@
     pointerDownAt = now;
     if(pt.x >= TAP_ZONE_X){
       pointerMode = 'pour';
+      pointerJumped = (laneIdx !== player.lane);
       if(laneIdx !== player.lane) setLane(laneIdx);
       startPour();
     } else {
       pointerMode = 'run';
       if(laneIdx !== player.lane) setLane(laneIdx);
-      else runTarget = W - pt.x;
+      else runTarget = runToward(W - pt.x);
     }
     e.preventDefault();
   });
@@ -2169,13 +2324,16 @@
     if(pointerMode !== 'run' || e.pointerId !== activePointer || state !== 'playing') return;
     var pt = toCanvas(e);
     var laneIdx = Math.floor((pt.y - laneTop) / laneH);
-    if(laneIdx === player.lane && (now - pointerDownAt > 0.12 || runTarget !== null)) runTarget = W - pt.x;
+    if(laneIdx === player.lane && (now - pointerDownAt > 0.12 || runTarget !== null)) runTarget = runToward(W - pt.x);
   });
   function endPointer(e, cancelled){
     if(e && activePointer !== null && e.pointerId !== undefined && e.pointerId !== activePointer) return;
     if(pointerMode === 'pour'){
       // a quick tap on a tap just moves you there; only a hold pours
-      if(cancelled || (player.pouring && player.fill < 1 && now - pointerDownAt < 0.18)) cancelPour();
+      if(cancelled || (player.pouring && player.fill < 1 && now - pointerDownAt < 0.18)){
+        if(!cancelled && !pointerJumped && state === 'playing'){ sfx.deny(); noteEarlyRelease(); }
+        cancelPour();
+      }
       else releasePour();
     } else if(pointerMode === null){
       releasePour();                      // keyboard pours still end on any pointerup, as before
@@ -2190,6 +2348,14 @@
   document.getElementById('ig-save-btn').addEventListener('click', saveInitials);
 
   canvas.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+  var titleTaps = 0;
+  var titleImg = document.querySelector ? document.querySelector('#ig-title-screen .ig-title-img') : null;
+  if(titleImg && titleImg.addEventListener){
+    titleImg.addEventListener('click', function(){
+      titleTaps++;
+      if(titleTaps === 5){ summonCameo('both'); titleImg.style.transform = 'rotate(-3deg)'; setTimeout(function(){ titleImg.style.transform = ''; }, 250); }
+    });
+  }
   function startAs(who){
     bartender = who;
     try{ localStorage.setItem('hopYardTapRush.bartender', who); }catch(err){}
