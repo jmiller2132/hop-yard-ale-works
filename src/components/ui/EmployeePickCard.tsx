@@ -75,7 +75,7 @@ export default function EmployeePickCard({ pick }: EmployeePickCardProps) {
           style={{
             backfaceVisibility: "hidden",
             transform: "rotateY(180deg)",
-            backgroundColor: "var(--color-green)",
+            backgroundColor: "var(--color-green-strong)",
             color: "white",
           }}
         >

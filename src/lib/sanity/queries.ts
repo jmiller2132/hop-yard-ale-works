@@ -81,12 +81,15 @@ export const upcomingEventsQuery = groq`
     title,
     date,
     time,
+    category,
     location-> { name, slug },
     description,
     isRecurring,
     recurrenceNote,
     requiresTicket,
-    ticketUrl
+    ticketUrl,
+    externalUrl,
+    artistLinks[] { label, url }
   }
 `;
 

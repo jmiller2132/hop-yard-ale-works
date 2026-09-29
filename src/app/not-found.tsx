@@ -47,7 +47,7 @@ export default function NotFound() {
             <Link
               href="/"
               className="rounded-full px-6 py-3 text-sm font-semibold text-white min-h-[44px] flex items-center transition-opacity hover:opacity-90"
-              style={{ backgroundColor: "var(--color-green)" }}
+              style={{ backgroundColor: "var(--color-green-strong)" }}
             >
               Take me home
             </Link>

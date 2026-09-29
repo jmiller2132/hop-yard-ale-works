@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { LOCATIONS, hoursSummaryText } from "@/lib/location-data";
 
 interface Message {
   id: string;
@@ -20,7 +21,11 @@ const INTENTS: Intent[] = [
   {
     keywords: ["hour", "open", "close", "when", "today", "schedule", "time", "kitchen", "close at", "open at"],
     response: {
-      text: "Here are the hours for both locations. The kitchen closes one hour before closing time.\n\n🍺 Appleton\nWed–Sat: 11 AM–10 PM\nSun: 12–6 PM\nMon–Tue: Closed\n\n🍕 Menomonee Falls\nSun: 11 AM–4 PM\nTue–Thu: 4–10 PM\nFri–Sat: 11 AM–10 PM\nMon: Closed",
+      text: [
+        "Here are the hours for both locations.",
+        `🍺 Appleton\n${hoursSummaryText("appleton", "\n")}\n${LOCATIONS.appleton.kitchenNote}`,
+        `🍕 Menomonee Falls\n${hoursSummaryText("the-falls", "\n")}\n${LOCATIONS["the-falls"].kitchenNote} ${LOCATIONS["the-falls"].hoursFootnote ?? ""}`.trim(),
+      ].join("\n\n"),
       links: [
         { label: "Appleton details", href: "/appleton/" },
         { label: "The Falls details", href: "/the-falls/" },
@@ -84,7 +89,8 @@ const INTENTS: Intent[] = [
   {
     keywords: ["event", "music", "live", "sunday", "show", "concert", "band", "trivia", "oktoberfest", "flick", "movie", "paperfest", "calendar"],
     response: {
-      text: "Live music is mostly on Sundays at Appleton. The Events page has the full upcoming calendar — including live music, tap releases, and community events we're part of.",
+      // TODO: confirm with owner — whether live music is a regular thing (and when).
+      text: "The Events page has everything we have coming up at both locations.",
       links: [{ label: "See upcoming events", href: "/events/" }],
     },
   },
@@ -119,8 +125,8 @@ const INTENTS: Intent[] = [
     response: {
       text: "You can order online for pickup or delivery through Toast and third-party delivery services at both locations.",
       links: [
-        { label: "Order — Appleton", href: "https://order.toasttab.com/online/hop-yard-ale-works-appleton-512-w-northland-ave" },
-        { label: "Order — The Falls", href: "https://order.toasttab.com/online/hop-yard-ale-works-menomonee-falls-n88w16521-main-street" },
+        { label: "Order — Appleton", href: LOCATIONS.appleton.orderOnlineUrl },
+        { label: "Order — The Falls", href: LOCATIONS["the-falls"].orderOnlineUrl },
       ],
     },
   },
@@ -267,7 +273,7 @@ export default function ChatBot() {
                           target={link.href.startsWith("http") ? "_blank" : undefined}
                           rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
                           className="inline-block rounded-full px-2.5 py-1 text-xs font-medium hover:opacity-80 transition-opacity"
-                          style={{ backgroundColor: "var(--color-green)", color: "white" }}
+                          style={{ backgroundColor: "var(--color-green-strong)", color: "white" }}
                           onClick={() => setIsOpen(false)}
                         >
                           {link.label} →
@@ -307,7 +313,7 @@ export default function ChatBot() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Ask something…"
-              className="flex-1 rounded-full px-4 py-2 text-sm outline-none min-h-[36px]"
+              className="flex-1 rounded-full px-4 py-2 text-base sm:text-sm outline-none min-h-[40px]"
               style={{ backgroundColor: "var(--color-warm-white)", color: "var(--color-ink)" }}
             />
             <button

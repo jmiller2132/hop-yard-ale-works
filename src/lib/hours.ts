@@ -24,7 +24,11 @@ export function computeOpenClosed(location: Location): OpenClosedStatus {
   const dayOfWeek = now.getDay();
   const dayName = DAYS[dayOfWeek];
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
-  const todayDate = now.toISOString().split("T")[0];
+  const todayDate = [
+    now.getFullYear(),
+    String(now.getMonth() + 1).padStart(2, "0"),
+    String(now.getDate()).padStart(2, "0"),
+  ].join("-");
 
   // Check holiday override
   const holiday = location.holidayOverrides?.find((o) => o.date === todayDate);

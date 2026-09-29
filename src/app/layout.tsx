@@ -13,6 +13,7 @@ import { sanityClient } from "@/lib/sanity/client";
 import { activeSeasonalThemeQuery, globalConfigQuery } from "@/lib/sanity/queries";
 import type { SeasonalTheme, GlobalConfig } from "@/types";
 import { isLateNight } from "@/lib/hours";
+import { IS_PRODUCTION_DEPLOY, SITE_URL } from "@/lib/site";
 
 const zillaSlab = Zilla_Slab({
   subsets: ["latin"],
@@ -34,16 +35,22 @@ export const metadata: Metadata = {
   },
   description:
     "Hop Yard Ale Works is a craft brewery and taproom with two Wisconsin locations: Appleton and Menomonee Falls. Small-batch beers, wood-fired pizza, and great company.",
-  metadataBase: new URL("https://hopyardaleworks.com"),
+  metadataBase: new URL(SITE_URL),
+  alternates: {
+    canonical: "./",
+  },
   openGraph: {
     siteName: "Hop Yard Ale Works",
     type: "website",
     locale: "en_US",
+    url: "./",
   },
-  robots: {
-    index: true,
-    follow: true,
+  twitter: {
+    card: "summary_large_image",
   },
+  robots: IS_PRODUCTION_DEPLOY
+    ? { index: true, follow: true }
+    : { index: false, follow: false },
 };
 
 export const revalidate = 3600; // GlobalConfig revalidates daily-ish from layout

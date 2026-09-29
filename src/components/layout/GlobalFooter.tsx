@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { LOCATIONS, addressLines, hoursSummary, type LocationSlug } from "@/lib/location-data";
 import type { GlobalConfig } from "@/types";
 
 interface GlobalFooterProps {
@@ -11,11 +12,18 @@ interface GlobalFooterProps {
 const NAV_LINKS = [
   { label: "Home", href: "/" },
   { label: "Appleton", href: "/appleton/" },
-  { label: "The Falls", href: "/the-falls/" },
+  { label: "Menomonee Falls", href: "/the-falls/" },
   { label: "Events", href: "/events/" },
   { label: "About", href: "/about/" },
+  { label: "FAQ", href: "/faq/" },
   { label: "Contact", href: "/contact/" },
-  { label: "Apply", href: "/apply/" },
+  { label: "Jobs", href: "/apply/" },
+  { label: "Privacy", href: "/privacy-policy/" },
+];
+
+const FOOTER_LOCATIONS: { slug: LocationSlug; heading: string }[] = [
+  { slug: "appleton", heading: "Appleton" },
+  { slug: "the-falls", heading: "Menomonee Falls" },
 ];
 
 const SOCIAL_LINKS = [
@@ -27,8 +35,6 @@ const SOCIAL_LINKS = [
 
 export default function GlobalFooter({ config }: GlobalFooterProps) {
   const [footerMessage, setFooterMessage] = useState<string | null>(null);
-  const [emailValue, setEmailValue] = useState("");
-  const [emailSubmitted, setEmailSubmitted] = useState(false);
   useEffect(() => {
     // Pick a random footer message per page load. Messages come only from
     // Sanity (Global Config → Footer Messages); nothing renders if none are set.
@@ -39,13 +45,6 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
     setFooterMessage(messages[idx] ?? null);
   }, [config]);
 
-  const handleEmailSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!emailValue.trim()) return;
-    // TODO: wire to Mailchimp API
-    setEmailSubmitted(true);
-  };
-
   return (
     <footer
       className="mt-auto"
@@ -54,43 +53,49 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
       {/* Main footer content */}
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-          {/* Appleton */}
-          <div>
-            <h3
-              className="mb-3 font-heading text-base font-semibold tracking-wide uppercase"
-              style={{ color: "rgba(255,255,255,0.6)" }}
-            >
-              Appleton
-            </h3>
-            <address className="not-italic text-sm leading-relaxed opacity-85">
-              512 W Northland Ave<br />
-              Appleton, WI 54911
-            </address>
-            <p className="mt-3 text-xs opacity-70 leading-relaxed">
-              Wed–Sat &nbsp;11 AM–10 PM<br />
-              Sun &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;12–6 PM<br />
-              Mon–Tue &nbsp;Closed
-            </p>
-          </div>
-
-          {/* Menomonee Falls */}
-          <div>
-            <h3
-              className="mb-3 font-heading text-base font-semibold tracking-wide uppercase"
-              style={{ color: "rgba(255,255,255,0.6)" }}
-            >
-              Menomonee Falls
-            </h3>
-            <address className="not-italic text-sm leading-relaxed opacity-85">
-              N88W16521 Main St<br />
-              Menomonee Falls, WI 53051
-            </address>
-            <p className="mt-3 text-xs opacity-70 leading-relaxed">
-              Tue–Thu &nbsp;4–10 PM<br />
-              Fri–Sat &nbsp;&nbsp;11 AM–10 PM<br />
-              Sun–Mon Closed
-            </p>
-          </div>
+          {FOOTER_LOCATIONS.map(({ slug, heading }) => {
+            const [street, cityLine] = addressLines(slug);
+            return (
+              <div key={slug}>
+                <h3
+                  className="mb-3 font-heading text-base font-semibold tracking-wide uppercase"
+                  style={{ color: "rgba(255,255,255,0.75)" }}
+                >
+                  {heading}
+                </h3>
+                <address className="not-italic text-sm leading-relaxed opacity-90">
+                  {street}<br />
+                  {cityLine}
+                </address>
+                <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-3 text-sm leading-relaxed opacity-85">
+                  {hoursSummary(slug).map((line) => (
+                    <div key={line.days} className="contents">
+                      <dt>{line.days}</dt>
+                      <dd>{line.hours}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+                  <a
+                    href={LOCATIONS[slug].orderOnlineUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline underline-offset-2 opacity-90 hover:opacity-100"
+                  >
+                    Order online
+                  </a>
+                  <a
+                    href={LOCATIONS[slug].googleMapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline underline-offset-2 opacity-90 hover:opacity-100"
+                  >
+                    Directions
+                  </a>
+                </p>
+              </div>
+            );
+          })}
 
           {/* Navigation */}
           <div>
@@ -114,7 +119,7 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
             </ul>
           </div>
 
-          {/* Email signup + Social */}
+          {/* Social */}
           <div>
             <h3
               className="mb-3 font-heading text-base font-semibold tracking-wide uppercase"
@@ -122,41 +127,13 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
             >
               Stay in the Loop
             </h3>
-            {emailSubmitted ? (
-              <p className="text-sm opacity-85">You&apos;re on the list. See you soon.</p>
-            ) : (
-              <form onSubmit={handleEmailSubmit} className="flex flex-col gap-2">
-                <label htmlFor="footer-email" className="text-sm opacity-80">
-                  Get updates on events and new taps
-                </label>
-                <input
-                  id="footer-email"
-                  type="email"
-                  value={emailValue}
-                  onChange={(e) => setEmailValue(e.target.value)}
-                  placeholder="your@email.com"
-                  className="rounded-md px-3 py-2 text-sm min-h-[44px]"
-                  style={{
-                    backgroundColor: "rgba(255,255,255,0.1)",
-                    color: "var(--color-warm-white)",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                  }}
-                />
-                <button
-                  type="submit"
-                  className="rounded-md px-4 py-2 text-sm font-semibold min-h-[44px] transition-opacity hover:opacity-90"
-                  style={{
-                    backgroundColor: "var(--color-seasonal-cta)",
-                    color: "white",
-                  }}
-                >
-                  Subscribe
-                </button>
-              </form>
-            )}
+            {/* TODO: add an email signup once a newsletter provider is connected. */}
+            <p className="text-sm opacity-85">
+              Follow us for events and new taps.
+            </p>
 
             {/* Social links */}
-            <div className="mt-6 flex items-center gap-4">
+            <div className="mt-4 flex items-center gap-4">
               {SOCIAL_LINKS.map((s) => (
                 <a
                   key={s.icon}
@@ -187,8 +164,8 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
           )}
           <a
             href="/pour/"
-            className="opacity-20 hover:opacity-100 transition-opacity"
-            aria-label="Pour a pint"
+            className="opacity-60 hover:opacity-100 transition-opacity"
+            aria-label="Play Tap Rush"
           >
             🍺
           </a>

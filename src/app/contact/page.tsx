@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import ContactForm from "@/components/contact/ContactForm";
-import { LOCATION_STATIC_DATA, HOURS_DISPLAY } from "@/lib/location-data";
+import { LOCATIONS, addressLines, hoursSummary, type LocationSlug } from "@/lib/location-data";
 
 export const metadata: Metadata = {
-  title: "Contact — Hop Yard Ale Works",
+  title: "Contact Us",
   description:
-    "Get in touch with Hop Yard Ale Works. Questions, private events, or just want to say hey — we'd love to hear from you.",
+    "Get in touch with Hop Yard Ale Works in Appleton or Menomonee Falls, WI. Questions, private events, or large groups — send us a message.",
 };
 
-const locations = [
+const locations: { key: LocationSlug; label: string; emoji: string; note: string }[] = [
   {
     key: "appleton",
     label: "Appleton",
@@ -53,41 +53,36 @@ export default function ContactPage() {
             {/* Info panel */}
             <div className="space-y-8">
               {locations.map(({ key, label, emoji, note }) => {
-                const data = LOCATION_STATIC_DATA[key];
-                const hours = HOURS_DISPLAY[key];
+                const data = LOCATIONS[key];
                 return (
                   <div key={key}>
                     <h2 className="font-heading text-base font-bold mb-3" style={{ color: "var(--color-ink)" }}>
-                      {emoji} {label}
+                      <span aria-hidden="true">{emoji}</span> {label}
                     </h2>
                     <p className="text-xs font-medium uppercase tracking-wider mb-3" style={{ color: "var(--color-muted)" }}>
                       {note}
                     </p>
                     <address className="not-italic text-sm space-y-1" style={{ color: "var(--color-ink)" }}>
-                      {data?.address?.split("\n").map((line, i) => (
-                        <span key={i} className="block">{line}</span>
+                      {addressLines(key).map((line) => (
+                        <span key={line} className="block">{line}</span>
                       ))}
                     </address>
-                    {data?.googleMapsUrl && (
-                      <a
-                        href={data.googleMapsUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-block mt-1.5 text-sm font-medium hover:underline underline-offset-2"
-                        style={{ color: "var(--color-green)" }}
-                      >
-                        Get directions ↗
-                      </a>
-                    )}
-                    {hours && (
-                      <ul className="mt-3 space-y-0.5">
-                        {hours.map((line, i) => (
-                          <li key={i} className="text-sm" style={{ color: "var(--color-muted)" }}>
-                            {line}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
+                    <a
+                      href={data.googleMapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block mt-1.5 text-sm font-medium hover:underline underline-offset-2"
+                      style={{ color: "var(--color-green-text)" }}
+                    >
+                      Get directions ↗
+                    </a>
+                    <ul className="mt-3 space-y-0.5">
+                      {hoursSummary(key).map((line) => (
+                        <li key={line.days} className="text-sm" style={{ color: "var(--color-muted)" }}>
+                          {line.days} &nbsp;{line.hours}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 );
               })}
@@ -107,7 +102,7 @@ export default function ContactPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="underline underline-offset-2"
-                    style={{ color: "var(--color-green)" }}
+                    style={{ color: "var(--color-green-text)" }}
                   >
                     Instagram
                   </a>{" "}
@@ -117,7 +112,7 @@ export default function ContactPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="underline underline-offset-2"
-                    style={{ color: "var(--color-green)" }}
+                    style={{ color: "var(--color-green-text)" }}
                   >
                     Facebook
                   </a>

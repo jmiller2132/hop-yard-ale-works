@@ -27,7 +27,7 @@ const FAQS = [
   { _id: "faq-visit-08", question: "Can I bring outside food or drinks?", answer: "Outside beverages aren't allowed — wristband must be worn to purchase alcohol at ticketed events. Outside food is generally not allowed, but reach out if you have a specific situation.", category: "visit" },
 
   // ── Hours ─────────────────────────────────────────────────────────────────
-  { _id: "faq-hours-01", question: "What are your hours?", answer: "Appleton: Wed–Sat 11 AM–10 PM, Sun 12–6 PM, Mon–Tue Closed.\nMenomonee Falls: Tue–Thu 4–10 PM, Fri–Sat 11 AM–10 PM, Sun–Mon Closed.\nHours may vary on holidays — check our Events page or social media for updates.", category: "hours" },
+  { _id: "faq-hours-01", question: "What are your hours?", answer: "Appleton: Wed–Sat 11 AM–10 PM, Sun 11 AM–4 PM, Mon–Tue Closed.\nMenomonee Falls: Tue–Thu 4–10 PM, Fri–Sat 11 AM–10 PM, Sun–Mon Closed. (Falls Sunday hours, 11 AM–4 PM, are seasonal and ended Labor Day.)\nHours may vary on holidays — check our Events page or social media for updates.", category: "hours" },
   { _id: "faq-hours-02", question: "Are you open on holidays?", answer: "We typically close or reduce hours around major holidays. The best way to know is to check our Events page — we post closure and early-close notices there in advance.", category: "hours" },
   { _id: "faq-hours-03", question: "Do both locations have the same hours?", answer: "No — the hours are different. Appleton is the brewhouse and is open Wednesday through Sunday. Menomonee Falls is open Tuesday through Saturday. See our Locations pages for full details.", category: "hours" },
 

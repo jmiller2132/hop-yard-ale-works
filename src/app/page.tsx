@@ -2,18 +2,23 @@ import Link from "next/link";
 import { sanityClient } from "@/lib/sanity/client";
 import { locationsQuery, taproomPhotosQuery, activeSeasonalThemeQuery } from "@/lib/sanity/queries";
 import { isLateNight } from "@/lib/hours";
-import { LOCATION_STATIC_DATA } from "@/lib/location-data";
+import { LOCATIONS, hoursSummaryText, locationForBadge } from "@/lib/location-data";
+import { organizationJsonLd } from "@/lib/structured-data";
+import { jsonLdString } from "@/lib/site";
 import OpenClosedBadgeLive from "@/components/ui/OpenClosedBadgeLive";
 import QuoteBanner from "@/components/ui/QuoteBanner";
 import TaproomPhotoGrid from "@/components/ui/TaproomPhotoGrid";
+import type { Metadata } from "next";
 import type { Location, TaproomPhoto, SeasonalTheme } from "@/types";
 
 export const revalidate = 900;
 
-export const metadata = {
-  title: "Hop Yard Ale Works — Great Beer, Great Pizza, Great Company",
+export const metadata: Metadata = {
+  title: {
+    absolute: "Hop Yard Ale Works | Craft Brewery & Wood-Fired Pizza in Appleton & Menomonee Falls, WI",
+  },
   description:
-    "Two Wisconsin taprooms brewing small-batch craft beer and firing up bold pizzas. Find us in Appleton and Menomonee Falls.",
+    "Two Wisconsin taprooms — Appleton and Menomonee Falls — brewing craft beer and serving wood-fired pizza. See hours, menus, and order online.",
 };
 
 export default async function HomePage() {
@@ -23,23 +28,27 @@ export default async function HomePage() {
     sanityClient.fetch<SeasonalTheme | null>(activeSeasonalThemeQuery).catch(() => null),
   ]);
 
-  const appletonStatic = LOCATION_STATIC_DATA["appleton"];
-  const fallsStatic = LOCATION_STATIC_DATA["the-falls"];
+  const appleton = locationForBadge(
+    "appleton",
+    locations.find((l) => l.slug?.current === "appleton")
+  );
+  const theFalls = locationForBadge(
+    "the-falls",
+    locations.find((l) => l.slug?.current === "the-falls")
+  );
 
-  const appleton =
-    locations.find((l) => l.slug?.current === "appleton") ??
-    (appletonStatic as Location);
-  const theFalls =
-    locations.find((l) => l.slug?.current === "the-falls") ??
-    (fallsStatic as Location);
-
-  const appletonOrderUrl = appleton?.orderOnlineUrl ?? appletonStatic.orderOnlineUrl!;
-  const fallsOrderUrl = theFalls?.orderOnlineUrl ?? fallsStatic.orderOnlineUrl!;
+  const appletonOrderUrl = appleton.orderOnlineUrl;
+  const fallsOrderUrl = theFalls.orderOnlineUrl;
 
   const lateNight = isLateNight();
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLdString(organizationJsonLd()) }}
+      />
+
       {/* Hero */}
       <section
         className="relative flex min-h-[75vh] items-center justify-center overflow-hidden"
@@ -138,24 +147,24 @@ export default async function HomePage() {
             <LocationCard
               name="Appleton"
               address="512 W Northland Ave, Appleton WI"
-              hoursNote="Wed–Sat 11 AM–10 PM · Sun 12–6 PM"
+              hoursNote={hoursSummaryText("appleton")}
               locationHours={appleton}
-              foodHref="/appleton-food-menu/"
-              drinksHref="/appleton-drinks-menu/"
+              foodHref={LOCATIONS.appleton.paths.food}
+              drinksHref={LOCATIONS.appleton.paths.drinks}
               orderHref={appletonOrderUrl}
-              locationHref="/appleton/"
-              mapsHref="https://maps.app.goo.gl/9N2389HKdPiMQgzL7"
+              locationHref={LOCATIONS.appleton.paths.home}
+              mapsHref={LOCATIONS.appleton.googleMapsUrl}
             />
             <LocationCard
               name="Menomonee Falls"
               address="N88W16521 Main St, Menomonee Falls WI"
-              hoursNote="Sun 11 AM–4 PM · Tue–Thu 4–10 PM · Fri–Sat 11 AM–10 PM"
+              hoursNote={hoursSummaryText("the-falls")}
               locationHours={theFalls}
-              foodHref="/the-falls-food-menu/"
-              drinksHref="/the-falls-drinks-menu/"
+              foodHref={LOCATIONS["the-falls"].paths.food}
+              drinksHref={LOCATIONS["the-falls"].paths.drinks}
               orderHref={fallsOrderUrl}
-              locationHref="/the-falls/"
-              mapsHref="https://maps.app.goo.gl/DWFo5Du6CZfUqkt7A"
+              locationHref={LOCATIONS["the-falls"].paths.home}
+              mapsHref={LOCATIONS["the-falls"].googleMapsUrl}
             />
           </div>
         </div>
@@ -176,7 +185,7 @@ export default async function HomePage() {
                 <Link
                   href="/photos/"
                   className="text-sm font-medium hover:underline underline-offset-2"
-                  style={{ color: "var(--color-green)" }}
+                  style={{ color: "var(--color-green-text)" }}
                 >
                   View all →
                 </Link>
@@ -256,20 +265,20 @@ export default async function HomePage() {
             <NextStepCard
               title="See the Menus"
               description="Food, drinks, and everything in between. Updated regularly."
-              href="/appleton-food-menu/"
-              cta="View Menus"
+              links={[{ label: "View Menus", href: "/appleton-food-menu/" }]}
             />
             <NextStepCard
               title="Upcoming Events"
-              description="Live music, tap releases, and community nights."
-              href="/events/"
-              cta="See Events"
+              description="What's coming up at both locations."
+              links={[{ label: "See Events", href: "/events/" }]}
             />
             <NextStepCard
               title="Order Online"
               description="Pick up or delivery through Toast. Ready when you are."
-              href={appletonOrderUrl}
-              cta="Order Now"
+              links={[
+                { label: "Order — Appleton", href: appletonOrderUrl, external: true },
+                { label: "Order — Menomonee Falls", href: fallsOrderUrl, external: true },
+              ]}
               highlight
             />
           </div>
@@ -369,7 +378,7 @@ function LocationCard({
           <p className="mt-1 text-sm" style={{ color: "var(--color-muted)" }}>
             {address}
           </p>
-          <p className="mt-0.5 text-xs" style={{ color: "var(--color-muted)" }}>
+          <p className="mt-1 text-sm" style={{ color: "var(--color-ink)" }}>
             {hoursNote}
           </p>
         </div>
@@ -456,14 +465,12 @@ function AboutPillar({
 function NextStepCard({
   title,
   description,
-  href,
-  cta,
+  links,
   highlight = false,
 }: {
   title: string;
   description: string;
-  href: string;
-  cta: string;
+  links: { label: string; href: string; external?: boolean }[];
   highlight?: boolean;
 }) {
   return (
@@ -477,16 +484,19 @@ function NextStepCard({
     >
       <h3 className="font-heading text-lg font-bold">{title}</h3>
       <p className="mt-2 text-sm opacity-80">{description}</p>
-      <Link
-        href={href}
-        className="mt-4 inline-flex min-h-[44px] items-center rounded-md px-4 py-2 text-sm font-semibold hover:opacity-90 transition-opacity"
-        style={{
-          backgroundColor: highlight ? "var(--color-seasonal-cta)" : "var(--color-seasonal-cta)",
-          color: "white",
-        }}
-      >
-        {cta}
-      </Link>
+      <div className="mt-4 flex flex-wrap gap-2">
+        {links.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+            className="inline-flex min-h-[44px] items-center rounded-md px-4 py-2 text-sm font-semibold hover:opacity-90 transition-opacity"
+            style={{ backgroundColor: "var(--color-seasonal-cta)", color: "white" }}
+          >
+            {link.label}
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }

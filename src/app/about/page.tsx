@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "About — Hop Yard Ale Works",
+  title: "About Us",
   description:
     "Oliver & Amy Behm built Hop Yard Ale Works out of a shared love for food, beer, and community. Learn our story, how we operate, and the local partners who make it all possible.",
 };
@@ -83,7 +83,7 @@ export default function AboutPage() {
           <h2 className="font-heading text-2xl sm:text-3xl font-bold mb-3" style={{ color: "var(--color-ink)" }}>
             The brewery experience
           </h2>
-          <p className="text-sm font-medium mb-6" style={{ color: "var(--color-green)" }}>
+          <p className="text-sm font-medium mb-6" style={{ color: "var(--color-green-text)" }}>
             A brewery isn&apos;t just a bar or a restaurant. It&apos;s something better.
           </p>
           <div className="space-y-4 text-base leading-relaxed" style={{ color: "var(--color-muted)" }}>

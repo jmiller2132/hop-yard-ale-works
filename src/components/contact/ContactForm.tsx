@@ -17,29 +17,36 @@ const initialState: ContactFormState = { status: "idle" };
 export default function ContactForm() {
   const [state, action, pending] = useActionState(submitContact, initialState);
 
-  if (state.status === "success" || state.status === "not_configured") {
+  if (state.status === "success") {
     return (
       <div
+        role="status"
         className="rounded-2xl p-8 text-center"
         style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.07)" }}
       >
         <div
+          aria-hidden="true"
           className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full text-2xl"
           style={{ backgroundColor: "rgba(106,191,75,0.12)" }}
         >
           ✓
         </div>
         <h2 className="font-heading text-xl font-bold mb-2" style={{ color: "var(--color-ink)" }}>
-          Message received.
+          Message sent.
         </h2>
         <p className="text-sm" style={{ color: "var(--color-muted)" }}>
-          {state.status === "not_configured"
-            ? "Thanks — your message was captured. We'll be in touch soon."
-            : "Thanks for reaching out. We'll get back to you as soon as we can."}
+          Thanks for reaching out. We&apos;ll get back to you as soon as we can.
         </p>
       </div>
     );
   }
+
+  const errorMessage =
+    state.status === "error"
+      ? state.message
+      : state.status === "not_configured"
+        ? "Sorry — our contact form isn't working right now, and your message was not sent. Please message us on Instagram or Facebook instead."
+        : null;
 
   return (
     <form
@@ -47,15 +54,15 @@ export default function ContactForm() {
       className="rounded-2xl p-6 sm:p-8 space-y-5"
       style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.07)" }}
     >
-      {state.status === "error" && (
+      {errorMessage && (
         <p
+          role="alert"
           className="rounded-lg px-4 py-3 text-sm"
           style={{ backgroundColor: "rgba(220,38,38,0.08)", color: "#b91c1c" }}
         >
-          {state.message}
+          {errorMessage}
         </p>
       )}
-
       <div className="grid sm:grid-cols-2 gap-5">
         <Field label="Name" required>
           <input
@@ -63,6 +70,7 @@ export default function ContactForm() {
             name="name"
             required
             autoComplete="name"
+            maxLength={100}
             placeholder="Your name"
             className={inputClass}
           />
@@ -73,6 +81,7 @@ export default function ContactForm() {
             name="email"
             required
             autoComplete="email"
+            maxLength={254}
             placeholder="you@example.com"
             className={inputClass}
           />
@@ -103,6 +112,7 @@ export default function ContactForm() {
           name="message"
           required
           rows={5}
+          maxLength={5000}
           placeholder="What's on your mind?"
           className={inputClass}
           style={{ resize: "vertical" }}
@@ -117,12 +127,19 @@ export default function ContactForm() {
       >
         {pending ? "Sending…" : "Send message"}
       </button>
+
+      <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+        <label>
+          Company
+          <input type="text" name="company" tabIndex={-1} autoComplete="off" />
+        </label>
+      </div>
     </form>
   );
 }
 
 const inputClass =
-  "w-full rounded-lg px-4 py-2.5 text-sm outline-none transition-shadow min-h-[42px]";
+  "w-full rounded-lg px-4 py-2.5 text-base sm:text-sm outline-none transition-shadow min-h-[42px]";
 
 function Field({
   label,

@@ -37,11 +37,18 @@ function resolveToEmail(subject: string, location: string): string | null {
   return null;
 }
 
+const MAX_LENGTH = { name: 100, email: 254, message: 5000 };
+
 export async function submitContact(
   _prev: ContactFormState,
   formData: FormData
 ): Promise<ContactFormState> {
-  const name = (formData.get("name") as string | null)?.trim() ?? "";
+  // Honeypot: real visitors never see or fill this field.
+  if ((formData.get("company") as string | null)?.trim()) {
+    return { status: "success" };
+  }
+
+  const name = ((formData.get("name") as string | null) ?? "").replace(/[\r\n]+/g, " ").trim();
   const email = (formData.get("email") as string | null)?.trim() ?? "";
   const subject = (formData.get("subject") as string | null)?.trim() ?? "";
   const message = (formData.get("message") as string | null)?.trim() ?? "";
@@ -49,6 +56,16 @@ export async function submitContact(
 
   if (!name || !email || !subject || !message || !location) {
     return { status: "error", message: "Please fill in all required fields." };
+  }
+  if (
+    name.length > MAX_LENGTH.name ||
+    email.length > MAX_LENGTH.email ||
+    message.length > MAX_LENGTH.message
+  ) {
+    return {
+      status: "error",
+      message: `Please keep your message under ${MAX_LENGTH.message.toLocaleString()} characters.`,
+    };
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return { status: "error", message: "Please enter a valid email address." };
@@ -64,8 +81,7 @@ export async function submitContact(
   const toEmail = resolveToEmail(subject, location);
 
   if (!apiKey || !toEmail) {
-    console.log("[Contact form — not yet wired to Resend]", {
-      name, email, subject, location, message,
+    console.error("[Contact form] Not configured — message was NOT delivered.", {
       missingKey: !apiKey,
       missingToEmail: !toEmail,
     });
@@ -74,20 +90,21 @@ export async function submitContact(
 
   try {
     const resend = new Resend(apiKey);
-    await resend.emails.send({
+    const { error } = await resend.emails.send({
       from: "Hop Yard Website <noreply@hopyardaleworks.com>",
       to: toEmail,
       replyTo: email,
       subject: `[hopyardaleworks.com] ${subject} — ${location} — from ${name}`,
-      html: `
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
-        <p><strong>Location:</strong> ${location}</p>
-        <p><strong>Subject:</strong> ${subject}</p>
-        <hr />
-        <p style="white-space:pre-wrap">${message}</p>
-      `,
+      text: [
+        `Name: ${name}`,
+        `Email: ${email}`,
+        `Location: ${location}`,
+        `Subject: ${subject}`,
+        "",
+        message,
+      ].join("\n"),
     });
+    if (error) throw error;
     return { status: "success" };
   } catch (err) {
     console.error("[Contact form] Resend error:", err);

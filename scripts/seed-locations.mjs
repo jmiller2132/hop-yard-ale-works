@@ -40,7 +40,7 @@ const locations = [
       { _key: "fri", day: "Friday",    open: "11:00 AM", close: "10:00 PM", isClosed: false },
       { _key: "sat", day: "Saturday",  open: "11:00 AM", close: "10:00 PM", isClosed: false },
     ],
-    sundayHours: { open: "12:00 PM", close: "6:00 PM", isClosed: false },
+    sundayHours: { open: "11:00 AM", close: "4:00 PM", isClosed: false },
   },
   {
     _id: "location-the-falls",

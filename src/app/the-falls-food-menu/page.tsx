@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { APPLETON_FOOD_MENU } from "@/data/menu-appleton";
-import { LOCATION_STATIC_DATA } from "@/lib/location-data";
+import { LOCATIONS } from "@/lib/location-data";
 import FoodMenuClient from "@/components/menu/FoodMenuClient";
 import StickyOrderBar from "@/components/menu/StickyOrderBar";
 import LocationContextBar from "@/components/layout/LocationContextBar";
@@ -9,12 +9,12 @@ import LocationContextBar from "@/components/layout/LocationContextBar";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Menomonee Falls Food Menu — Hop Yard Ale Works",
+  title: "Menomonee Falls Wood-Fired Pizza Menu",
   description:
-    "Wood-fired pizzas at Hop Yard Ale Works — Menomonee Falls. View the full menu and order online.",
+    "Wood-fired pizzas at Hop Yard Ale Works in Menomonee Falls, WI. Same food menu as our Appleton taproom. View the full menu and order online.",
 };
 
-const ORDER_URL = LOCATION_STATIC_DATA["the-falls"].orderOnlineUrl!;
+const ORDER_URL = LOCATIONS["the-falls"].orderOnlineUrl;
 
 export default function TheFallsFoodMenuPage() {
   return (
@@ -43,7 +43,8 @@ export default function TheFallsFoodMenuPage() {
           <h1 className="font-heading text-4xl font-bold text-white sm:text-5xl">
             Food Menu
           </h1>
-          <p className="mt-1 text-white/60 text-sm font-medium uppercase tracking-wider">Menomonee Falls</p>
+          <p className="mt-1 text-white/70 text-sm font-medium uppercase tracking-wider">Menomonee Falls</p>
+          <p className="mt-2 text-white/70 text-sm">Same food menu at both locations.</p>
         </div>
       </section>
 

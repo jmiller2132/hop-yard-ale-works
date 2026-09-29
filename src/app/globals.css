@@ -5,22 +5,27 @@
   /* Core brand palette */
   --color-teal: #2D4F54;
   --color-green: #6ABF4B;
+  /* #6ABF4B fails WCAG AA on light backgrounds and under white text; use
+     --color-green-strong (5.3:1 with white) for fills and green text on light.
+     Keep --color-green for accents on dark (ink) surfaces. */
+  --color-green-strong: #2F7A1F;
+  --color-green-text: var(--color-green-strong);
   --color-orange: #C94B2A;
   --color-gold: #D4A017;
   --color-ink: #231F20;
   --color-warm-white: #F5F2EE;
-  --color-muted: #6B7280;
+  --color-muted: #5B6470;
 
   /* Semantic aliases */
   --color-bg: var(--color-warm-white);
   --color-text: var(--color-ink);
-  --color-cta: var(--color-green);
+  --color-cta: var(--color-green-strong);
   --color-hero-bg: var(--color-ink);
   --color-footer-bg: var(--color-ink);
 
   /* Seasonal palette overrides (default = brand) */
-  --color-seasonal-cta: var(--color-green);
-  --color-seasonal-badge: var(--color-green);
+  --color-seasonal-cta: var(--color-green-strong);
+  --color-seasonal-badge: var(--color-green-strong);
   --color-seasonal-accent: var(--color-gold);
   --color-seasonal-banner-bg: var(--color-ink);
   --color-seasonal-banner-text: rgba(255,255,255,0.9);
@@ -87,9 +92,10 @@
   --color-green: #6ABF4B;
   --color-orange: #C94B2A;
   --color-gold: #D4A017;
+  --color-green-strong: #2F7A1F;
   --color-ink: #231F20;
   --color-warm-white: #F5F2EE;
-  --color-muted: #6B7280;
+  --color-muted: #5B6470;
 
   /* Typography */
   --font-heading: var(--font-zilla-slab), Georgia, serif;
@@ -160,7 +166,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ─── Focus styles ─── */
 :focus-visible {
-  outline: 2px solid var(--color-green);
+  outline: 2px solid var(--color-green-strong);
   outline-offset: 2px;
 }
 

@@ -8,7 +8,7 @@ import Link from "next/link";
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: "Photos — Hop Yard Ale Works",
+  title: "Photos",
   description: "A look inside the taprooms. Real people, real pints, real pizza.",
 };
 
@@ -55,7 +55,7 @@ export default async function PhotosPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="underline underline-offset-2"
-                  style={{ color: "var(--color-green)" }}
+                  style={{ color: "var(--color-green-text)" }}
                 >
                   Instagram
                 </a>

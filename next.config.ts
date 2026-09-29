@@ -1,6 +1,36 @@
 import type { NextConfig } from "next";
 
+// With trailingSlash: true, Next redirects "/about-us" → "/about-us/" before
+// these rules run, so each legacy source only needs its slash form, and every
+// destination must end in "/" to avoid a second hop.
+const LEGACY_REDIRECTS: [source: string, destination: string][] = [
+  // SEO — beer/wine menu consolidation
+  ["/appleton-beer-menu/", "/appleton-drinks-menu/"],
+  ["/appleton-wine-menu/", "/appleton-drinks-menu/#wine"],
+  ["/the-falls-beer-menu/", "/the-falls-drinks-menu/"],
+  ["/the-falls-wine-menu/", "/the-falls-drinks-menu/#wine"],
+  // Slug changes (WordPress slugs → new site slugs)
+  ["/about-us/", "/about/"],
+  ["/contact-us/", "/contact/"],
+  ["/apply-now/", "/apply/"],
+  // Old WordPress redirect chains — collapse to final destination
+  ["/beer-menu-appleton/", "/appleton-drinks-menu/"],
+  ["/beer-menu-menomonee-falls/", "/the-falls-drinks-menu/"],
+  // Order Online standalone page → home
+  ["/order-online/", "/"],
+];
+
+const SECURITY_HEADERS = [
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=()" },
+  { key: "Content-Security-Policy", value: "frame-ancestors 'self'" },
+  { key: "X-Frame-Options", value: "SAMEORIGIN" },
+];
+
 const nextConfig: NextConfig = {
+  trailingSlash: true,
+
   images: {
     remotePatterns: [
       {
@@ -12,121 +42,28 @@ const nextConfig: NextConfig = {
   },
 
   async redirects() {
-    return [
-      // ── SEO — beer/wine menu consolidation ─────────────────────────
-      {
-        source: "/appleton-beer-menu",
-        destination: "/appleton-drinks-menu",
-        permanent: true,
-      },
-      {
-        source: "/appleton-beer-menu/",
-        destination: "/appleton-drinks-menu/",
-        permanent: true,
-      },
-      {
-        source: "/appleton-wine-menu",
-        destination: "/appleton-drinks-menu#wine",
-        permanent: true,
-      },
-      {
-        source: "/appleton-wine-menu/",
-        destination: "/appleton-drinks-menu/#wine",
-        permanent: true,
-      },
-      {
-        source: "/the-falls-beer-menu",
-        destination: "/the-falls-drinks-menu",
-        permanent: true,
-      },
-      {
-        source: "/the-falls-beer-menu/",
-        destination: "/the-falls-drinks-menu/",
-        permanent: true,
-      },
-      {
-        source: "/the-falls-wine-menu",
-        destination: "/the-falls-drinks-menu#wine",
-        permanent: true,
-      },
-      {
-        source: "/the-falls-wine-menu/",
-        destination: "/the-falls-drinks-menu/#wine",
-        permanent: true,
-      },
-      // ── Slug changes (WordPress slugs → new site slugs) ────────────
-      {
-        source: "/about-us",
-        destination: "/about",
-        permanent: true,
-      },
-      {
-        source: "/about-us/",
-        destination: "/about/",
-        permanent: true,
-      },
-      {
-        source: "/contact-us",
-        destination: "/contact",
-        permanent: true,
-      },
-      {
-        source: "/contact-us/",
-        destination: "/contact/",
-        permanent: true,
-      },
-      {
-        source: "/apply-now",
-        destination: "/apply",
-        permanent: true,
-      },
-      {
-        source: "/apply-now/",
-        destination: "/apply/",
-        permanent: true,
-      },
-      // ── Old WordPress redirect chains — collapse to final destination
-      {
-        source: "/beer-menu-appleton",
-        destination: "/appleton-drinks-menu",
-        permanent: true,
-      },
-      {
-        source: "/beer-menu-appleton/",
-        destination: "/appleton-drinks-menu/",
-        permanent: true,
-      },
-      {
-        source: "/beer-menu-menomonee-falls",
-        destination: "/the-falls-drinks-menu",
-        permanent: true,
-      },
-      {
-        source: "/beer-menu-menomonee-falls/",
-        destination: "/the-falls-drinks-menu/",
-        permanent: true,
-      },
-      // ── Order Online standalone page → home ────────────────────────
-      {
-        source: "/order-online",
-        destination: "/",
-        permanent: true,
-      },
-      {
-        source: "/order-online/",
-        destination: "/",
-        permanent: true,
-      },
-    ];
+    return LEGACY_REDIRECTS.map(([source, destination]) => ({
+      source,
+      destination,
+      permanent: true,
+    }));
   },
 
-  // Sanity Studio route — handled by embedded studio
   async headers() {
     return [
+      {
+        source: "/:path*",
+        headers: SECURITY_HEADERS,
+      },
       {
         // Disallow indexing of studio
         source: "/studio/:path*",
         headers: [{ key: "X-Robots-Tag", value: "noindex" }],
+      },
+      {
+        // The game is embedded by /pour (itself noindex); keep the raw file out of search.
+        source: "/tap-rush.html",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
       },
     ];
   },

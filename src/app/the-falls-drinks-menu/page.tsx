@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { UNTAPPD_CONFIG } from "@/lib/untappd";
-import { LOCATION_STATIC_DATA } from "@/lib/location-data";
+import { LOCATIONS } from "@/lib/location-data";
 import {
   FALLS_WINE_MENU,
   FALLS_CIDERS_SELTZERS,
@@ -15,13 +15,13 @@ import LocationContextBar from "@/components/layout/LocationContextBar";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Menomonee Falls Drinks Menu — Hop Yard Ale Works",
+  title: "Menomonee Falls Tap List: Craft Beer, Wine & Drinks",
   description:
-    "What's on tap right now at Hop Yard Ale Works Menomonee Falls, plus wine, ciders, seltzers, and non-alcoholic options.",
+    "What's on tap right now at Hop Yard Ale Works in Menomonee Falls, WI, plus wine, ciders, seltzers, and non-alcoholic options.",
 };
 
 const config = UNTAPPD_CONFIG["the-falls"];
-const ORDER_URL = LOCATION_STATIC_DATA["the-falls"].orderOnlineUrl!;
+const ORDER_URL = LOCATIONS["the-falls"].orderOnlineUrl;
 
 export default function TheFallsDrinksMenuPage() {
   const allNa = [...FALLS_NA, ...FALLS_NA_WINE];

@@ -103,7 +103,7 @@ export default function LearnToBrewery() {
             </p>
             <p
               className="mt-2 text-xs font-medium"
-              style={{ color: "var(--color-green)" }}
+              style={{ color: "var(--color-green-text)" }}
             >
               If you: {style.ideal}
             </p>

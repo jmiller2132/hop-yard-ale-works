@@ -36,7 +36,7 @@ export default function HoursTable({ rows }: HoursTableProps) {
           style={
             isToday
               ? {
-                  backgroundColor: "var(--color-green)",
+                  backgroundColor: "var(--color-green-strong)",
                   color: "white",
                   borderRadius: "6px",
                 }

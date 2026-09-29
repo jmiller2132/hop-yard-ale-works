@@ -48,7 +48,7 @@ export default function MenuItemCard({ item, id, highlighted }: MenuItemCardProp
             {item.isFanFavorite && (
               <span
                 className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
-                style={{ backgroundColor: "var(--color-green)", color: "white" }}
+                style={{ backgroundColor: "var(--color-green-strong)", color: "white" }}
               >
                 Fan Favorite
               </span>

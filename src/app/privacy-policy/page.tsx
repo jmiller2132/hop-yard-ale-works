@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Hop Yard Ale Works",
+  title: "Privacy Policy",
   robots: { index: false },
 };
 

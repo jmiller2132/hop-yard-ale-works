@@ -38,8 +38,6 @@ export default function FaqAccordion({ faqs }: FaqAccordionProps) {
   });
 
   const categories = Object.keys(grouped);
-  const visibleCategories =
-    activeCategory === "all" ? categories : categories.filter((c) => c === activeCategory);
 
   return (
     <div>
@@ -60,8 +58,8 @@ export default function FaqAccordion({ faqs }: FaqAccordionProps) {
 
       {/* Accordion groups */}
       <div className="space-y-10">
-        {visibleCategories.map((cat) => (
-          <section key={cat}>
+        {categories.map((cat) => (
+          <section key={cat} hidden={activeCategory !== "all" && activeCategory !== cat}>
             <h2
               className="font-heading text-lg font-bold mb-3 pb-2"
               style={{ color: "var(--color-ink)", borderBottom: "2px solid var(--color-green)" }}
@@ -78,6 +76,7 @@ export default function FaqAccordion({ faqs }: FaqAccordionProps) {
                     style={{ border: "1px solid rgba(0,0,0,0.07)" }}
                   >
                     <button
+                      type="button"
                       className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left"
                       style={{
                         backgroundColor: isOpen ? "var(--color-ink)" : "white",
@@ -85,6 +84,7 @@ export default function FaqAccordion({ faqs }: FaqAccordionProps) {
                       }}
                       onClick={() => setOpenId(isOpen ? null : faq._id)}
                       aria-expanded={isOpen}
+                      aria-controls={`faq-answer-${faq._id}`}
                     >
                       <span className="font-medium text-sm sm:text-base leading-snug">
                         {faq.question}
@@ -97,14 +97,14 @@ export default function FaqAccordion({ faqs }: FaqAccordionProps) {
                         +
                       </span>
                     </button>
-                    {isOpen && (
-                      <div
-                        className="px-5 py-4 text-sm leading-relaxed whitespace-pre-line"
-                        style={{ backgroundColor: "var(--color-warm-white)", color: "var(--color-muted)" }}
-                      >
-                        {faq.answer}
-                      </div>
-                    )}
+                    <div
+                      id={`faq-answer-${faq._id}`}
+                      hidden={!isOpen}
+                      className="px-5 py-4 text-sm leading-relaxed whitespace-pre-line"
+                      style={{ backgroundColor: "var(--color-warm-white)", color: "var(--color-muted)" }}
+                    >
+                      {faq.answer}
+                    </div>
                   </div>
                 );
               })}
@@ -119,7 +119,9 @@ export default function FaqAccordion({ faqs }: FaqAccordionProps) {
 function FilterPill({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
   return (
     <button
+      type="button"
       onClick={onClick}
+      aria-pressed={active}
       className="rounded-full px-3 py-1.5 text-sm font-medium transition-colors min-h-[34px]"
       style={{
         backgroundColor: active ? "var(--color-ink)" : "rgba(0,0,0,0.05)",

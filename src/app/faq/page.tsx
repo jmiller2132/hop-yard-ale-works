@@ -8,7 +8,7 @@ import FaqAccordion from "@/components/faq/FaqAccordion";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "FAQ — Hop Yard Ale Works",
+  title: "FAQ: Hours, Food, Drinks & Visiting",
   description:
     "Answers to common questions about visiting Hop Yard Ale Works — hours, food, drinks, events, and more.",
 };

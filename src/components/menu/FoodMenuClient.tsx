@@ -192,7 +192,7 @@ export default function FoodMenuClient({
                   active ? "border-transparent text-white" : "border-current hover:opacity-80"
                 )}
                 style={{
-                  backgroundColor: active ? "var(--color-green)" : "transparent",
+                  backgroundColor: active ? "var(--color-green-strong)" : "transparent",
                   color: active ? "white" : "var(--color-muted)",
                   WebkitTapHighlightColor: "transparent",
                 }}
@@ -219,7 +219,7 @@ export default function FoodMenuClient({
             <h2 className="font-heading text-2xl font-bold" style={{ color: "var(--color-ink)" }}>
               Our Creations
             </h2>
-            <span className="rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ backgroundColor: "var(--color-green)", color: "white" }}>
+            <span className="rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ backgroundColor: "var(--color-green-strong)", color: "white" }}>
               Vol. 28
             </span>
           </div>
@@ -347,7 +347,7 @@ export default function FoodMenuClient({
               {snackItems.map((item) => (
                 <div key={item.displayOrder} className="rounded-lg px-5 py-3 text-sm flex items-center gap-4" style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.07)" }}>
                   <span className="font-medium" style={{ color: "var(--color-ink)" }}>{item.name}</span>
-                  <span className="font-bold" style={{ color: "var(--color-green)" }}>{item.price}</span>
+                  <span className="font-bold" style={{ color: "var(--color-green-text)" }}>{item.price}</span>
                 </div>
               ))}
             </div>
@@ -421,7 +421,7 @@ function EmptyPizzaState({
       <p className="text-sm mb-4" style={{ color: "var(--color-muted)" }}>
         Build Your Own is fully customizable — load up on veggies and vegan-friendly toppings.
       </p>
-      <button onClick={onByo} className="text-sm font-semibold underline underline-offset-2" style={{ color: "var(--color-green)" }}>
+      <button onClick={onByo} className="text-sm font-semibold underline underline-offset-2" style={{ color: "var(--color-green-text)" }}>
         Go to Build Your Own →
       </button>
     </div>
@@ -483,7 +483,7 @@ function ByoGroup({
             >
               <span className={cn(dimmed ? "line-through" : "")}>{item.name}</span>
               {!dimmed && highlight && (
-                <span className="text-xs font-semibold shrink-0" style={{ color: "var(--color-green)" }}>✓ base</span>
+                <span className="text-xs font-semibold shrink-0" style={{ color: "var(--color-green-text)" }}>✓ base</span>
               )}
             </li>
           );
@@ -516,7 +516,7 @@ function ByoUpgrade({ label, price, note, highlight }: { label: string; price: s
         <span className="text-sm font-medium" style={{ color: "var(--color-ink)" }}>{label}</span>
         <p className="text-xs mt-0.5" style={{ color: "var(--color-muted)" }}>{note}</p>
       </div>
-      <span className="font-heading text-sm font-bold ml-3 flex-shrink-0" style={{ color: "var(--color-green)" }}>{price}</span>
+      <span className="font-heading text-sm font-bold ml-3 flex-shrink-0" style={{ color: "var(--color-green-text)" }}>{price}</span>
     </div>
   );
 }

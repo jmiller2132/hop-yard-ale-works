@@ -32,7 +32,7 @@ function groupByMonth(events: Event[]): Map<string, Event[]> {
 
 const CATEGORY_STYLES: Record<string, { bg: string; activeBg: string; text: string; activeText: string }> = {
   All:            { bg: "rgba(0,0,0,0.05)",       activeBg: "var(--color-ink)",  text: "var(--color-ink)", activeText: "white" },
-  "Live Music":   { bg: "rgba(106,191,75,0.12)",   activeBg: "#4a9e2f",           text: "#2d6b1a",          activeText: "white" },
+  "Live Music":   { bg: "rgba(106,191,75,0.12)",   activeBg: "#2F7A1F",           text: "#2d6b1a",          activeText: "white" },
   "Tap Release":  { bg: "rgba(217,119,6,0.12)",    activeBg: "#b45309",           text: "#92400e",          activeText: "white" },
   "Out & About":  { bg: "rgba(109,40,217,0.10)",   activeBg: "#6d28d9",           text: "#5b21b6",          activeText: "white" },
   "Special":      { bg: "rgba(71,85,105,0.12)",    activeBg: "#475569",           text: "#334155",          activeText: "white" },
@@ -43,7 +43,7 @@ const CLOSURE = "Closure";
 
 const LOCATIONS = [
   { slug: "all", label: "Both locations", color: "var(--color-ink)" },
-  { slug: "appleton", label: "Appleton", color: "#4a9e2f" },
+  { slug: "appleton", label: "Appleton", color: "#2F7A1F" },
   { slug: "the-falls", label: "The Falls", color: "#b45309" },
 ] as const;
 
@@ -65,7 +65,6 @@ function accentFor(event: Event) {
 
 interface EventsClientProps {
   events: Event[];
-  hasPlaceholders: boolean;
 }
 
 const FILTERS_CHANGED = "events-filters-changed";
@@ -79,7 +78,7 @@ function subscribeToSearch(onChange: () => void) {
   };
 }
 
-export default function EventsClient({ events, hasPlaceholders }: EventsClientProps) {
+export default function EventsClient({ events }: EventsClientProps) {
   const search = useSyncExternalStore(
     subscribeToSearch,
     () => window.location.search,
@@ -134,23 +133,6 @@ export default function EventsClient({ events, hasPlaceholders }: EventsClientPr
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
 
-      {/* Sample events notice (for whoever is editing the site, not customers) */}
-      {hasPlaceholders && process.env.NODE_ENV === "development" && (
-        <div
-          className="mb-8 rounded-xl px-5 py-4 text-sm"
-          style={{ backgroundColor: "rgba(106,191,75,0.08)", border: "1px solid rgba(106,191,75,0.25)" }}
-        >
-          <p style={{ color: "var(--color-ink)" }}>
-            <span className="font-semibold" style={{ color: "var(--color-green)" }}>
-              Some events below are marked &quot;Sample.&quot;
-            </span>{" "}
-            These are placeholder entries showing what the calendar could look like — tap releases,
-            trivia nights, Oktoberfest, etc. Real events are unlabeled. Once live events are
-            added in the CMS, samples disappear automatically.
-          </p>
-        </div>
-      )}
-
       {/* Filters */}
       <div className="mb-8 space-y-4">
         <LocationToggle active={activeLocation} onSelect={(location) => updateFilters({ location })} />
@@ -166,13 +148,38 @@ export default function EventsClient({ events, hasPlaceholders }: EventsClientPr
       {closures.length > 0 && <ClosureNotice closures={closures} />}
 
       {/* Results */}
-      {/* min-h-screen keeps the page tall enough that filtering never forces the browser to clamp scroll */}
-      <div className="min-h-screen [overflow-anchor:none]">
+      {/* min-height keeps the page tall enough that filtering never forces the browser to clamp scroll */}
+      <div className={`${events.length > 0 ? "min-h-[80svh]" : ""} [overflow-anchor:none]`}>
         {!featured ? (
           <div className="py-16 text-center">
             <p className="text-sm" style={{ color: "var(--color-muted)" }}>
-              {isFiltered ? "No upcoming events match those filters." : "No upcoming events right now."}
+              {isFiltered ? "No upcoming events match those filters." : "No events posted right now."}
             </p>
+            {!isFiltered && (
+              <p className="mt-2 text-sm" style={{ color: "var(--color-muted)" }}>
+                Follow us on{" "}
+                <a
+                  href="https://www.instagram.com/hopyardaleworks/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-2"
+                  style={{ color: "var(--color-green-text)" }}
+                >
+                  Instagram
+                </a>{" "}
+                or{" "}
+                <a
+                  href="https://www.facebook.com/hopyardaleworks/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-2"
+                  style={{ color: "var(--color-green-text)" }}
+                >
+                  Facebook
+                </a>{" "}
+                for the latest.
+              </p>
+            )}
             {isFiltered && (
               <button
                 onClick={() => updateFilters({ location: "all", category: "All" })}

@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { sanityClient } from "@/lib/sanity/client";
 import { locationBySlugQuery, liveMusicTodayQuery } from "@/lib/sanity/queries";
-import { LOCATION_STATIC_DATA } from "@/lib/location-data";
+import { LOCATIONS, addressLines, hoursRows, locationForBadge } from "@/lib/location-data";
+import { locationJsonLd } from "@/lib/structured-data";
+import { jsonLdString } from "@/lib/site";
 import OpenClosedBadgeLive from "@/components/ui/OpenClosedBadgeLive";
 import HoursTable from "@/components/ui/HoursTable";
 import WeatherNudge from "@/components/ui/WeatherNudge";
@@ -12,56 +14,23 @@ import type { Location } from "@/types";
 export const revalidate = 900;
 
 export const metadata: Metadata = {
-  title: "Appleton — Hop Yard Ale Works",
+  title: "Appleton Brewery & Wood-Fired Pizza Taproom",
   description:
-    "Visit Hop Yard Ale Works in Appleton, WI. The original taproom — craft beer, wood-fired pizza, and great company at 512 W Northland Ave.",
+    "Craft beer brewed on site and wood-fired pizza at 512 W Northland Ave, Appleton, WI. Hours, menus, directions, and online ordering.",
 };
 
-const APPLETON_HOURS_ROWS = [
-  { day: "Sunday",    hours: "12–6 PM" },
-  { day: "Monday",    hours: "Closed",  closed: true },
-  { day: "Tuesday",   hours: "Closed",  closed: true },
-  { day: "Wednesday", hours: "11 AM–10 PM" },
-  { day: "Thursday",  hours: "11 AM–10 PM" },
-  { day: "Friday",    hours: "11 AM–10 PM" },
-  { day: "Saturday",  hours: "11 AM–10 PM" },
-];
-
-const JSON_LD = {
-  "@context": "https://schema.org",
-  "@type": "BreweryOrWinery",
-  name: "Hop Yard Ale Works — Appleton",
-  url: "https://www.hopyardaleworks.com/appleton/",
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: "512 W Northland Ave",
-    addressLocality: "Appleton",
-    addressRegion: "WI",
-    postalCode: "54911",
-    addressCountry: "US",
-  },
-  hasMap: "https://maps.app.goo.gl/9N2389HKdPiMQgzL7",
-  openingHoursSpecification: [
-    { "@type": "OpeningHoursSpecification", dayOfWeek: "Sunday",    opens: "12:00", closes: "18:00" },
-    { "@type": "OpeningHoursSpecification", dayOfWeek: "Wednesday", opens: "11:00", closes: "22:00" },
-    { "@type": "OpeningHoursSpecification", dayOfWeek: "Thursday",  opens: "11:00", closes: "22:00" },
-    { "@type": "OpeningHoursSpecification", dayOfWeek: "Friday",    opens: "11:00", closes: "22:00" },
-    { "@type": "OpeningHoursSpecification", dayOfWeek: "Saturday",  opens: "11:00", closes: "22:00" },
-  ],
-  servesCuisine: ["Craft Beer", "Pizza"],
-  priceRange: "$$",
-};
+const INFO = LOCATIONS.appleton;
 
 export default async function AppletonPage() {
   const cms = await sanityClient
     .fetch<Location | null>(locationBySlugQuery, { slug: "appleton" })
     .catch(() => null);
 
-  const location = cms ?? (LOCATION_STATIC_DATA["appleton"] as Location);
+  const location = locationForBadge("appleton", cms);
 
-  const todayChicago = new Date(
-    new Date().toLocaleString("en-US", { timeZone: "America/Chicago" })
-  ).toISOString().split("T")[0];
+  const todayChicago = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Chicago" }).format(
+    new Date()
+  );
 
   const liveMusicCount = await sanityClient
     .fetch<number>(liveMusicTodayQuery, { today: todayChicago, locationSlug: "appleton" })
@@ -69,15 +38,13 @@ export default async function AppletonPage() {
 
   const hasLiveMusicToday = liveMusicCount > 0;
 
-  const orderUrl =
-    location?.orderOnlineUrl ??
-    LOCATION_STATIC_DATA["appleton"].orderOnlineUrl!;
+  const orderUrl = location.orderOnlineUrl;
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(locationJsonLd("appleton")) }}
       />
 
       {/* Hero */}
@@ -97,11 +64,11 @@ export default async function AppletonPage() {
           <p className="mt-2 text-white/80 text-lg">The original taproom.</p>
 
           <div className="mt-3 flex items-center gap-3 flex-wrap">
-            {location?.hours && <OpenClosedBadgeLive location={location} />}
+            <OpenClosedBadgeLive location={location} />
             {hasLiveMusicToday && (
               <span
                 className="text-sm font-medium px-2.5 py-1 rounded-full"
-                style={{ backgroundColor: "var(--color-green)", color: "white" }}
+                style={{ backgroundColor: "var(--color-green-strong)", color: "white" }}
               >
                 Live Music Today
               </span>
@@ -128,7 +95,7 @@ export default async function AppletonPage() {
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-md px-5 py-3 text-sm font-bold min-h-[48px] flex items-center gap-2 transition-opacity hover:opacity-90"
-              style={{ backgroundColor: "var(--color-green)", color: "white" }}
+              style={{ backgroundColor: "var(--color-green-strong)", color: "white" }}
             >
               Order Online
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
@@ -149,9 +116,9 @@ export default async function AppletonPage() {
               <h2 className="font-heading text-xl font-bold mb-4" style={{ color: "var(--color-ink)" }}>
                 Hours
               </h2>
-              <HoursTable rows={APPLETON_HOURS_ROWS} />
-              <p className="mt-3 text-xs" style={{ color: "var(--color-muted)" }}>
-                Kitchen closes 1 hour before close. Hours subject to change on holidays.
+              <HoursTable rows={hoursRows("appleton")} />
+              <p className="mt-3 text-sm" style={{ color: "var(--color-muted)" }}>
+                {INFO.kitchenNote} Hours subject to change on holidays.
               </p>
               <WeatherNudge locationSlug="appleton" drinksHref="/appleton-drinks-menu/" />
             </div>
@@ -162,16 +129,16 @@ export default async function AppletonPage() {
                 Find Us
               </h2>
               <address className="not-italic text-sm leading-relaxed" style={{ color: "var(--color-ink)" }}>
-                512 W Northland Ave<br />
-                Appleton, WI 54911
+                {addressLines("appleton")[0]}<br />
+                {addressLines("appleton")[1]}
               </address>
               <p className="mt-4">
                 <a
-                  href="https://maps.app.goo.gl/9N2389HKdPiMQgzL7"
+                  href={INFO.googleMapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 rounded-md px-4 py-2 text-sm font-semibold min-h-[44px]"
-                  style={{ backgroundColor: "var(--color-green)", color: "white" }}
+                  style={{ backgroundColor: "var(--color-green-strong)", color: "white" }}
                 >
                   Get directions
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
@@ -191,6 +158,7 @@ export default async function AppletonPage() {
                   A neighborhood taproom with a working brewhouse in the back. All the beer
                   served at both locations is brewed here. Come to drink it fresh.
                 </p>
+                {/* TODO: confirm with owner — "live music most Sundays" */}
                 <p>
                   Wood-fired pizza, a full tap list that rotates regularly, and live music
                   most Sundays. Good for a quick pint or a full evening out.

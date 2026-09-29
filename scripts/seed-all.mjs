@@ -46,7 +46,7 @@ const LOCATIONS = [
       { _key: "fri", day: "Friday",    open: "11:00 AM", close: "10:00 PM", isClosed: false },
       { _key: "sat", day: "Saturday",  open: "11:00 AM", close: "10:00 PM", isClosed: false },
     ],
-    sundayHours: { open: "12:00 PM", close: "6:00 PM", isClosed: false },
+    sundayHours: { open: "11:00 AM", close: "4:00 PM", isClosed: false },
   },
   {
     _id: "location-the-falls",
@@ -69,39 +69,7 @@ const LOCATIONS = [
   },
 ];
 
-// ─── EVENTS ───────────────────────────────────────────────────────────────────
-const locRef = (slug) =>
-  slug === "appleton"
-    ? { _type: "reference", _ref: "location-appleton" }
-    : slug === "the-falls"
-    ? { _type: "reference", _ref: "location-the-falls" }
-    : undefined;
-
-const EVENTS = [
-  { _id: "event-jun-14", title: "Live Music: Jackson Mankowski", date: "2026-06-14", time: "6:00 PM", category: "Live Music", locationSlug: "appleton", description: "Appleton singer-songwriter blending folk, pop, R&B, and blues. Free to attend.", artistLinks: [{ _key: "spotify", label: "Spotify", url: "https://open.spotify.com/artist/6oMfxwBYVpGlYBNfVqPeZ9" }], isRecurring: false, requiresTicket: false, isActive: true },
-  { _id: "event-jun-20-ipa", title: "Wisconsin West Coast IPA Invitational", date: "2026-06-20", time: "2:00 PM – 6:30 PM", category: "Out & About", description: "Hop Yard is one of 11 Wisconsin breweries pouring at McFleshman's birthday bash turned statewide showcase. Taste through a lineup of West Coast IPAs, doubles, triples, and sessions — then vote for your favorite. Every ticket includes a commemorative tasting glass. Music in the beer garden starts at 7 PM.", externalUrl: "https://www.hometowntickets.com/events/wisconsin-west-coast-ipa-invitational", isRecurring: false, requiresTicket: true, ticketUrl: "https://www.hometowntickets.com/events/wisconsin-west-coast-ipa-invitational", isActive: true },
-  { _id: "event-jun-21", title: "Live Music: Sam of Foocoustics", date: "2026-06-21", time: "6:00 PM", category: "Live Music", locationSlug: "appleton", description: "Live acoustic performance. Free to attend.", isRecurring: false, requiresTicket: false, isActive: true },
-  { _id: "event-jun-28", title: "Live Music: Acoustic Jukebox", date: "2026-06-28", time: "6:00 PM", category: "Live Music", locationSlug: "appleton", description: "Live acoustic performance. Free to attend.", isRecurring: false, requiresTicket: false, isActive: true },
-  { _id: "event-jul-03-app", title: "Closing Early Tonight — Last Call at 8 PM", date: "2026-07-03", category: "Closure", locationSlug: "appleton", description: "We're closing at 8 PM tonight. Both locations closed July 4–7. Happy 4th — go blow something up responsibly.", isRecurring: false, requiresTicket: false, isActive: true },
-  { _id: "event-jul-03-falls", title: "Closing Early Tonight — Last Call at 8 PM", date: "2026-07-03", category: "Closure", locationSlug: "the-falls", description: "We're closing at 8 PM tonight. Both locations closed July 4–7. See you the following week.", isRecurring: false, requiresTicket: false, isActive: true },
-  { _id: "event-jul-12", title: "Live Music: Brady James", date: "2026-07-12", time: "6:00 PM", category: "Live Music", locationSlug: "appleton", description: "Live acoustic performance. Free to attend.", isRecurring: false, requiresTicket: false, isActive: true },
-  { _id: "event-jul-16-paperfest", title: "Paperfest — Craft Beer & Food Truck Rally", date: "2026-07-16", time: "July 16–19", category: "Out & About", description: "Hop Yard is pouring at the Paperfest Craft Beer Tent — find us at Sunset Park in Kimberly. Sip our Here's My Number, Call Me Hazy and Maui Waui Seltzer alongside brews from other local Wisconsin breweries. Free admission. 100% of beverage proceeds benefit local nonprofits.", externalUrl: "https://www.paperfest.com", isRecurring: false, requiresTicket: false, isActive: true },
-  { _id: "event-jul-17-flix", title: "Flicks & Sips: Back to the Future", date: "2026-07-17", time: "6:00 PM", category: "Out & About", locationSlug: "appleton", description: "Outdoor movie night at Jones Park Amphitheater, Appleton. Hop Yard Ale Works is pouring — grab a beer, grab a blanket, and watch Marty McFly sort out his parents. Food and drinks start at 6 PM, movie at 7 PM. Bring a lawn chair.", isRecurring: false, requiresTicket: false, isActive: true },
-  { _id: "event-jul-19", title: "Live Music: Adrian Lambrecht", date: "2026-07-19", time: "6:00 PM", category: "Live Music", locationSlug: "appleton", description: "Live acoustic performance. Free to attend.", isRecurring: false, requiresTicket: false, isActive: true },
-  { _id: "event-jul-26", title: "Live Music: Michael Grabner", date: "2026-07-26", time: "6:00 PM", category: "Live Music", locationSlug: "appleton", description: "Live acoustic performance. Free to attend.", isRecurring: false, requiresTicket: false, isActive: true },
-  { _id: "event-aug-01", title: "Tap Release: Summer Haze IPA", date: "2026-08-01", time: "12:00 PM", category: "Tap Release", locationSlug: "appleton", description: "Our summer seasonal hits the taps. Hazy, juicy, low bitterness — brewed for days like this. Available at both locations while it lasts.", isRecurring: false, requiresTicket: false, isActive: true },
-  { _id: "event-aug-02", title: "Live Music: Jake Wheeler", date: "2026-08-02", time: "6:00 PM", category: "Live Music", locationSlug: "appleton", description: "Live acoustic performance. Free to attend.", isRecurring: false, requiresTicket: false, isActive: true },
-  { _id: "event-aug-13", title: "Trivia Night", date: "2026-08-13", time: "7:00 PM", category: "Special", locationSlug: "the-falls", description: "Pub trivia at The Falls. Teams up to 6. No signup required — just show up. Prizes for the top three teams.", isRecurring: false, requiresTicket: false, isActive: true },
-  { _id: "event-aug-16", title: "Live Music: The Foxcroft Duo", date: "2026-08-16", time: "6:00 PM", category: "Live Music", locationSlug: "appleton", description: "Live acoustic performance. Free to attend.", isRecurring: false, requiresTicket: false, isActive: true },
-  { _id: "event-sep-12-tap", title: "Tap Release: Oktoberfest Märzen", date: "2026-09-12", time: "12:00 PM", category: "Tap Release", locationSlug: "appleton", description: "Our fall seasonal is here. Malty, toasty, clean finish — everything a Märzen should be. Brewed in-house, available at both locations.", isRecurring: false, requiresTicket: false, isActive: true },
-  { _id: "event-sep-12-flix", title: "Flicks & Sips: Hot Rod", date: "2026-09-12", time: "6:00 PM", category: "Out & About", locationSlug: "appleton", description: "Outdoor movie night at Jones Park Amphitheater, Appleton. Hop Yard Ale Works is pouring. Food and drinks start at 6 PM, movie at 7 PM. Bring a lawn chair.", isRecurring: false, requiresTicket: false, isActive: true },
-  { _id: "event-sep-13", title: "Live Music: Danny Malone", date: "2026-09-13", time: "6:00 PM", category: "Live Music", locationSlug: "appleton", description: "Live acoustic performance. Free to attend.", isRecurring: false, requiresTicket: false, isActive: true },
-  { _id: "event-sep-20", title: "Tap Takeover: Guest Brewery Night", date: "2026-09-20", time: "4:00 PM", category: "Special", locationSlug: "the-falls", description: "We're pulling a few guest taps and letting another Wisconsin brewery take up some real estate. Details coming soon.", isRecurring: false, requiresTicket: false, isActive: true },
-  { _id: "event-sep-27", title: "Live Music: River City Blues", date: "2026-09-27", time: "6:00 PM", category: "Live Music", locationSlug: "appleton", description: "Live acoustic performance. Free to attend.", isRecurring: false, requiresTicket: false, isActive: true },
-  { _id: "event-oct-03", title: "Oktoberfest Party", date: "2026-10-03", time: "12:00 PM", category: "Special", locationSlug: "appleton", description: "Lederhosen optional. Märzen required. Seasonal specials and a good excuse to be outside before it gets cold.", isRecurring: false, requiresTicket: false, isActive: true },
-  { _id: "event-oct-11", title: "Live Music: Mike Patterson", date: "2026-10-11", time: "6:00 PM", category: "Live Music", locationSlug: "appleton", description: "Live acoustic performance. Free to attend.", isRecurring: false, requiresTicket: false, isActive: true },
-  { _id: "event-oct-25", title: "Halloween Pre-Party + Costume Contest", date: "2026-10-25", time: "5:00 PM", category: "Special", locationSlug: "appleton", description: "Come in costume. Prizes for best dressed. Seasonal beer, pizza, and the general chaos of a Saturday night in October.", isRecurring: false, requiresTicket: false, isActive: true },
-];
+// Events are entered by staff in Sanity Studio; this script never seeds them.
 
 // ─── MENU ITEMS ───────────────────────────────────────────────────────────────
 function menuDoc(id, name, description, price, locationId, menuType, section, displayOrder, tags = [], extras = {}) {
@@ -220,12 +188,6 @@ async function seed() {
         const d = { ...doc };
         // Inject _type if not already set
         if (!d._type && docType) d._type = docType;
-        // Resolve locationSlug → reference for events
-        if (d.locationSlug) {
-          const ref = locRef(d.locationSlug);
-          if (ref) d.location = ref;
-          delete d.locationSlug;
-        }
         await upsert(d);
         process.stdout.write(".");
         ok++;
@@ -242,7 +204,6 @@ async function seed() {
   };
 
   await run("Locations", LOCATIONS);
-  await run("Events", EVENTS, "event");
   await run("Menu Items", MENU_ITEMS);
 
   console.log(`\n✅ Seeded ${ok} documents. ${fail > 0 ? `⚠️  ${fail} failed.` : "All good!"}`);

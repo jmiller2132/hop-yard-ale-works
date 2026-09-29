@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { sanityClient } from "@/lib/sanity/client";
 import { locationBySlugQuery } from "@/lib/sanity/queries";
-import { LOCATION_STATIC_DATA } from "@/lib/location-data";
+import { LOCATIONS, addressLines, hoursRows, locationForBadge } from "@/lib/location-data";
+import { locationJsonLd } from "@/lib/structured-data";
+import { jsonLdString } from "@/lib/site";
 import OpenClosedBadgeLive from "@/components/ui/OpenClosedBadgeLive";
 import HoursTable from "@/components/ui/HoursTable";
 import WeatherNudge from "@/components/ui/WeatherNudge";
@@ -12,63 +14,27 @@ import type { Location } from "@/types";
 export const revalidate = 900;
 
 export const metadata: Metadata = {
-  title: "Menomonee Falls — Hop Yard Ale Works",
+  title: "Menomonee Falls Taproom: Craft Beer & Wood-Fired Pizza",
   description:
-    "Visit Hop Yard Ale Works in Menomonee Falls, WI. Craft beer and wood-fired pizza at N88W16521 Main St. Sun 11–4, Tue–Thu evenings, Fri–Sat all day.",
+    "Craft beer and wood-fired pizza at N88W16521 Main St, Menomonee Falls, WI. Hours, menus, directions, private events, and online ordering.",
 };
 
-const FALLS_HOURS_ROWS = [
-  { day: "Sunday",    hours: "11 AM–4 PM" },
-  { day: "Monday",    hours: "Closed",    closed: true },
-  { day: "Tuesday",   hours: "4–10 PM" },
-  { day: "Wednesday", hours: "4–10 PM" },
-  { day: "Thursday",  hours: "4–10 PM" },
-  { day: "Friday",    hours: "11 AM–10 PM" },
-  { day: "Saturday",  hours: "11 AM–10 PM" },
-];
-
-const JSON_LD = {
-  "@context": "https://schema.org",
-  "@type": "BreweryOrWinery",
-  name: "Hop Yard Ale Works — Menomonee Falls",
-  url: "https://www.hopyardaleworks.com/the-falls/",
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: "N88W16521 Main St",
-    addressLocality: "Menomonee Falls",
-    addressRegion: "WI",
-    postalCode: "53051",
-    addressCountry: "US",
-  },
-  hasMap: "https://maps.app.goo.gl/DWFo5Du6CZfUqkt7A",
-  openingHoursSpecification: [
-    { "@type": "OpeningHoursSpecification", dayOfWeek: "Sunday",    opens: "11:00", closes: "16:00" },
-    { "@type": "OpeningHoursSpecification", dayOfWeek: "Tuesday",   opens: "16:00", closes: "22:00" },
-    { "@type": "OpeningHoursSpecification", dayOfWeek: "Wednesday", opens: "16:00", closes: "22:00" },
-    { "@type": "OpeningHoursSpecification", dayOfWeek: "Thursday",  opens: "16:00", closes: "22:00" },
-    { "@type": "OpeningHoursSpecification", dayOfWeek: "Friday",    opens: "11:00", closes: "22:00" },
-    { "@type": "OpeningHoursSpecification", dayOfWeek: "Saturday",  opens: "11:00", closes: "22:00" },
-  ],
-  servesCuisine: ["Craft Beer", "Pizza"],
-  priceRange: "$$",
-};
+const INFO = LOCATIONS["the-falls"];
 
 export default async function TheFallsPage() {
   const cms = await sanityClient
     .fetch<Location | null>(locationBySlugQuery, { slug: "the-falls" })
     .catch(() => null);
 
-  const location = cms ?? (LOCATION_STATIC_DATA["the-falls"] as Location);
+  const location = locationForBadge("the-falls", cms);
 
-  const orderUrl =
-    location?.orderOnlineUrl ??
-    LOCATION_STATIC_DATA["the-falls"].orderOnlineUrl!;
+  const orderUrl = location.orderOnlineUrl;
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(locationJsonLd("the-falls")) }}
       />
 
       {/* Hero */}
@@ -89,11 +55,9 @@ export default async function TheFallsPage() {
             Pizza-forward taproom. New to craft beer? We&rsquo;ll help.
           </p>
 
-          {location?.hours && (
-            <div className="mt-3">
-              <OpenClosedBadgeLive location={location} />
-            </div>
-          )}
+          <div className="mt-3">
+            <OpenClosedBadgeLive location={location} />
+          </div>
 
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
@@ -115,7 +79,7 @@ export default async function TheFallsPage() {
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-md px-5 py-3 text-sm font-bold min-h-[48px] flex items-center gap-2 transition-opacity hover:opacity-90"
-              style={{ backgroundColor: "var(--color-green)", color: "white" }}
+              style={{ backgroundColor: "var(--color-green-strong)", color: "white" }}
             >
               Order Online
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
@@ -136,9 +100,9 @@ export default async function TheFallsPage() {
               <h2 className="font-heading text-xl font-bold mb-4" style={{ color: "var(--color-ink)" }}>
                 Hours
               </h2>
-              <HoursTable rows={FALLS_HOURS_ROWS} />
-              <p className="mt-3 text-xs" style={{ color: "var(--color-muted)" }}>
-                Kitchen closes 1 hour before close. Hours subject to change on holidays.
+              <HoursTable rows={hoursRows("the-falls")} />
+              <p className="mt-3 text-sm" style={{ color: "var(--color-muted)" }}>
+                {INFO.kitchenNote} {INFO.hoursFootnote} Hours subject to change on holidays.
               </p>
               <WeatherNudge locationSlug="the-falls" drinksHref="/the-falls-drinks-menu/" />
             </div>
@@ -149,16 +113,16 @@ export default async function TheFallsPage() {
                 Find Us
               </h2>
               <address className="not-italic text-sm leading-relaxed" style={{ color: "var(--color-ink)" }}>
-                N88W16521 Main St<br />
-                Menomonee Falls, WI 53051
+                {addressLines("the-falls")[0]}<br />
+                {addressLines("the-falls")[1]}
               </address>
               <p className="mt-4">
                 <a
-                  href="https://maps.app.goo.gl/DWFo5Du6CZfUqkt7A"
+                  href={INFO.googleMapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 rounded-md px-4 py-2 text-sm font-semibold min-h-[44px]"
-                  style={{ backgroundColor: "var(--color-green)", color: "white" }}
+                  style={{ backgroundColor: "var(--color-green-strong)", color: "white" }}
                 >
                   Get directions
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
@@ -176,7 +140,7 @@ export default async function TheFallsPage() {
               <div className="space-y-2 text-sm leading-relaxed" style={{ color: "var(--color-ink)" }}>
                 <p>
                   A relaxed taproom in the heart of Menomonee Falls. Come for a pint and
-                  some wood-fired pizza — evenings during the week, all day on weekends.
+                  some wood-fired pizza — evenings Tuesday through Thursday, all day Friday and Saturday.
                 </p>
                 <p>
                   New to craft beer? The bar is happy to walk you through what&rsquo;s on.
@@ -222,7 +186,7 @@ export default async function TheFallsPage() {
                 <Link
                   href="/contact/?subject=private-event&location=the-falls"
                   className="inline-flex items-center rounded-full px-6 py-3 text-sm font-semibold min-h-[44px] transition-opacity hover:opacity-90"
-                  style={{ backgroundColor: "var(--color-green)", color: "white" }}
+                  style={{ backgroundColor: "var(--color-green-strong)", color: "white" }}
                 >
                   Get in Touch
                 </Link>

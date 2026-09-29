@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Join the Team — Hop Yard Ale Works",
+  title: "Jobs in Appleton & Menomonee Falls",
   description:
     "We're hiring at both Appleton and Menomonee Falls. Team-first, flexible hours, great environment. Apply now.",
 };
