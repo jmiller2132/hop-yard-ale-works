@@ -56,7 +56,8 @@ function to24h(time: string): string {
 }
 
 export default async function EventsPage() {
-  const now = new Date().toISOString().split("T")[0];
+  // en-CA formats as YYYY-MM-DD; using UTC here would drop tonight's events after 7 PM Central.
+  const now = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Chicago" }).format(new Date());
 
   const cmsEvents = await sanityClient
     .fetch<Event[]>(upcomingEventsQuery, { now, start: 0, end: 50 })
@@ -88,8 +89,9 @@ export default async function EventsPage() {
         aria-label="Events"
       >
         <div className="absolute inset-0 bg-black/20" aria-hidden="true" />
-        <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6">
+        <div className="relative z-10 mx-auto w-full max-w-5xl px-4 sm:px-6">
           <h1 className="font-heading text-4xl font-bold text-white sm:text-5xl">Events</h1>
+          {/* TODO: confirm with owner — tagline wording not verified as official copy */}
           <p className="mt-2 text-white/70 text-sm">
             Live music, tap releases, and whatever else we&rsquo;ve got going on.
           </p>
