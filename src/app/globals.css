@@ -176,17 +176,6 @@ h1, h2, h3, h4, h5, h6 {
   animation: fade-in-out 3.2s ease-in-out forwards;
 }
 
-/* ─── Footer marquee icon strip ─── */
-@keyframes marquee {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-/* Pixel-exact version avoids sub-pixel rounding jump at the seam */
-@keyframes marquee-px {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(calc(var(--shift) * -1)); }
-}
-
 /* ─── Scrollbar ─── */
 ::-webkit-scrollbar {
   width: 6px;

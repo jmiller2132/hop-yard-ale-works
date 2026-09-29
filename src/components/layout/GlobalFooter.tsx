@@ -8,75 +8,6 @@ interface GlobalFooterProps {
   config?: GlobalConfig | null;
 }
 
-interface TileDef {
-  bg: string;
-  src: string;
-  dark?: boolean; // true = black icon (for light/bright backgrounds)
-}
-
-// Interleaved so no icon type is ever adjacent to itself
-const MARQUEE_TILES: TileDef[] = [
-  { bg: "#3D7A2D", src: "/icons/hops.png"                  },  // hops - forest green
-  { bg: "#1B6CA8", src: "/icons/water.png"                 },  // water - lake blue
-  { bg: "#C5050C", src: "/icons/wisconsin.png"             },  // WI - Badgers red
-  { bg: "#D4A017", src: "/icons/pint.png",      dark: true },  // pint - amber
-  { bg: "#C94B2A", src: "/icons/pizza.png"                 },  // pizza - tomato
-  { bg: "#4A3520", src: "/icons/barrel.png"                },  // barrel - dark wood
-  { bg: "#0C4A6E", src: "/icons/water.png"                 },  // water - deep navy
-  { bg: "#8B6914", src: "/icons/wheat.png"                 },  // wheat - dark gold
-  { bg: "#203731", src: "/icons/wisconsin.png"             },  // WI - Packers green
-  { bg: "#8B5E3C", src: "/icons/pretzel.png"               },  // pretzel - warm brown
-  { bg: "#6ABF4B", src: "/icons/hops.png",      dark: true },  // hops - brand green
-  { bg: "#1A5C2A", src: "/icons/bottle.png"                },  // bottle - bottle green
-  { bg: "#0284C7", src: "/icons/water.png"                 },  // water - bright blue
-  { bg: "#231F20", src: "/icons/pint.png"                  },  // pint - ink
-  { bg: "#F5F2EE", src: "/icons/pizza.png",     dark: true },  // pizza - cream
-  { bg: "#12284B", src: "/icons/wisconsin.png"             },  // WI - Brewers navy
-  { bg: "#D4A017", src: "/icons/barrel.png",    dark: true },  // barrel - gold
-  { bg: "#2D4F54", src: "/icons/hops.png"                  },  // hops - teal
-  { bg: "#1D4ED8", src: "/icons/water.png"                 },  // water - royal blue
-  { bg: "#D4A017", src: "/icons/wheat.png",     dark: true },  // wheat - gold
-  { bg: "#C94B2A", src: "/icons/pretzel.png"               },  // pretzel - red
-  { bg: "#D4A017", src: "/icons/bottle.png",    dark: true },  // bottle - amber
-  { bg: "#6ABF4B", src: "/icons/pint.png",      dark: true },  // pint - green
-  { bg: "#2D4F54", src: "/icons/barrel.png"                },  // barrel - teal
-];
-
-const TILE_SIZE  = 80;
-const TILE_GAP   = 6;
-// Exact pixel shift = one full set width. No % rounding = no jump at seam.
-const MARQUEE_SHIFT = 24 * (TILE_SIZE + TILE_GAP); // 2064px
-
-function MarqueeTile({ tile }: { tile: TileDef }) {
-  return (
-    <div
-      style={{
-        width: TILE_SIZE,
-        height: TILE_SIZE,
-        backgroundColor: tile.bg,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        flexShrink: 0,
-        borderRadius: 4,
-        marginRight: TILE_GAP,
-      }}
-    >
-      <img
-        src={tile.src}
-        alt=""
-        width={40}
-        height={40}
-        style={{
-          filter: tile.dark ? "brightness(0)" : "brightness(0) invert(1)",
-          objectFit: "contain",
-        }}
-      />
-    </div>
-  );
-}
-
-
 const NAV_LINKS = [
   { label: "Home", href: "/" },
   { label: "Appleton", href: "/appleton/" },
@@ -94,23 +25,16 @@ const SOCIAL_LINKS = [
   { label: "Linktree", href: "https://linktr.ee/hopyardaleworks", icon: "linktree" },
 ];
 
-const DEFAULT_FOOTER_MESSAGES = [
-  "Thanks for supporting local.",
-  "See you at the bar.",
-  "Pizza + Pints = Perfect Night.",
-  "Brewed in Wisconsin. Loved everywhere.",
-  "We'll save you a stool.",
-];
-
 export default function GlobalFooter({ config }: GlobalFooterProps) {
   const [footerMessage, setFooterMessage] = useState<string | null>(null);
   const [emailValue, setEmailValue] = useState("");
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   useEffect(() => {
-    // Pick a random footer message per page load
+    // Pick a random footer message per page load. Messages come only from
+    // Sanity (Global Config → Footer Messages); nothing renders if none are set.
     const messages =
-      config?.footerMessages?.map((m) => m.text).filter(Boolean) ??
-      DEFAULT_FOOTER_MESSAGES;
+      config?.footerMessages?.map((m) => m.text).filter(Boolean) ?? [];
+    if (messages.length === 0) return;
     const idx = Math.floor(Math.random() * messages.length);
     setFooterMessage(messages[idx] ?? null);
   }, [config]);
@@ -199,7 +123,7 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
               Stay in the Loop
             </h3>
             {emailSubmitted ? (
-              <p className="text-sm opacity-85">You're on the list. See you soon.</p>
+              <p className="text-sm opacity-85">You&apos;re on the list. See you soon.</p>
             ) : (
               <form onSubmit={handleEmailSubmit} className="flex flex-col gap-2">
                 <label htmlFor="footer-email" className="text-sm opacity-80">
@@ -250,32 +174,24 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
         </div>
       </div>
 
-      {/* Bottom bar */}
+      {/* Bottom bar — extra bottom padding keeps the fixed chat button and
+          late-night strip from covering it */}
       <div
-        className="border-t px-4 pt-4 pb-4 sm:px-6"
+        className="border-t px-4 pt-4 pb-32 sm:px-6 md:pb-24"
         style={{ borderColor: "rgba(255,255,255,0.1)" }}
       >
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 text-xs opacity-60 sm:flex-row">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 text-xs sm:flex-row">
+          <p className="opacity-60">&copy; {new Date().getFullYear()} Hop Yard Ale Works. All rights reserved.</p>
           {footerMessage && (
-            <p className="italic">{footerMessage}</p>
+            <p className="italic opacity-60">{footerMessage}</p>
           )}
-          <p>&copy; {new Date().getFullYear()} Hop Yard Ale Works. All rights reserved.</p>
-          <a href="/pour/" className="hover:opacity-100 transition-opacity" style={{ opacity: 0.3 }}>
+          <a
+            href="/pour/"
+            className="opacity-20 hover:opacity-100 transition-opacity"
+            aria-label="Pour a pint"
+          >
             🍺
           </a>
-        </div>
-      </div>
-
-      {/* Marquee — absolute bottom of the page */}
-      <div style={{ overflow: "hidden", lineHeight: 0 }} aria-hidden="true">
-        <div style={{
-          display: "flex",
-          animation: `marquee-px 40s linear infinite`,
-          ["--shift" as string]: `${MARQUEE_SHIFT}px`,
-        }}>
-          {[...MARQUEE_TILES, ...MARQUEE_TILES].map((tile, i) => (
-            <MarqueeTile key={i} tile={tile} />
-          ))}
         </div>
       </div>
     </footer>
