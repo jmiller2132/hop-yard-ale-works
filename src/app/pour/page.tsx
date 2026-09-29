@@ -1,11 +1,23 @@
-import PourGame from "@/components/game/PourGame";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Perfect Pour — Hop Yard Ale Works",
+  title: "Tap Rush — Hop Yard Ale Works",
   robots: { index: false, follow: false },
 };
 
-export default function PourPage() {
-  return <PourGame />;
+export default function TapRushPage() {
+  return (
+    <iframe
+      src="/tap-rush.html"
+      style={{
+        position: "fixed",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        border: "none",
+        display: "block",
+      }}
+      title="Tap Rush"
+    />
+  );
 }
