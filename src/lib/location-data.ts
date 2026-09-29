@@ -271,6 +271,14 @@ export function addressLines(slug: LocationSlug): [string, string] {
   return [l.street, `${l.city}, ${l.region} ${l.postalCode}`];
 }
 
+/** localStorage key for the last location page visited. */
+export const LOCATION_STORAGE_KEY = "hyw-location";
+
+export function readStoredLocation(): LocationSlug | null {
+  const saved = localStorage.getItem(LOCATION_STORAGE_KEY);
+  return saved === "appleton" || saved === "the-falls" ? saved : null;
+}
+
 export function locationFromPath(pathname: string): LocationSlug | null {
   if (pathname.startsWith("/the-falls")) return "the-falls";
   if (pathname.startsWith("/appleton")) return "appleton";

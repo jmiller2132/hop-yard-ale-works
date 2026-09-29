@@ -21,7 +21,7 @@ export default function PrivacyPolicyPage() {
           style={{ color: "var(--color-ink)" }}
         >
           <p>
-            <strong>Last updated:</strong> May 2026
+            <strong>Last updated:</strong> September 2026
           </p>
 
           <section>
@@ -63,6 +63,22 @@ export default function PrivacyPolicyPage() {
               This site uses Vercel Analytics, a privacy-first analytics service
               that does not use cookies and does not collect personally identifiable
               information. No cookie consent banner is required.
+            </p>
+          </section>
+
+          <section>
+            <h2
+              className="font-heading text-xl font-bold mb-2"
+              style={{ color: "var(--color-teal)" }}
+            >
+              Chat Assistant
+            </h2>
+            <p>
+              The chat assistant on this site answers from our FAQ and menus. When it
+              can&apos;t answer a question, the text of that question (with email
+              addresses and phone numbers removed) and the page you were on are
+              recorded through Vercel Analytics so we can add better answers. Please
+              don&apos;t type personal information into the chat.
             </p>
           </section>
 

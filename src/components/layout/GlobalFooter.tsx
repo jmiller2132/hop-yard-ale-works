@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { LOCATIONS, addressLines, hoursSummary, type LocationSlug } from "@/lib/location-data";
+import { SOCIAL_LINKS } from "@/lib/site";
 import type { GlobalConfig } from "@/types";
 
 interface GlobalFooterProps {
@@ -24,13 +25,6 @@ const NAV_LINKS = [
 const FOOTER_LOCATIONS: { slug: LocationSlug; heading: string }[] = [
   { slug: "appleton", heading: "Appleton" },
   { slug: "the-falls", heading: "Menomonee Falls" },
-];
-
-const SOCIAL_LINKS = [
-  { label: "Instagram", href: "https://www.instagram.com/hopyardaleworks/", icon: "instagram" },
-  { label: "Facebook", href: "https://www.facebook.com/hopyardaleworks/", icon: "facebook" },
-  { label: "Untappd", href: "https://untappd.com/HopYardAleWorks", icon: "untappd" },
-  { label: "Linktree", href: "https://linktr.ee/hopyardaleworks", icon: "linktree" },
 ];
 
 export default function GlobalFooter({ config }: GlobalFooterProps) {

@@ -1,157 +1,22 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { LOCATIONS, hoursSummaryText } from "@/lib/location-data";
+import { usePathname } from "next/navigation";
+import { track } from "@vercel/analytics";
+import { answer, redactForLogging, type ChatContext, type ChatLink } from "@/lib/chatbot";
+import { locationFromPath, readStoredLocation } from "@/lib/location-data";
 
 interface Message {
   id: string;
   role: "bot" | "user";
   text: string;
-  links?: { label: string; href: string }[];
+  links?: ChatLink[];
 }
 
-// ─── Intent definitions ───────────────────────────────────────────────────────
-
-interface Intent {
-  keywords: string[];
-  response: { text: string; links?: { label: string; href: string }[] };
+interface ChatBotProps {
+  faqs: ChatContext["faqs"];
+  holidayOverrides: ChatContext["holidayOverrides"];
 }
-
-const INTENTS: Intent[] = [
-  {
-    keywords: ["hour", "open", "close", "when", "today", "schedule", "time", "kitchen", "close at", "open at"],
-    response: {
-      text: [
-        "Here are the hours for both locations.",
-        `🍺 Appleton\n${hoursSummaryText("appleton", "\n")}\n${LOCATIONS.appleton.kitchenNote}`,
-        `🍕 Menomonee Falls\n${hoursSummaryText("the-falls", "\n")}\n${LOCATIONS["the-falls"].kitchenNote}`,
-      ].join("\n\n"),
-      links: [
-        { label: "Appleton details", href: "/appleton/" },
-        { label: "The Falls details", href: "/the-falls/" },
-      ],
-    },
-  },
-  {
-    keywords: ["pizza", "food", "eat", "hungry", "menu", "appetizer", "dessert", "topping", "byo", "build your own", "cookie"],
-    response: {
-      text: "We do wood-fired pizza — specialty pies, a build your own option, and a dessert pizza. The full menu is on the Food page.",
-      links: [{ label: "See the food menu", href: "/appleton-food-menu/" }],
-    },
-  },
-  {
-    keywords: ["gluten", "vegan", "dairy", "allerg", "cauliflower", "dietary", "celiac", "nut", "egg", "soy"],
-    response: {
-      text: "Here's the quick rundown:\n• Regular dough: vegan, not gluten-free\n• Cauliflower crust: gluten-free, not vegan\n• Dairy-free cheese available (oat milk)\n• Red sauce: not vegan (ask for garlic oil sub)\n\nNote: flour is in the air in our kitchen, so we can't guarantee 100% gluten-free. If you have a severe allergy, let our bartenders know.",
-      links: [{ label: "Full FAQ", href: "/faq/" }],
-    },
-  },
-  {
-    keywords: ["beer", "tap", "brew", "ipa", "ale", "lager", "hazy", "craft", "draft", "pint", "flight", "stout", "porter", "pale", "sour", "saison", "what's on tap", "what is on tap"],
-    response: {
-      text: "Our tap list rotates regularly — the Drinks page has a live Untappd embed showing exactly what's pouring right now. We never want to give you outdated info on that.",
-      links: [
-        { label: "Appleton tap list", href: "/appleton-drinks-menu/" },
-        { label: "The Falls tap list", href: "/the-falls-drinks-menu/" },
-      ],
-    },
-  },
-  {
-    keywords: ["wine", "rosé", "rose", "prosecco", "moscato", "riesling", "chardonnay", "pinot", "sauvignon", "cabernet", "bubbly", "sparkling"],
-    response: {
-      text: "We carry a rotating selection of reds, whites, rosés, and sparkling at both locations. The Falls also offers wine by the bottle.",
-      links: [
-        { label: "Appleton drinks", href: "/appleton-drinks-menu/" },
-        { label: "The Falls drinks", href: "/the-falls-drinks-menu/" },
-      ],
-    },
-  },
-  {
-    keywords: ["cider", "seltzer", "non-alcoholic", "non alcoholic", "na ", "n/a", "no alcohol", "athletic", "mocktail", "soda", "water", "buzzkill", "liquid death"],
-    response: {
-      text: "Yes — we have non-alcoholic beers, wines, sparkling options, craft sodas, and canned water. The Drinks menu has the full list.",
-      links: [
-        { label: "Appleton drinks", href: "/appleton-drinks-menu/" },
-        { label: "The Falls drinks", href: "/the-falls-drinks-menu/" },
-      ],
-    },
-  },
-  {
-    keywords: ["where", "address", "direction", "located", "location", "find us", "map", "parking", "appleton", "menomonee", "falls", "kimberly", "northland"],
-    response: {
-      text: "We have two locations:\n\n📍 Appleton\n512 W Northland Ave, Appleton, WI 54911\n\n📍 Menomonee Falls\nN88W16521 Main St, Menomonee Falls, WI 53051",
-      links: [
-        { label: "Get directions to Appleton", href: "https://maps.app.goo.gl/9N2389HKdPiMQgzL7" },
-        { label: "Get directions to The Falls", href: "https://maps.app.goo.gl/DWFo5Du6CZfUqkt7A" },
-      ],
-    },
-  },
-  {
-    keywords: ["event", "music", "live", "sunday", "show", "concert", "band", "trivia", "oktoberfest", "flick", "movie", "paperfest", "calendar"],
-    response: {
-      text: "Appleton has live music most Sundays outside of football season. The Events page has everything we have coming up at both locations.",
-      links: [{ label: "See upcoming events", href: "/events/" }],
-    },
-  },
-  {
-    keywords: ["reservation", "reserv", "book", "table", "seat", "walk-in", "walk in", "wait", "hold table"],
-    response: {
-      text: "We don't take reservations — first come, first served. You're welcome to come a bit early and hold tables for your group (max 3 tables per group).",
-      links: [{ label: "Visit info", href: "/faq/" }],
-    },
-  },
-  {
-    keywords: ["dog", "pet", "pup", "leash", "outside", "patio"],
-    response: {
-      text: "Dogs are welcome outside:\n• Appleton: outside patio\n• Menomonee Falls: back patio and front sidewalks\n\nMust be well-behaved and leashed. Registered service animals are welcome inside with proof of certification.",
-    },
-  },
-  {
-    keywords: ["kid", "child", "children", "family", "age", "minor", "baby"],
-    response: {
-      text: "Yes — we're all-ages at both locations. Kids are welcome.",
-    },
-  },
-  {
-    keywords: ["private event", "private party", "group event", "large group", "rent", "buyout", "hire", "corporate"],
-    response: {
-      text: "We do private events!\n• Appleton: Mondays or Tuesdays (when we're closed to the public). Email hopyardaleworks@gmail.com.\n• Menomonee Falls: Any day we're open, contract required. Email hopyardthefalls@gmail.com.\n\nOr use the contact form.",
-      links: [{ label: "Contact us", href: "/contact/" }],
-    },
-  },
-  {
-    keywords: ["order online", "order", "pickup", "takeout", "take out", "to go", "toast", "delivery"],
-    response: {
-      text: "You can order online for pickup or delivery through Toast and third-party delivery services at both locations.",
-      links: [
-        { label: "Order — Appleton", href: LOCATIONS.appleton.orderOnlineUrl },
-        { label: "Order — The Falls", href: LOCATIONS["the-falls"].orderOnlineUrl },
-      ],
-    },
-  },
-  {
-    keywords: ["tab", "card", "pay", "payment", "credit", "cash", "tip", "gratuity"],
-    response: {
-      text: "Open a tab with any credit or debit card — we hand it right back, no info stored. If you need to leave during a busy period, we'll close it with the card on file (includes 15% gratuity).",
-    },
-  },
-  {
-    keywords: ["phone", "call", "contact", "email", "reach", "get in touch", "message"],
-    response: {
-      text: "We don't have a public phone number. Best way to reach us is through the contact form, or message us on Instagram or Facebook.",
-      links: [
-        { label: "Contact form", href: "/contact/" },
-      ],
-    },
-  },
-  {
-    keywords: ["about", "owner", "who are", "oliver", "amy", "behm", "story", "history", "founded"],
-    response: {
-      text: "Hop Yard Ale Works was started by Oliver and Amy Behm, who grew up in the Fox Valley with a shared love for food and beer. Read the full story on our About page.",
-      links: [{ label: "About us", href: "/about/" }],
-    },
-  },
-];
 
 const WELCOME: Message = {
   id: "welcome",
@@ -159,29 +24,12 @@ const WELCOME: Message = {
   text: "Hey — what can I help you find? Ask about hours, food, beer, events, or getting here.",
 };
 
-function matchIntent(input: string): { text: string; links?: { label: string; href: string }[] } {
-  const lower = input.toLowerCase();
-  for (const intent of INTENTS) {
-    if (intent.keywords.some((kw) => lower.includes(kw))) {
-      return intent.response;
-    }
-  }
-  return {
-    text: "Hmm, I'm not sure about that one. Here are a few places that might help:",
-    links: [
-      { label: "FAQ", href: "/faq/" },
-      { label: "Food menu", href: "/appleton-food-menu/" },
-      { label: "Events", href: "/events/" },
-      { label: "Contact us", href: "/contact/" },
-    ],
-  };
-}
-
 function uid() {
   return Math.random().toString(36).slice(2);
 }
 
-export default function ChatBot() {
+export default function ChatBot({ faqs, holidayOverrides }: ChatBotProps) {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([WELCOME]);
   const [input, setInput] = useState("");
@@ -207,12 +55,20 @@ export default function ChatBot() {
     setIsTyping(true);
 
     setTimeout(() => {
-      const response = matchIntent(text);
+      const location = locationFromPath(pathname) ?? readStoredLocation();
+      const { intent, ...response } = answer(text, { location, faqs, holidayOverrides });
+      if (intent === "fallback" || intent.startsWith("unposted:")) {
+        track("Chatbot unanswered", {
+          question: redactForLogging(text),
+          topic: intent,
+          page: pathname,
+        });
+      }
       const botMsg: Message = { id: uid(), role: "bot", ...response };
       setMessages((prev) => [...prev, botMsg]);
       setIsTyping(false);
     }, 600);
-  }, [input]);
+  }, [input, pathname, faqs, holidayOverrides]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {

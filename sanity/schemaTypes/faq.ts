@@ -28,6 +28,15 @@ export const faqSchema = defineType({
       ]},
       validation: (r) => r.required(),
     }),
+    defineField({
+      name: "chatKeywords",
+      title: "Chat assistant keywords",
+      description:
+        "Words or short phrases that should make the website chat assistant reply with this answer (e.g. \"gift card\", \"growler\"). A word also matches longer words that start with it, so \"growler\" matches \"growlers\".",
+      type: "array",
+      of: [{ type: "string" }],
+      options: { layout: "tags" },
+    }),
   ],
   preview: {
     select: { title: "question", subtitle: "category" },

@@ -140,6 +140,7 @@ export interface FAQ {
   answer: string;
   category: "hours" | "visit" | "food" | "drinks" | "events" | "contact" | "general";
   location?: { name: string; slug: { current: string } };
+  chatKeywords?: string[] | null;
 }
 
 export interface OpenClosedStatus {

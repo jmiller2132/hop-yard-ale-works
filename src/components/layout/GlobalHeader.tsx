@@ -6,14 +6,18 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { urlFor } from "@/lib/sanity/client";
-import { LOCATIONS, locationFromPath, type LocationSlug } from "@/lib/location-data";
+import {
+  LOCATIONS,
+  LOCATION_STORAGE_KEY,
+  locationFromPath,
+  readStoredLocation,
+  type LocationSlug,
+} from "@/lib/location-data";
 import type { SeasonalTheme } from "@/types";
 
 interface GlobalHeaderProps {
   activeTheme?: SeasonalTheme | null;
 }
-
-const LOCATION_STORAGE_KEY = "hyw-location";
 
 function normalizePath(pathname: string): string {
   return pathname.replace(/\/+$/, "") || "/";
@@ -56,11 +60,6 @@ const EASTER_EGG_POOL = [
 function subscribeToStorage(onChange: () => void) {
   window.addEventListener("storage", onChange);
   return () => window.removeEventListener("storage", onChange);
-}
-
-function readStoredLocation(): LocationSlug | null {
-  const saved = localStorage.getItem(LOCATION_STORAGE_KEY);
-  return saved === "appleton" || saved === "the-falls" ? saved : null;
 }
 
 function getPageType(path: string): string | null {

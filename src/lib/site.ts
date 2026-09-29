@@ -10,11 +10,14 @@ export const SITE_URL = (
 export const IS_PRODUCTION_DEPLOY =
   process.env.VERCEL_ENV === undefined || process.env.VERCEL_ENV === "production";
 
-export const SOCIAL_PROFILES = [
-  "https://www.instagram.com/hopyardaleworks/",
-  "https://www.facebook.com/hopyardaleworks/",
-  "https://untappd.com/HopYardAleWorks",
+export const SOCIAL_LINKS = [
+  { label: "Instagram", href: "https://www.instagram.com/hopyardaleworks/", icon: "instagram" },
+  { label: "Facebook", href: "https://www.facebook.com/hopyardaleworks/", icon: "facebook" },
+  { label: "Untappd", href: "https://untappd.com/HopYardAleWorks", icon: "untappd" },
+  { label: "Linktree", href: "https://linktr.ee/hopyardaleworks", icon: "linktree" },
 ];
+
+export const SOCIAL_PROFILES = SOCIAL_LINKS.slice(0, 3).map((s) => s.href);
 
 export function absoluteUrl(path: string): string {
   return `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;

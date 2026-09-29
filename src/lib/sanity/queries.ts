@@ -136,6 +136,16 @@ export const faqsByCategoryQuery = groq`
   }
 `;
 
+export const chatbotDataQuery = groq`
+  {
+    "faqs": *[_type == "faq"] { _id, question, answer, chatKeywords },
+    "locations": *[_type == "location"] {
+      "slug": slug.current,
+      holidayOverrides[] { date, label, hoursNote }
+    }
+  }
+`;
+
 export const liveMusicTodayQuery = groq`
   count(*[
     _type == "event" &&

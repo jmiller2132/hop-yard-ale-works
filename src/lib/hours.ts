@@ -16,10 +16,13 @@ function timeToMinutes(timeStr: string): number {
   return hours * 60 + minutes;
 }
 
+/** Current wall-clock time in Wisconsin, as a local Date. */
+export function chicagoNow(): Date {
+  return new Date(new Date().toLocaleString("en-US", { timeZone: "America/Chicago" }));
+}
+
 export function computeOpenClosed(location: Location): OpenClosedStatus {
-  const now = new Date(
-    new Date().toLocaleString("en-US", { timeZone: "America/Chicago" })
-  );
+  const now = chicagoNow();
 
   const dayOfWeek = now.getDay();
   const dayName = DAYS[dayOfWeek];
@@ -84,16 +87,10 @@ function findNextOpenDay(location: Location, currentDayIndex: number): string {
 }
 
 export function isLateNight(): boolean {
-  const now = new Date(
-    new Date().toLocaleString("en-US", { timeZone: "America/Chicago" })
-  );
-  const hour = now.getHours();
+  const hour = chicagoNow().getHours();
   return hour >= 0 && hour < 5;
 }
 
 export function isSunday(): boolean {
-  const now = new Date(
-    new Date().toLocaleString("en-US", { timeZone: "America/Chicago" })
-  );
-  return now.getDay() === 0;
+  return chicagoNow().getDay() === 0;
 }

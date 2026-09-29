@@ -10,8 +10,10 @@ import ChatBot from "@/components/chat/ChatBot";
 import KonamiCode from "@/components/ui/KonamiCode";
 import TabTitleInactivity from "@/components/ui/TabTitleInactivity";
 import { sanityClient } from "@/lib/sanity/client";
-import { activeSeasonalThemeQuery, globalConfigQuery } from "@/lib/sanity/queries";
-import type { SeasonalTheme, GlobalConfig } from "@/types";
+import { activeSeasonalThemeQuery, chatbotDataQuery, globalConfigQuery } from "@/lib/sanity/queries";
+import type { SeasonalTheme, GlobalConfig, HolidayOverride } from "@/types";
+import type { ChatFaq } from "@/lib/chatbot";
+import type { LocationSlug } from "@/lib/location-data";
 import { isLateNight } from "@/lib/hours";
 import { IS_PRODUCTION_DEPLOY, SITE_URL } from "@/lib/site";
 
@@ -61,14 +63,24 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   // Fetch global data server-side
-  const [activeTheme, globalConfig] = await Promise.all([
+  const [activeTheme, globalConfig, chatbotData] = await Promise.all([
     sanityClient
       .fetch<SeasonalTheme | null>(activeSeasonalThemeQuery)
       .catch(() => null),
     sanityClient
       .fetch<GlobalConfig | null>(globalConfigQuery)
       .catch(() => null),
+    sanityClient
+      .fetch<{
+        faqs: ChatFaq[];
+        locations: { slug: string; holidayOverrides: HolidayOverride[] | null }[];
+      }>(chatbotDataQuery)
+      .catch(() => null),
   ]);
+
+  const chatHolidayOverrides: Partial<Record<LocationSlug, HolidayOverride[]>> = Object.fromEntries(
+    (chatbotData?.locations ?? []).map((l) => [l.slug, l.holidayOverrides ?? []]),
+  );
 
   const themeAttr =
     activeTheme?.accentPalette && activeTheme.accentPalette !== "default"
@@ -101,7 +113,7 @@ export default async function RootLayout({
             You&apos;re up late. So is the dough.
           </p>
         )}
-        <ChatBot />
+        <ChatBot faqs={chatbotData?.faqs ?? []} holidayOverrides={chatHolidayOverrides} />
         <KonamiCode />
         <TabTitleInactivity />
         <Analytics />
