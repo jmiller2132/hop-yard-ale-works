@@ -102,7 +102,7 @@ export default async function TheFallsPage() {
               </h2>
               <HoursTable rows={hoursRows("the-falls")} />
               <p className="mt-3 text-sm" style={{ color: "var(--color-muted)" }}>
-                {INFO.kitchenNote} {INFO.hoursFootnote} Hours subject to change on holidays.
+                {INFO.kitchenNote} Hours subject to change on holidays.
               </p>
               <WeatherNudge locationSlug="the-falls" drinksHref="/the-falls-drinks-menu/" />
             </div>
@@ -140,7 +140,7 @@ export default async function TheFallsPage() {
               <div className="space-y-2 text-sm leading-relaxed" style={{ color: "var(--color-ink)" }}>
                 <p>
                   A relaxed taproom in the heart of Menomonee Falls. Come for a pint and
-                  some wood-fired pizza — evenings Tuesday through Thursday, all day Friday and Saturday.
+                  some wood-fired pizza — evenings Tuesday through Thursday, all day Friday and Saturday, and Sunday until 4.
                 </p>
                 <p>
                   New to craft beer? The bar is happy to walk you through what&rsquo;s on.
@@ -175,7 +175,8 @@ export default async function TheFallsPage() {
                 contract required to reserve.
               </p>
               <ul className="mt-5 space-y-2">
-                {["Up to 80 guests", "Full bar service included", "Pizza menu available", "Any day we're open"].map((item) => (
+                  {/* TODO: confirm with owner — guest capacity for private events */}
+                {["Full bar service included", "Pizza menu available", "Any day we're open"].map((item) => (
                   <li key={item} className="flex items-center gap-2 text-sm" style={{ color: "rgba(255,255,255,0.75)" }}>
                     <span style={{ color: "var(--color-green)" }}>✓</span>
                     {item}

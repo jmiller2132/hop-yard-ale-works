@@ -24,7 +24,7 @@ const INTENTS: Intent[] = [
       text: [
         "Here are the hours for both locations.",
         `🍺 Appleton\n${hoursSummaryText("appleton", "\n")}\n${LOCATIONS.appleton.kitchenNote}`,
-        `🍕 Menomonee Falls\n${hoursSummaryText("the-falls", "\n")}\n${LOCATIONS["the-falls"].kitchenNote} ${LOCATIONS["the-falls"].hoursFootnote ?? ""}`.trim(),
+        `🍕 Menomonee Falls\n${hoursSummaryText("the-falls", "\n")}\n${LOCATIONS["the-falls"].kitchenNote}`,
       ].join("\n\n"),
       links: [
         { label: "Appleton details", href: "/appleton/" },
@@ -89,8 +89,7 @@ const INTENTS: Intent[] = [
   {
     keywords: ["event", "music", "live", "sunday", "show", "concert", "band", "trivia", "oktoberfest", "flick", "movie", "paperfest", "calendar"],
     response: {
-      // TODO: confirm with owner — whether live music is a regular thing (and when).
-      text: "The Events page has everything we have coming up at both locations.",
+      text: "Appleton has live music most Sundays outside of football season. The Events page has everything we have coming up at both locations.",
       links: [{ label: "See upcoming events", href: "/events/" }],
     },
   },

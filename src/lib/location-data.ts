@@ -35,7 +35,6 @@ export interface LocationInfo {
   tagline: string;
   hours: Record<Day, DaySchedule>;
   kitchenNote: string;
-  hoursFootnote?: string;
   paths: { home: string; food: string; drinks: string };
 }
 
@@ -87,9 +86,7 @@ export const LOCATIONS: Record<LocationSlug, LocationInfo> = {
       "https://order.toasttab.com/online/hop-yard-ale-works-menomonee-falls-n88w16521-main-street",
     tagline: "Pizza-forward taproom.",
     hours: {
-      // Sunday 11 AM–4 PM is seasonal and ended Labor Day 2026.
-      // TODO: confirm with owner when Sunday hours resume.
-      Sunday: null,
+      Sunday: { open: "11:00", close: "16:00" },
       Monday: null,
       Tuesday: FALLS_WEEKNIGHT,
       Wednesday: FALLS_WEEKNIGHT,
@@ -97,8 +94,7 @@ export const LOCATIONS: Record<LocationSlug, LocationInfo> = {
       Friday: FALLS_WEEKEND,
       Saturday: FALLS_WEEKEND,
     },
-    kitchenNote: "Kitchen closes 1 hour before close.",
-    hoursFootnote: "Sunday hours (11 AM–4 PM) are seasonal and ended Labor Day.",
+    kitchenNote: "Kitchen closes 1 hour before close Tue–Sat, and at 4 PM on Sunday.",
     paths: {
       home: "/the-falls/",
       food: "/the-falls-food-menu/",

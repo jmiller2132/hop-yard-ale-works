@@ -158,10 +158,10 @@ export default async function AppletonPage() {
                   A neighborhood taproom with a working brewhouse in the back. All the beer
                   served at both locations is brewed here. Come to drink it fresh.
                 </p>
-                {/* TODO: confirm with owner — "live music most Sundays" */}
                 <p>
                   Wood-fired pizza, a full tap list that rotates regularly, and live music
-                  most Sundays. Good for a quick pint or a full evening out.
+                  most Sundays outside of football season. Good for a quick pint or a full
+                  evening out.
                 </p>
               </div>
             </div>

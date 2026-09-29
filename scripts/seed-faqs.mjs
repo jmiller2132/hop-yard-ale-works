@@ -27,7 +27,7 @@ const FAQS = [
   { _id: "faq-visit-08", question: "Can I bring outside food or drinks?", answer: "Outside beverages aren't allowed — wristband must be worn to purchase alcohol at ticketed events. Outside food is generally not allowed, but reach out if you have a specific situation.", category: "visit" },
 
   // ── Hours ─────────────────────────────────────────────────────────────────
-  { _id: "faq-hours-01", question: "What are your hours?", answer: "Appleton: Wed–Sat 11 AM–10 PM, Sun 11 AM–4 PM, Mon–Tue Closed.\nMenomonee Falls: Tue–Thu 4–10 PM, Fri–Sat 11 AM–10 PM, Sun–Mon Closed. (Falls Sunday hours, 11 AM–4 PM, are seasonal and ended Labor Day.)\nHours may vary on holidays — check our Events page or social media for updates.", category: "hours" },
+  { _id: "faq-hours-01", question: "What are your hours?", answer: "Appleton: Wed–Sat 11 AM–10 PM, Sun 11 AM–4 PM, Mon–Tue Closed.\nMenomonee Falls: Tue–Thu 4–10 PM, Fri–Sat 11 AM–10 PM, Sun 11 AM–4 PM, Mon Closed.\nHours may vary on holidays — check our Events page or social media for updates.", category: "hours" },
   { _id: "faq-hours-02", question: "Are you open on holidays?", answer: "We typically close or reduce hours around major holidays. The best way to know is to check our Events page — we post closure and early-close notices there in advance.", category: "hours" },
   { _id: "faq-hours-03", question: "Do both locations have the same hours?", answer: "No — the hours are different. Appleton is the brewhouse and is open Wednesday through Sunday. Menomonee Falls is open Tuesday through Saturday. See our Locations pages for full details.", category: "hours" },
 
@@ -49,7 +49,7 @@ const FAQS = [
 
   // ── Events ────────────────────────────────────────────────────────────────
   { _id: "faq-events-01", question: "How can I find out about upcoming events?", answer: "The best place is our Events page on this site. We also post updates on Instagram and Facebook. Live music is primarily at the Appleton location.", category: "events" },
-  { _id: "faq-events-02", question: "Do you host live music?", answer: "Yes — we have live music most Sundays at Appleton. Check the Events page for confirmed dates and artists.", category: "events" },
+  { _id: "faq-events-02", question: "Do you host live music?", answer: "Yes — we have live music most Sundays at Appleton outside of football season. Check the Events page for confirmed dates and artists.", category: "events" },
   { _id: "faq-events-03", question: "Can I host a private event or large group?", answer: "Reach out via the Contact page and select 'Private event / large group' as your subject. Tell us your date, group size, and which location you have in mind and we'll go from there.", category: "events" },
 
   // ── Contact / General ─────────────────────────────────────────────────────
