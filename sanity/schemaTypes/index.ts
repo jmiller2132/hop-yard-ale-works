@@ -7,6 +7,7 @@ import { seasonalThemeSchema } from "./seasonalTheme";
 import { globalConfigSchema } from "./globalConfig";
 import { faqSchema } from "./faq";
 import { contactSubmissionSchema } from "./contactSubmission";
+import { tapRushBoardSchema } from "./tapRushBoard";
 
 export const schemaTypes = [
   locationSchema,
@@ -18,4 +19,5 @@ export const schemaTypes = [
   globalConfigSchema,
   faqSchema,
   contactSubmissionSchema,
+  tapRushBoardSchema,
 ];

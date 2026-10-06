@@ -47,6 +47,9 @@ export default defineConfig({
             S.listItem()
               .title("Contact Submissions")
               .child(S.documentTypeList("contactSubmission")),
+            S.listItem()
+              .title("Tap Rush Leaderboards")
+              .child(S.documentTypeList("tapRushBoard")),
           ]),
     }),
     visionTool(),
