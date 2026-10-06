@@ -17,7 +17,7 @@ const TIME_ZONE = "America/Chicago";
 // Mirrors the blocked list inside public/tap-rush.html so the server can't be used to bypass it.
 const BLOCKED = new Set([
   "ASS", "CUM", "DIK", "DIC", "FAG", "FCK", "FUC", "FUK", "FUQ", "JIZ", "KKK",
-  "NIG", "NGR", "SEX", "TIT", "WTF", "POO", "PEE", "GAY", "HOE", "XXX", "KYS",
+  "NIG", "NGR", "SEX", "TIT", "GAY", "HOE", "XXX", "KYS",
 ]);
 
 export type PublicEntry = { name: string; score: number };
