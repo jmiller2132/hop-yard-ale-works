@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Zilla_Slab, Inter } from "next/font/google";
+import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
@@ -28,6 +29,13 @@ const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
+});
+
+const wooderson = localFont({
+  src: "../fonts/wooderson-crisp.otf",
+  variable: "--font-wooderson",
+  display: "swap",
+  weight: "400",
 });
 
 export const metadata: Metadata = {
@@ -92,7 +100,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={`${zillaSlab.variable} ${inter.variable}`}
+      className={`${zillaSlab.variable} ${inter.variable} ${wooderson.variable}`}
       {...(themeAttr ? { "data-theme": themeAttr } : {})}
     >
       <body className="flex min-h-screen flex-col" style={{ fontFamily: "var(--font-body)" }}>
