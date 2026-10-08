@@ -279,7 +279,7 @@ const INTENTS: Intent[] = [
     links: () => [CONTACT_LINK],
   }),
   faqIntent("tours", "faq-drinks-09", ["tour"]),
-  faqIntent("kids-menu", "faq-food-08", ["kids menu", "kid menu", "kid's menu", "kids' menu", "menu for kids", "childrens menu", "children's menu", "kids meal", "kid size"], {
+  faqIntent("kids-menu", "faq-food-08", ["kids menu", "kid menu", "kid's menu", "kids' menu", "menu for kids", "childrens menu", "children's menu", "kids meal", re(/\bkids? size/, 3)], {
     links: (q) => locationLinks(q.location, "food", "Food menu"),
   }),
   faqIntent("atmosphere", "faq-visit-16", ["loud", "noisy", "quiet", "busy", "crowded"]),
@@ -290,6 +290,12 @@ const INTENTS: Intent[] = [
   faqIntent("order-at-bar", "faq-visit-05", ["order at the bar", "order at the counter", "at the bar", "where do i order", "table service", "counter service", "server", "waiter", "waitress"]),
   faqIntent("outside-food", "faq-visit-08", ["outside food", "outside drink", "outside beverage", "bring food", "bring in food", "bring my own", "bring our own", "bring snacks", "own food", "own drinks", "byob"]),
   faqIntent("cover", "faq-visit-02", ["cover", "entry fee", "admission", "to get in", re(/\bfees?\b/)]),
+  faqIntent("pizza-size", "faq-food-09", [
+    "slices", re(/\bfeeds?\b/),
+    re(/\b(how big|how large|sizes?|sized|inch|inches|diameter)\b.*\b(pizzas?|pies?)\b|\b(pizzas?|pies?)\b.*\b(how big|how large|sizes?|sized|inch|inches|diameter)\b/, 3),
+  ], {
+    links: (q) => locationLinks(q.location, "food", "Food menu"),
+  }),
   faqIntent("scratch", "faq-food-02", ["scratch", "homemade", "home made", "house made", "made in house", "made fresh", "fresh dough", "own dough", "make dough", "make your dough", "make the dough", "dough made"]),
   faqIntent("local", "faq-food-06", ["local", "sourced", "ingredient", "farm"]),
   {

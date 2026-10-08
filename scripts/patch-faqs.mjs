@@ -61,6 +61,7 @@ const PATCHES = [
   { _id: "faq-visit-16", question: "How busy does it get?", answer: "It can get pretty busy. We don't take reservations, so if you're coming with a group, it helps to arrive a little early and hold tables (up to 3 per group).", category: "visit" },
   { _id: "faq-visit-17", question: "Do you have a patio?", answer: "Appleton has an outside patio and Menomonee Falls has a back patio. Patio seating is seasonal, and the patios aren't heated. Well-behaved, leashed dogs are welcome out there too.", category: "visit" },
   { _id: "faq-visit-18", question: "How old do you have to be to drink?", answer: "You must be 21 or older to be served alcohol.", category: "visit" },
+  { _id: "faq-food-09", question: "How big are the pizzas?", answer: "Our pizzas are roughly 10 inches. Every crust is hand-pulled, so the size can vary a little.", category: "food" },
   { _id: "faq-food-08", question: "Do you have a kids menu?", answer: "No — we don't have a kids menu or kid-size options.", category: "food" },
   { _id: "faq-drinks-07", question: "Do you sell beer to go?", answer: "Yes — we sell 4-packs of select beers to go.", category: "drinks" },
   { _id: "faq-drinks-08", question: "Do you serve cocktails or liquor?", answer: "We carry some ready-to-drink (RTD) cocktails, along with beer, wine, cider, and seltzer.", category: "drinks" },
