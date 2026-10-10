@@ -1869,18 +1869,37 @@
         // HOP YARD lettering in plain white (left of the orange wall)
         drawText('HOP', 46*P, 8*P, {s:2, align:'center', col:'#f1ede4'});
         drawText('YARD', 46*P, 23*P, {s:2, align:'center', col:'#f1ede4'});
-        // the orange feature wall with TVs, the Hop Man sign and Edison bulbs
-        box(92, 7, 116, 34, '#6e3f1c'); box(94, 9, 112, 32, '#e2782c');
-        for(var tv=0; tv<2; tv++){ var tx = tv ? 170 : 101;
-          box(tx, 14, 29, 17, '#141414'); box(tx+1, 15, 27, 15, '#1f4f96');
-          for(var ln=0; ln<5; ln++) box(tx+3, 17 + ln*2.5, 8 + ((ln*5 + tv*3) % 13), 1, ['#9be070','#ffd23f','#f4f2ea','#ff6a4d','#9be070'][ln]);
+        // the cream feature wall with green hop line art, framed by wide wood slats
+        function slats(x0, x1){
+          box(x0, 4, x1 - x0, 37, '#141414');
+          for(var sx=x0 + 1; sx<x1 - 1; sx+=3){ box(sx, 4, 2, 37, '#cfa874'); box(sx, 4, 1, 37, '#e0bd8a'); }
+          box(x0, 4, 1, 37, '#8a6438'); box(x1 - 1, 4, 1, 37, '#8a6438');
         }
-        box(136, 11, 28, 30, '#141414'); box(137, 12, 26, 29, '#c9a46a');
-        blit(spr('hopman'), 141*P, 11*P);
-        // the green moss "Cheers!" wall, to the right of the orange wall
-        box(214, 8, 80, 30, '#6e3f1c'); box(216, 10, 76, 26, '#3f7d2c');
-        for(var q=0;q<90;q++) box(217 + (q*13)%74, 11 + (q*7)%24, 1, 1, q % 3 ? '#4f9a36' : '#356b26');
-        drawText('CHEERS!', 254*P, 20*P, {align:'center', col:'#f4f2ea', sh:'#141414'});
+        slats(76, 98); slats(202, 224);
+        box(98, 4, 104, 37, '#e4d9a8');
+        var BIGHOP = ["....GG.....","...G..G....","..GGGGGG...",".G..G...G..","G..G.G...G.","GGGGGGGGGG.",".G..G..G.G.","G..G.G...G.",".GGGGGGGG..",".G..G..G...","..G.G.G....","..GGGGG....","...G.G.....","....G......"];
+        var SMHOP = ["..G..",".GGG.","G.G.G","GGGGG","G.G.G",".GGG.","..G.."];
+        function art(map, x0, y0){ for(var yy=0;yy<map.length;yy++) for(var xx=0;xx<map[yy].length;xx++) if(map[yy].charAt(xx) === 'G') box(x0 + xx, y0 + yy, 1, 1, '#4f8a3a'); }
+        function vine(x0, y0, x1, y1){ var n = Math.max(Math.abs(x1-x0), Math.abs(y1-y0));
+          for(var k=0;k<=n;k++){ var t = k/n; box(Math.round(x0 + (x1-x0)*t), Math.round(y0 + (y1-y0)*t + Math.sin(t*Math.PI*2)*2), 1, 1, '#4f8a3a'); } }
+        vine(100, 9, 135, 6); vine(165, 6, 200, 9); vine(100, 12, 101, 34); vine(200, 12, 199, 34);
+        art(BIGHOP, 108, 5); art(BIGHOP, 181, 4);
+        art(SMHOP, 125, 8); art(SMHOP, 170, 8); art(SMHOP, 99, 33); art(SMHOP, 196, 33);
+        [[104,7],[132,5],[166,5],[196,7]].forEach(function(l){ box(l[0], l[1], 3, 1, '#4f8a3a'); box(l[0]+1, l[1]-1, 2, 1, '#4f8a3a'); box(l[0]+1, l[1]+1, 1, 1, '#4f8a3a'); });
+        // the beer-list TV and a still Packers game
+        box(102, 23, 26, 15, '#141414'); box(103, 24, 24, 13, '#2a3f9a');
+        for(var ln=0; ln<4; ln++){ box(105, 26 + ln*3, 7, 1, '#9be070'); box(114, 26 + ln*3, 10, 1, '#f4f2ea'); }
+        box(168, 22, 30, 17, '#141414'); box(169, 23, 28, 15, '#3f8a2c');
+        for(var yl=172; yl<197; yl+=6) box(yl, 23, 1, 15, '#7cc95a');
+        [[6,5],[9,9],[12,4],[15,10]].forEach(function(o){ box(169 + o[0], 23 + o[1], 1, 2, '#203731'); box(169 + o[0], 24 + o[1], 1, 1, '#ffb612'); });
+        [[8,7],[11,11],[14,6],[18,8]].forEach(function(o){ box(169 + o[0], 23 + o[1], 1, 2, '#0b162a'); box(169 + o[0], 23 + o[1], 1, 1, '#c83803'); });
+        // the Hop Man cutout, backlit
+        ctx.globalAlpha = 0.35; disc(150, 30, 12, '#fff2c4'); ctx.globalAlpha = 0.25; disc(150, 28, 15, '#fff2c4'); ctx.globalAlpha = 1;
+        blit(spr('hopman'), 141*P, 10*P);
+        // the green moss "Cheers!" wall, to the right of the feature wall
+        box(228, 8, 68, 30, '#6e3f1c'); box(230, 10, 64, 26, '#3f7d2c');
+        for(var q=0;q<80;q++) box(231 + (q*13)%62, 11 + (q*7)%24, 1, 1, q % 3 ? '#4f9a36' : '#356b26');
+        drawText('CHEERS!', 262*P, 13*P, {align:'center', col:'#f4f2ea', sh:'#141414'});   // above Josie's corner icon
       },
       wall: '#2a2e31', seam: '#24282a',
       door: function(r){ box(2, r+1, 13, 17, '#141414'); box(3, r+2, 11, 16, '#3d7a5a'); box(4, r+3, 9, 6, '#356b4f'); box(4, r+10, 9, 7, '#356b4f'); box(12, r+10, 1, 2, '#c9ccd0'); },
@@ -2123,7 +2142,7 @@
       look: function(){ return casualLook(); }
     }
   ];
-  LEVELS[0].anim = function(){ bulbs(98, 204, 0, 9, 3); };
+  LEVELS[0].anim = function(){ bulbs(101, 199, 0, 9, 3); };
   LEVELS[1].anim = function(){ bulbs(8, 120, 4, 16, 2); bulbs(236, 296, 4, 15, 6); };
   LEVELS[2].anim = function(){ var f = Math.floor(now*8) % 3;
     box(142, 33, 17, 5, '#e0601e'); box(145 + f, 32, 9, 4, '#ff9a2e'); box(147 + (f % 2), 34, 5, 3, '#ffd36a'); };
