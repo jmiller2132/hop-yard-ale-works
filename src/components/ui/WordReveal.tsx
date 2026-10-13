@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef, type ElementType, type ReactNode } from "react";
+import React, { useEffect, useRef, type ElementType, type ReactNode } from "react";
 
 interface WordRevealProps {
   children: ReactNode;
   className?: string;
+  style?: React.CSSProperties;
   /** HTML element to render as (default: "div") */
   as?: ElementType;
   delay?: number;
@@ -17,6 +18,7 @@ interface WordRevealProps {
 export default function WordReveal({
   children,
   className = "",
+  style,
   as: Tag = "div",
   delay = 0,
 }: WordRevealProps) {
@@ -58,7 +60,7 @@ export default function WordReveal({
 
   return (
     // @ts-expect-error — polymorphic ref typing
-    <Tag ref={ref} className={className}>
+    <Tag ref={ref} className={className} style={style}>
       {children}
     </Tag>
   );
