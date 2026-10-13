@@ -11,11 +11,10 @@ import QuoteBanner from "@/components/ui/QuoteBanner";
 import TaproomPhotoGrid from "@/components/ui/TaproomPhotoGrid";
 import HeroParallaxImage from "@/components/ui/HeroParallaxImage";
 import RevealOnScroll from "@/components/ui/RevealOnScroll";
-import SpinTheTap from "@/components/ui/SpinTheTap";
 import ScrollPizzaSpin from "@/components/ui/ScrollPizzaSpin";
 import ScrollBeerFill from "@/components/ui/ScrollBeerFill";
-import { fetchAllTapBeers } from "@/lib/untappd-scrape";
-import { UNTAPPD_CONFIG } from "@/lib/untappd";
+import WordReveal from "@/components/ui/WordReveal";
+import TiltCard from "@/components/ui/TiltCard";
 import type { Metadata } from "next";
 import type { Location, TaproomPhoto, SeasonalTheme } from "@/types";
 
@@ -40,14 +39,10 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const [locations, photos, activeTheme, tapBeers] = await Promise.all([
+  const [locations, photos, activeTheme] = await Promise.all([
     sanityClient.fetch<Location[]>(locationsQuery).catch(() => [] as Location[]),
     sanityClient.fetch<TaproomPhoto[]>(taproomPhotosQuery).catch(() => [] as TaproomPhoto[]),
     sanityClient.fetch<SeasonalTheme | null>(activeSeasonalThemeQuery).catch(() => null),
-    fetchAllTapBeers([
-      { breweryId: UNTAPPD_CONFIG.appleton.breweryId, menuId: UNTAPPD_CONFIG.appleton.menuId },
-      { breweryId: UNTAPPD_CONFIG["the-falls"].breweryId, menuId: UNTAPPD_CONFIG["the-falls"].menuId },
-    ]).catch(() => []),
   ]);
 
   const appleton = locationForBadge(
@@ -118,8 +113,6 @@ export default async function HomePage() {
             </p>
           )}
 
-          <SpinTheTap beers={tapBeers.length > 0 ? tapBeers : null} />
-
           <div className="mt-10 grid gap-4 sm:grid-cols-2 sm:gap-6 text-left items-stretch">
             <LocationHeroCard
               name="Appleton"
@@ -156,10 +149,13 @@ export default async function HomePage() {
             style={{ backgroundColor: SECTION.brewed.bg, color: SECTION.brewed.fg }}
           >
             <ScrollBeerFill />
-            <RevealOnScroll>
-              <h2 className="font-display text-4xl uppercase leading-[0.9] sm:text-6xl">
-                Brewed Here
-              </h2>
+            <WordReveal
+              as="h2"
+              className="font-display text-4xl uppercase leading-[0.9] sm:text-6xl"
+            >
+              Brewed Here
+            </WordReveal>
+            <RevealOnScroll delay={220}>
               <p className="mt-4 max-w-xl text-sm leading-relaxed sm:text-base">
                 Every beer on tap is brewed in-house at our Appleton brewhouse and served at both locations. Rotating taps, seasonal releases, and a few you&rsquo;ll keep coming back for.
               </p>
@@ -173,10 +169,13 @@ export default async function HomePage() {
             style={{ backgroundColor: SECTION.pizza.bg, color: SECTION.pizza.fg }}
           >
             <ScrollPizzaSpin />
-            <RevealOnScroll>
-              <h2 className="font-display text-4xl uppercase leading-[0.9] sm:text-6xl">
-                Wood-Fired Pizza
-              </h2>
+            <WordReveal
+              as="h2"
+              className="font-display text-4xl uppercase leading-[0.9] sm:text-6xl"
+            >
+              Wood-Fired Pizza
+            </WordReveal>
+            <RevealOnScroll delay={280}>
               <p className="mt-4 max-w-xl text-sm leading-relaxed sm:text-base">
                 Wood-fired every order, with specialty pies and a build-your-own option for when you already know what you want.
               </p>
@@ -199,10 +198,13 @@ export default async function HomePage() {
           style={{ backgroundColor: SECTION.company.bg, color: SECTION.company.fg }}
         >
           <div className="mx-auto max-w-5xl">
-            <RevealOnScroll>
-              <h2 className="font-display text-4xl uppercase leading-[0.9] sm:text-6xl">
-                Good Company
-              </h2>
+            <WordReveal
+              as="h2"
+              className="font-display text-4xl uppercase leading-[0.9] sm:text-6xl"
+            >
+              Good Company
+            </WordReveal>
+            <RevealOnScroll delay={210}>
               <p className="mt-4 max-w-xl text-sm leading-relaxed sm:text-base">
                 A neighborhood taproom first. We&rsquo;re here to make everyone comfortable — whether you&rsquo;re a craft beer regular or just figuring out what a hazy IPA is.
               </p>
@@ -255,14 +257,13 @@ export default async function HomePage() {
         aria-label="Locations"
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <RevealOnScroll>
-            <h2
-              className="mb-8 font-display text-4xl uppercase leading-[0.9] sm:text-6xl"
-              style={{ color: SECTION.findUs.fg }}
-            >
-              Find Us
-            </h2>
-          </RevealOnScroll>
+          <WordReveal
+            as="h2"
+            className="mb-8 font-display text-4xl uppercase leading-[0.9] sm:text-6xl"
+            style={{ color: SECTION.findUs.fg }}
+          >
+            Find Us
+          </WordReveal>
           <div className="grid gap-6 sm:grid-cols-2">
             <LocationCard
               name="Appleton"
@@ -623,13 +624,16 @@ function NextStepCard({
   highlight?: boolean;
 }) {
   return (
-    <div
-      className="p-6"
+    <TiltCard
+      maxTilt={5}
       style={{
         backgroundColor: highlight ? "var(--color-ink)" : "white",
         color: highlight ? "var(--color-warm-white)" : "var(--color-ink)",
         border: highlight ? "none" : "1px solid rgba(0,0,0,0.08)",
       }}
+    >
+    <div
+      className="p-6 h-full"
     >
       <h3 className="font-display text-lg">{title}</h3>
       <p className="mt-2 text-sm opacity-80">{description}</p>
@@ -647,5 +651,6 @@ function NextStepCard({
         ))}
       </div>
     </div>
+    </TiltCard>
   );
 }
