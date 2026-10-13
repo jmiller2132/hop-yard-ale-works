@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { UNTAPPD_CONFIG } from "@/lib/untappd";
 import { LOCATIONS } from "@/lib/location-data";
+import { fetchAllTapBeers } from "@/lib/untappd-scrape";
 import {
   APPLETON_WINE_MENU,
   APPLETON_CIDERS_SELTZERS,
@@ -23,8 +24,11 @@ export const metadata: Metadata = {
 const config = UNTAPPD_CONFIG["appleton"];
 const ORDER_URL = LOCATIONS.appleton.orderOnlineUrl;
 
-export default function AppletonDrinksMenuPage() {
-  const allNa = [...APPLETON_NA, ...APPLETON_NA_WINE];
+export default async function AppletonDrinksMenuPage() {
+  const [allNa, tapBeers] = await Promise.all([
+    Promise.resolve([...APPLETON_NA, ...APPLETON_NA_WINE]),
+    fetchAllTapBeers([{ breweryId: config.breweryId, menuId: config.menuId }]).catch(() => []),
+  ]);
 
   return (
     <>
@@ -64,6 +68,7 @@ export default function AppletonDrinksMenuPage() {
         orderUrl={ORDER_URL}
         locationName="Appleton"
         foodHref="/appleton-food-menu/"
+        tapBeers={tapBeers}
       />
 
       <StickyOrderBar href={ORDER_URL} locationName="Appleton" />

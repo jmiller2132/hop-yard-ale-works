@@ -5,8 +5,10 @@ import Link from "next/link";
 import UntappdEmbed from "./UntappdEmbed";
 import LearnToBrewery from "./LearnToBrewery";
 import MenuSectionNav from "./MenuSectionNav";
+import SpinTheTap from "@/components/ui/SpinTheTap";
 import type { WineItemSeed } from "@/data/menu-appleton";
 import type { DrinkItemSeed } from "@/data/menu-the-falls";
+import type { TapBeer } from "@/lib/untappd-scrape";
 
 const SECTIONS = [
   { id: "on-tap", label: "On Tap" },
@@ -26,6 +28,7 @@ interface DrinksMenuClientProps {
   orderUrl: string;
   locationName: string;
   foodHref: string;
+  tapBeers?: TapBeer[] | null;
 }
 
 export default function DrinksMenuClient({
@@ -38,6 +41,7 @@ export default function DrinksMenuClient({
   orderUrl,
   locationName,
   foodHref,
+  tapBeers,
 }: DrinksMenuClientProps) {
   const [activeSection, setActiveSection] = useState("on-tap");
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
@@ -90,6 +94,17 @@ export default function DrinksMenuClient({
           id="on-tap"
           className="pt-10"
         >
+          {/* Spin the Tap */}
+          <div
+            className="mb-8 rounded-xl px-6 py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+            style={{ backgroundColor: "var(--color-ink)" }}
+          >
+            <p className="text-sm font-medium uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.5)" }}>
+              Can&rsquo;t decide?
+            </p>
+            <SpinTheTap beers={tapBeers ?? null} afterSpinHref={null} />
+          </div>
+
           <UntappdEmbed
             breweryId={breweryId}
             menuId={menuId}

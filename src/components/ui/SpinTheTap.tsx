@@ -25,9 +25,11 @@ function randomFrom<T>(arr: T[], exclude?: T): T {
 interface SpinTheTapProps {
   /** Live HYW beers from Untappd. When present, spins real beer names. */
   beers?: TapBeer[] | null;
+  /** If provided, overrides the "see tap list" link shown after a spin. Pass null to suppress the link entirely. */
+  afterSpinHref?: string | null;
 }
 
-export default function SpinTheTap({ beers }: SpinTheTapProps) {
+export default function SpinTheTap({ beers, afterSpinHref }: SpinTheTapProps) {
   const pool = beers && beers.length > 0 ? beers.map((b) => b.name) : FALLBACK_STYLES;
 
   const [current, setCurrent] = useState(() => randomFrom(pool));
@@ -124,10 +126,10 @@ export default function SpinTheTap({ beers }: SpinTheTapProps) {
         </span>
       </button>
 
-      {/* Show "See tap list" link once the user has spun at least once */}
-      {hasSpun && !spinning && (
+      {/* Show "See tap list" link once the user has spun at least once (suppressed when afterSpinHref is null) */}
+      {hasSpun && !spinning && afterSpinHref !== null && (
         <Link
-          href="/appleton-drinks-menu/"
+          href={afterSpinHref ?? "/appleton-drinks-menu/"}
           className="text-xs underline underline-offset-4 hover:opacity-80 transition-opacity"
           style={{ color: "rgba(255,255,255,0.50)" }}
         >

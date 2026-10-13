@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { UNTAPPD_CONFIG } from "@/lib/untappd";
 import { LOCATIONS } from "@/lib/location-data";
+import { fetchAllTapBeers } from "@/lib/untappd-scrape";
 import {
   FALLS_WINE_MENU,
   FALLS_CIDERS_SELTZERS,
@@ -23,8 +24,11 @@ export const metadata: Metadata = {
 const config = UNTAPPD_CONFIG["the-falls"];
 const ORDER_URL = LOCATIONS["the-falls"].orderOnlineUrl;
 
-export default function TheFallsDrinksMenuPage() {
-  const allNa = [...FALLS_NA, ...FALLS_NA_WINE];
+export default async function TheFallsDrinksMenuPage() {
+  const [allNa, tapBeers] = await Promise.all([
+    Promise.resolve([...FALLS_NA, ...FALLS_NA_WINE]),
+    fetchAllTapBeers([{ breweryId: config.breweryId, menuId: config.menuId }]).catch(() => []),
+  ]);
 
   return (
     <>
@@ -64,6 +68,7 @@ export default function TheFallsDrinksMenuPage() {
         orderUrl={ORDER_URL}
         locationName="The Falls"
         foodHref="/the-falls-food-menu/"
+        tapBeers={tapBeers}
       />
 
       <StickyOrderBar href={ORDER_URL} locationName="The Falls" />
