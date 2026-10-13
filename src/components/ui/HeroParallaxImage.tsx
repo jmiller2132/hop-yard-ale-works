@@ -45,8 +45,8 @@ export default function HeroParallaxImage() {
       }}
     >
       <Image
-        src="/look/appleton-bar-overview.jpg"
-        alt="The bar and tap wall at Hop Yard Ale Works in Appleton"
+        src="/look/appleton-cheers-wall.jpg"
+        alt="Cheers neon sign and cozy booth seating inside Hop Yard Ale Works Appleton"
         fill
         priority
         sizes="100vw"
