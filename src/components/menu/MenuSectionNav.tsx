@@ -56,10 +56,10 @@ export default function MenuSectionNav({ sections, activeId, onSelect }: MenuSec
               ref={isActive ? activeRef : null}
               onClick={() => onSelect(section.id)}
               className={cn(
-                "flex-shrink-0 px-4 py-3.5 text-sm font-medium transition-colors duration-200 border-b-2 -mb-px min-h-[44px]",
+                "flex-shrink-0 px-5 py-4 text-base transition-colors duration-200 border-b-[3px] -mb-px min-h-[48px]",
                 isActive
-                  ? "border-[var(--color-seasonal-cta)] text-[var(--color-ink)]"
-                  : "border-transparent text-[var(--color-muted)] hover:text-[var(--color-ink)]"
+                  ? "border-[var(--color-seasonal-cta)] text-[var(--color-ink)] font-bold"
+                  : "border-transparent text-[var(--color-muted)] font-medium hover:text-[var(--color-ink)]"
               )}
               style={{ WebkitTapHighlightColor: "transparent" }}
             >

@@ -94,17 +94,6 @@ export default function DrinksMenuClient({
           id="on-tap"
           className="pt-10"
         >
-          {/* Spin the Tap */}
-          <div
-            className="mb-8 rounded-xl px-6 py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
-            style={{ backgroundColor: "var(--color-ink)" }}
-          >
-            <p className="text-sm font-medium uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.5)" }}>
-              Can&rsquo;t decide?
-            </p>
-            <SpinTheTap beers={tapBeers ?? null} afterSpinHref={null} />
-          </div>
-
           <UntappdEmbed
             breweryId={breweryId}
             menuId={menuId}
@@ -113,8 +102,48 @@ export default function DrinksMenuClient({
 
           <LearnToBrewery />
 
+          {/* Spin the Tap + Quiz — below the menu, alongside "New to craft beer?" */}
+          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            {/* Spin the Tap */}
+            <div
+              className="rounded-xl p-6 flex flex-col"
+              style={{ backgroundColor: "var(--color-ink)" }}
+            >
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] mb-1" style={{ color: "rgba(255,255,255,0.45)" }}>
+                Feeling lucky?
+              </p>
+              <h3 className="font-display text-2xl uppercase leading-tight mb-2" style={{ color: "white" }}>
+                Spin the Tap
+              </h3>
+              <p className="text-sm mb-1" style={{ color: "rgba(255,255,255,0.6)" }}>
+                Hit the button — we&rsquo;ll pull a random beer from tonight&rsquo;s tap list.
+              </p>
+              <SpinTheTap beers={tapBeers ?? null} afterSpinHref={null} />
+            </div>
 
-
+            {/* Quiz CTA */}
+            <Link
+              href="/what-to-drink/"
+              className="rounded-xl p-6 flex flex-col group hover:opacity-95 transition-opacity"
+              style={{ backgroundColor: "var(--color-teal)", color: "white" }}
+            >
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] mb-1" style={{ color: "rgba(255,255,255,0.55)" }}>
+                Not sure?
+              </p>
+              <h3 className="font-display text-2xl uppercase leading-tight mb-2">
+                Find My Beer
+              </h3>
+              <p className="text-sm" style={{ color: "rgba(255,255,255,0.75)" }}>
+                Four quick questions. We&rsquo;ll match you to something on tap right now.
+              </p>
+              <span
+                className="mt-auto pt-5 text-sm font-semibold inline-flex items-center gap-1 group-hover:gap-2 transition-all"
+                style={{ color: "rgba(255,255,255,0.9)" }}
+              >
+                Take the quiz →
+              </span>
+            </Link>
+          </div>
         </section>
 
         {/* Wine */}
@@ -198,28 +227,6 @@ export default function DrinksMenuClient({
         >
           You read the whole thing. The bar respects that.
         </p>
-
-        {/* Not sure what to order? */}
-        <div
-          className="mt-6 mb-2 rounded-xl px-6 py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
-          style={{ backgroundColor: "rgba(0,0,0,0.04)", border: "1px dashed rgba(0,0,0,0.12)" }}
-        >
-          <div>
-            <p className="font-heading text-base font-semibold" style={{ color: "var(--color-ink)" }}>
-              Not sure what to order?
-            </p>
-            <p className="text-sm mt-0.5" style={{ color: "var(--color-muted)" }}>
-              Four quick questions. We&rsquo;ll point you at something on tap right now.
-            </p>
-          </div>
-          <Link
-            href="/what-to-drink/"
-            className="flex-shrink-0 inline-flex items-center rounded-lg px-5 py-2.5 text-sm font-semibold min-h-[44px] hover:opacity-90 transition-opacity whitespace-nowrap"
-            style={{ backgroundColor: "var(--color-green)", color: "white" }}
-          >
-            Find my beer →
-          </Link>
-        </div>
 
         {/* NextStep */}
         <div className="mt-4 grid gap-4 sm:grid-cols-2 pb-4">
