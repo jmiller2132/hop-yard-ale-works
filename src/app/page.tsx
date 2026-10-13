@@ -15,6 +15,7 @@ import ScrollPizzaSpin from "@/components/ui/ScrollPizzaSpin";
 import ScrollBeerFill from "@/components/ui/ScrollBeerFill";
 import WordReveal from "@/components/ui/WordReveal";
 import TiltCard from "@/components/ui/TiltCard";
+import FloatingBubbles from "@/components/ui/FloatingBubbles";
 import type { Metadata } from "next";
 import type { Location, TaproomPhoto, SeasonalTheme } from "@/types";
 
@@ -193,22 +194,35 @@ export default async function HomePage() {
           </div>
         </div>
 
-        <div
-          className="px-6 py-16 sm:px-10 sm:py-24"
-          style={{ backgroundColor: SECTION.company.bg, color: SECTION.company.fg }}
-        >
-          <div className="mx-auto max-w-5xl">
-            <WordReveal
-              as="h2"
-              className="font-display text-4xl uppercase leading-[0.9] sm:text-6xl"
-            >
-              Good Company
-            </WordReveal>
-            <RevealOnScroll delay={210}>
-              <p className="mt-4 max-w-xl text-sm leading-relaxed sm:text-base">
-                A neighborhood taproom first. We&rsquo;re here to make everyone comfortable — whether you&rsquo;re a craft beer regular or just figuring out what a hazy IPA is.
-              </p>
-            </RevealOnScroll>
+        <div className="grid lg:grid-cols-2">
+          <div className="relative min-h-[320px] lg:min-h-[520px]">
+            <Image
+              src="/look/appleton-patio-dog.jpg"
+              alt="Friends enjoying an afternoon on the Hop Yard patio"
+              fill
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              quality={90}
+              className="object-cover"
+            />
+          </div>
+          <div
+            className="relative overflow-hidden flex flex-col justify-center px-6 py-16 sm:px-10 sm:py-24"
+            style={{ backgroundColor: SECTION.company.bg, color: SECTION.company.fg }}
+          >
+            <FloatingBubbles />
+            <div className="relative z-10">
+              <WordReveal
+                as="h2"
+                className="font-display text-4xl uppercase leading-[0.9] sm:text-6xl"
+              >
+                Good Company
+              </WordReveal>
+              <RevealOnScroll delay={210}>
+                <p className="mt-4 max-w-xl text-sm leading-relaxed sm:text-base">
+                  A neighborhood taproom first. We&rsquo;re here to make everyone comfortable — whether you&rsquo;re a craft beer regular or just figuring out what a hazy IPA is.
+                </p>
+              </RevealOnScroll>
+            </div>
           </div>
         </div>
       </section>
