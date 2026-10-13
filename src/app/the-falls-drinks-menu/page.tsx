@@ -40,12 +40,12 @@ export default async function TheFallsDrinksMenuPage() {
       >
         <div className="absolute inset-0" aria-hidden="true">
           <Image
-            src="/look/appleton-taps-glasses.jpg"
+            src="/look/falls-taps-bar.webp"
             alt=""
             fill
             priority
             sizes="100vw"
-            className="object-cover object-center opacity-40"
+            className="object-cover object-center opacity-50"
           />
         </div>
         <div className="absolute inset-0 bg-black/40" aria-hidden="true" />

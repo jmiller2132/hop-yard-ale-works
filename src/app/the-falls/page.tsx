@@ -88,28 +88,29 @@ export default async function TheFallsPage() {
             </Link>
           </div>
         </div>
-        <div className="relative aspect-[3/4] lg:aspect-auto lg:min-h-full">
+        <div className="relative min-h-[300px] sm:min-h-[420px] lg:min-h-full">
           <Image
             src="/look/falls-exterior.webp"
             alt="Hop Yard Ale Works sign on the brick building in Menomonee Falls"
             fill
             priority
-            quality={90}
+            quality={85}
             sizes="(min-width: 1024px) 50vw, 100vw"
             className="object-cover object-[center_42%]"
           />
         </div>
       </section>
 
-      <Image
-        src="/look/falls-wall.webp"
-        alt="Painted Hop Yard mark and barrels on the Menomonee Falls wall"
-        width={1024}
-        height={768}
-        sizes="100vw"
-        quality={90}
-        className="h-auto w-full"
-      />
+      <div className="relative w-full overflow-hidden" style={{ height: "clamp(220px, 38vw, 520px)" }}>
+        <Image
+          src="/look/falls-wall.webp"
+          alt="Painted Hop Yard mark and barrels on the Menomonee Falls wall"
+          fill
+          sizes="100vw"
+          quality={85}
+          className="object-cover object-center"
+        />
+      </div>
 
       {/* Hours + Address */}
       <section className="section-padding">
