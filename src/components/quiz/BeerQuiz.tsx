@@ -282,7 +282,7 @@ export default function BeerQuiz({ beers }: BeerQuizProps) {
                   key={opt.id}
                   onClick={() => pick(opt.scores, opt.id)}
                   disabled={!!chosen}
-                  className="w-full text-left px-5 py-4 rounded-xl font-medium text-sm leading-snug transition-all duration-150 min-h-[52px]"
+                  className="w-full text-left px-5 py-4 rounded font-medium text-sm leading-snug transition-all duration-150 min-h-[52px]"
                   style={{
                     backgroundColor: isSelected
                       ? "var(--color-green)"

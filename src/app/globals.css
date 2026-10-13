@@ -2,19 +2,18 @@
 
 /* ─── Brand design tokens ─── */
 :root {
-  /* Core brand palette */
-  --color-teal: #2D4F54;
-  --color-green: #6ABF4B;
-  /* #6ABF4B fails WCAG AA on light backgrounds and under white text; use
-     --color-green-strong (5.3:1 with white) for fills and green text on light.
-     Keep --color-green for accents on dark (ink) surfaces. */
-  --color-green-strong: #2F7A1F;
+  /* Core brand palette — values sourced from Hop Yard Design System tokens.json */
+  --color-teal: #1a393c;           /* badge-spruce */
+  --color-green: #6ABF4B;          /* hop-green */
+  /* hop-green (#6abf4b) fails WCAG AA on light; use --color-green-strong
+     (hop-green-ink, 4.6:1 on chalk) for text and fills on light surfaces. */
+  --color-green-strong: #2b7240;   /* hop-green-ink */
   --color-green-text: var(--color-green-strong);
-  --color-orange: #C94B2A;
-  --color-gold: #D4A017;
-  --color-ink: #231F20;
-  --color-warm-white: #F5F2EE;
-  --color-muted: #5B6470;
+  --color-orange: #e9562b;         /* taproom-orange */
+  --color-gold: #f4b860;           /* edison-amber */
+  --color-ink: #231F20;            /* bowler-black */
+  --color-warm-white: #ede8df;     /* chalk */
+  --color-muted: #55585e;          /* text-secondary */
 
   /* Semantic aliases */
   --color-bg: var(--color-warm-white);
@@ -87,21 +86,27 @@
 
 /* ─── Tailwind v4 theme extension ─── */
 @theme inline {
-  /* Colors */
-  --color-teal: #2D4F54;
+  /* Colors — keep in sync with :root above */
+  --color-teal: #1a393c;
   --color-green: #6ABF4B;
-  --color-orange: #C94B2A;
-  --color-gold: #D4A017;
-  --color-green-strong: #2F7A1F;
+  --color-orange: #e9562b;
+  --color-gold: #f4b860;
+  --color-green-strong: #2b7240;
   --color-ink: #231F20;
-  --color-warm-white: #F5F2EE;
-  --color-muted: #5B6470;
+  --color-warm-white: #ede8df;
+  --color-muted: #55585e;
 
   /* Typography */
   --font-heading: var(--font-zilla-slab), Georgia, serif;
   --font-display: var(--font-wooderson), var(--font-zilla-slab), Georgia, serif;
   --font-body: var(--font-inter), system-ui, sans-serif;
   --font-sans: var(--font-inter), system-ui, sans-serif;
+  /* Brand mono (DM Mono) — numerals, ABV, IBU, prices */
+  --font-mono: var(--font-dm-mono), ui-monospace, monospace;
+  /* Brand tag (American Typewriter) — taglines, labels, metadata.
+     TODO: drop AmericanTypewriter-Medium.ttf into src/fonts/ then uncomment
+     the localFont loader in layout.tsx and update this variable. */
+  --font-tag: "American Typewriter", "Courier New", Courier, monospace;
 
   /* Font size scale */
   --text-xs: 0.75rem;
@@ -146,6 +151,18 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 400;
 }
 
+/* American Typewriter — taglines, labels, metadata (typewriter lowercase) */
+.font-tag {
+  font-family: var(--font-tag);
+  font-weight: 500;
+}
+
+/* DM Mono — ABV, IBU, prices, numeric data */
+.font-mono-brand {
+  font-family: var(--font-mono);
+  font-weight: 400;
+}
+
 /* ─── Section spacing utility ─── */
 .section-padding {
   padding-top: 2.5rem;
@@ -172,8 +189,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ─── Focus styles ─── */
+/* Edison Amber focus ring per brand guidelines (3px, clears 3:1 on chalk/card/raised) */
 :focus-visible {
-  outline: 2px solid var(--color-green-strong);
+  outline: 3px solid #b6710d;
   outline-offset: 2px;
 }
 
@@ -207,6 +225,12 @@ h1, h2, h3, h4, h5, h6 {
 
 .picker-land-pop {
   animation: picker-land-pop 480ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* ─── Hide chat button when mobile nav drawer is open ─── */
+.mobile-menu-open .chat-fab {
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* ─── Custom cursor — hide native pointer when CustomCursor is active ─── */

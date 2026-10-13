@@ -72,7 +72,7 @@ export default function FaqAccordion({ faqs }: FaqAccordionProps) {
                 return (
                   <div
                     key={faq._id}
-                    className="rounded-xl overflow-hidden"
+                    className="rounded overflow-hidden"
                     style={{ border: "1px solid rgba(0,0,0,0.07)" }}
                   >
                     <button
@@ -91,7 +91,7 @@ export default function FaqAccordion({ faqs }: FaqAccordionProps) {
                       </span>
                       <span
                         className="flex-shrink-0 text-lg leading-none transition-transform duration-200"
-                        style={{ transform: isOpen ? "rotate(45deg)" : "none" }}
+                        style={{ transform: isOpen ? "rotate(45deg)" : "rotate(0deg)" }}
                         aria-hidden="true"
                       >
                         +

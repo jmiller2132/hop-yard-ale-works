@@ -21,14 +21,18 @@ import type { Location, TaproomPhoto, SeasonalTheme } from "@/types";
 
 export const revalidate = 900;
 
-// Field colors sampled from can photos. Engine Co. was not in those photos.
-// Grounds for the homepage sections, not beer labels.
+// Homepage section grounds — all values are brand palette tokens.
+// brewed  → moss (deep moss green)
+// pizza   → pine (weathered wood plank — fits the wood-fired theme)
+// company → taproom-orange (one use of the accent; keep as the single orange hit on this page)
+// findUs  → badge-spruce (deep teal-near-black)
+// social  → cinder (building exterior dark)
 const SECTION = {
-  brewed: { bg: "#2F6B32", fg: "#F5F2EE" },
-  pizza: { bg: "#E2A21A", fg: "#231F20" },
-  company: { bg: "#E36B2C", fg: "#231F20" },
-  findUs: { bg: "#6E342C", fg: "#F5F2EE" },
-  social: { bg: "#8C2F2A", fg: "#F5F2EE" },
+  brewed:  { bg: "#4c6b2f", fg: "#ede8df" },
+  pizza:   { bg: "#d6af7a", fg: "#1c1c1c" },
+  company: { bg: "#e9562b", fg: "#1c1c1c" },
+  findUs:  { bg: "#1a393c", fg: "#ede8df" },
+  social:  { bg: "#3b3e44", fg: "#ede8df" },
 } as const;
 
 export const metadata: Metadata = {
@@ -229,7 +233,7 @@ export default async function HomePage() {
 
       <QuoteBanner />
 
-      <section aria-label="Both taprooms" style={{ backgroundColor: "#231F20" }}>
+      <section aria-label="Both taprooms" style={{ backgroundColor: "var(--color-ink)" }}>
         <div className="mx-auto grid max-w-6xl gap-2 p-2 sm:grid-cols-2 sm:p-3">
           <Link href="/appleton/" className="group relative block h-72 overflow-hidden sm:h-[26rem]">
             <Image
@@ -331,7 +335,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      <div style={{ backgroundColor: "#1c1c1c" }}>
+      <div style={{ backgroundColor: "var(--color-ink)" }}>
         <Image
           src="/look/cans-five.jpg"
           alt="Driving Miss Haisy, Flight of the Nectaron, Orange County Hefe, Running Teeth First, and Mossie's"
@@ -343,7 +347,7 @@ export default async function HomePage() {
         />
       </div>
 
-      <section aria-label="Appleton taproom photos" style={{ backgroundColor: "#1c1c1c" }}>
+      <section aria-label="Appleton taproom photos" style={{ backgroundColor: "var(--color-ink)" }}>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-[2px]">
           {[
             { src: "/look/appleton-cheers-wall.jpg", alt: "Cheers neon sign on green moss wall with booth seating at Hop Yard Ale Works Appleton" },
@@ -367,7 +371,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section aria-label="Menomonee Falls taproom photos" style={{ backgroundColor: "#1c1c1c" }}>
+      <section aria-label="Menomonee Falls taproom photos" style={{ backgroundColor: "var(--color-ink)" }}>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-[2px]">
           {[
             { src: "/look/falls-wall.webp", alt: "Painted Hop Yard mark and barrels on the Menomonee Falls wall" },
@@ -501,7 +505,7 @@ function LocationHeroCard({
       }}
     >
       <h2 className="font-display text-xl text-white">{name}</h2>
-      <p className="mt-1 text-sm text-white/75">{tagline}</p>
+      <p className="font-tag mt-1 text-sm text-white/75">{tagline}</p>
       {locationHours?.hours && (
         <div className="mt-3">
           <OpenClosedBadgeLive location={locationHours} />

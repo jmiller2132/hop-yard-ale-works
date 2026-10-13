@@ -251,7 +251,7 @@ export default function FoodMenuClient({
         </section>
 
         {/* ── Photo break ──────────────────────────────────────────────────── */}
-        <div className="relative overflow-hidden rounded-xl mt-14" style={{ height: "220px" }}>
+        <div className="relative overflow-hidden rounded mt-14" style={{ height: "220px" }}>
           <Image
             src="/look/appleton-pizza-screen.jpg"
             alt="Pizza and beer on the bar at Hop Yard Ale Works"
@@ -377,11 +377,11 @@ export default function FoodMenuClient({
 
         {/* NextStep block */}
         <div className="mt-8 grid gap-4 sm:grid-cols-2 pb-4">
-          <Link href={drinksHref} className="flex flex-col rounded-xl p-6 transition-opacity hover:opacity-90" style={{ backgroundColor: "var(--color-ink)", color: "white" }}>
+          <Link href={drinksHref} className="flex flex-col rounded p-6 transition-opacity hover:opacity-90" style={{ backgroundColor: "var(--color-ink)", color: "white" }}>
             <span className="font-heading text-lg font-bold">Pair it with a drink</span>
             <span className="mt-1 text-sm opacity-80">See what&apos;s pouring right now →</span>
           </Link>
-          <Link href={orderUrl} className="flex flex-col rounded-xl p-6 transition-opacity hover:opacity-90" style={{ backgroundColor: "var(--color-seasonal-cta)", color: "white" }}>
+          <Link href={orderUrl} className="flex flex-col rounded p-6 transition-opacity hover:opacity-90" style={{ backgroundColor: "var(--color-seasonal-cta)", color: "white" }}>
             <span className="font-heading text-lg font-bold">Order Online</span>
             <span className="mt-1 text-sm opacity-80">Pick up or delivery via Toast →</span>
           </Link>
@@ -417,7 +417,7 @@ function EmptyPizzaState({
   ).join(" + ");
 
   return (
-    <div className="rounded-xl px-6 py-8 text-center" style={{ backgroundColor: "rgba(0,0,0,0.03)", border: "1px dashed rgba(0,0,0,0.12)" }}>
+    <div className="rounded px-6 py-8 text-center" style={{ backgroundColor: "rgba(0,0,0,0.03)", border: "1px dashed rgba(0,0,0,0.12)" }}>
       <p className="text-sm font-medium mb-1" style={{ color: "var(--color-ink)" }}>
         No {creations ? "creations" : "basics"} match <strong>{filterNames}</strong>.
       </p>
@@ -470,7 +470,7 @@ function ByoGroup({
   const showRecommended = filterVegan || filterVegetarian;
 
   return (
-    <div className="rounded-xl p-4" style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.07)" }}>
+    <div className="rounded p-4" style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.07)" }}>
       <h3 className="font-heading text-sm font-semibold mb-3" style={{ color: "var(--color-ink)" }}>
         {title}
       </h3>

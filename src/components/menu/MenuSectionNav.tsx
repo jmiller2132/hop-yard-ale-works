@@ -37,7 +37,7 @@ export default function MenuSectionNav({ sections, activeId, onSelect }: MenuSec
   return (
     <nav
       aria-label="Menu sections"
-      className="sticky top-16 z-40 border-b"
+      className="sticky top-20 z-40 border-b"
       style={{
         backgroundColor: "var(--color-warm-white)",
         borderColor: "rgba(0,0,0,0.08)",

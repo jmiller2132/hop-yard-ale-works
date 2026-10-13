@@ -21,7 +21,7 @@ export default function ContactForm() {
     return (
       <div
         role="status"
-        className="rounded-2xl p-8 text-center"
+        className="rounded p-8 text-center"
         style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.07)" }}
       >
         <div
@@ -51,7 +51,7 @@ export default function ContactForm() {
   return (
     <form
       action={action}
-      className="rounded-2xl p-6 sm:p-8 space-y-5"
+      className="rounded p-6 sm:p-8 space-y-5"
       style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.07)" }}
     >
       {errorMessage && (

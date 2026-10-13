@@ -42,7 +42,7 @@ export default async function PhotosPage() {
             <TaproomPhotoGrid photos={photos} />
           ) : (
             <div
-              className="rounded-2xl py-20 text-center"
+              className="rounded py-20 text-center"
               style={{ backgroundColor: "var(--color-warm-white)" }}
             >
               <p className="text-lg font-heading font-semibold mb-2" style={{ color: "var(--color-ink)" }}>

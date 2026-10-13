@@ -9,17 +9,15 @@ export const metadata: Metadata = {
     "Get in touch with Hop Yard Ale Works in Appleton or Menomonee Falls, WI. Questions, private events, or large groups — send us a message.",
 };
 
-const locations: { key: LocationSlug; label: string; emoji: string; note: string }[] = [
+const locations: { key: LocationSlug; label: string; note: string }[] = [
   {
     key: "appleton",
     label: "Appleton",
-    emoji: "🍺",
     note: "Brewhouse & original taproom",
   },
   {
     key: "the-falls",
     label: "Menomonee Falls",
-    emoji: "🍕",
     note: "Pizza-forward taproom",
   },
 ];
@@ -50,14 +48,14 @@ export default function ContactPage() {
       <section className="section-padding">
         <div className="mx-auto max-w-5xl px-4 sm:px-6">
           <div className="grid lg:grid-cols-[1fr_2fr] gap-10 lg:gap-14 items-start">
-            {/* Info panel */}
-            <div className="space-y-8">
-              {locations.map(({ key, label, emoji, note }) => {
+            {/* Info panel — shows after the form on mobile, beside it on desktop */}
+            <div className="order-2 lg:order-1 space-y-8">
+              {locations.map(({ key, label, note }) => {
                 const data = LOCATIONS[key];
                 return (
                   <div key={key}>
                     <h2 className="font-heading text-base font-bold mb-3" style={{ color: "var(--color-ink)" }}>
-                      <span aria-hidden="true">{emoji}</span> {label}
+                      {label}
                     </h2>
                     <p className="text-xs font-medium uppercase tracking-wider mb-3" style={{ color: "var(--color-muted)" }}>
                       {note}
@@ -89,7 +87,7 @@ export default function ContactPage() {
 
               {/* Social / email note */}
               <div
-                className="rounded-xl p-4 text-sm space-y-1"
+                className="rounded p-4 text-sm space-y-1"
                 style={{ backgroundColor: "rgba(106,191,75,0.08)", border: "1px solid rgba(106,191,75,0.2)" }}
               >
                 <p className="font-semibold" style={{ color: "var(--color-ink)" }}>
@@ -127,8 +125,10 @@ export default function ContactPage() {
               </p>
             </div>
 
-            {/* Form */}
-            <ContactForm />
+            {/* Form — first on mobile, second column on desktop */}
+            <div className="order-1 lg:order-2">
+              <ContactForm />
+            </div>
           </div>
         </div>
       </section>

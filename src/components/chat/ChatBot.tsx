@@ -187,7 +187,7 @@ export default function ChatBot({ faqs, holidayOverrides }: ChatBotProps) {
       {/* Floating bubble — sits above sticky order bar on mobile */}
       <button
         onClick={() => setIsOpen((o) => !o)}
-        className="fixed bottom-[4.5rem] md:bottom-4 right-4 sm:right-6 z-50 flex h-13 w-13 items-center justify-center rounded-full shadow-lg transition-transform hover:scale-105 active:scale-95"
+        className="chat-fab fixed bottom-[4.5rem] md:bottom-4 right-4 sm:right-6 z-50 flex h-13 w-13 items-center justify-center rounded-full shadow-lg transition-[transform,opacity] hover:scale-105 active:scale-95"
         style={{
           backgroundColor: "var(--color-ink)",
           color: "white",

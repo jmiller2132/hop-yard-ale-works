@@ -24,7 +24,7 @@ export default function MenuItemCard({ item, id, highlighted }: MenuItemCardProp
     <div
       id={id}
       className={cn(
-        "rounded-xl p-5 transition-all duration-300",
+        "rounded p-5 transition-all duration-300",
         highlighted && "ring-2 ring-offset-2"
       )}
       style={{
@@ -94,7 +94,7 @@ export default function MenuItemCard({ item, id, highlighted }: MenuItemCardProp
 
         {/* Price */}
         <span
-          className="flex-shrink-0 font-heading text-base font-bold"
+          className="flex-shrink-0 font-mono-brand text-base font-bold"
           style={{ color: "var(--color-ink)" }}
         >
           {item.price}

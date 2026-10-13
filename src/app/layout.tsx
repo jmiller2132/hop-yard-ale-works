@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Zilla_Slab, Inter } from "next/font/google";
+import { Zilla_Slab, Inter, DM_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -38,6 +38,24 @@ const wooderson = localFont({
   variable: "--font-wooderson",
   display: "swap",
   weight: "400",
+});
+
+// TODO: American Typewriter (brand tag / label face).
+// Drop AmericanTypewriter-Medium.ttf into src/fonts/, then uncomment:
+// const americanTypewriter = localFont({
+//   src: "../fonts/AmericanTypewriter-Medium.ttf",
+//   variable: "--font-american-typewriter",
+//   display: "swap",
+//   weight: "500",
+// });
+// Add ${americanTypewriter.variable} to the html className below,
+// and update --font-tag in globals.css to var(--font-american-typewriter).
+
+const dmMono = DM_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-dm-mono",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -102,7 +120,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={`${zillaSlab.variable} ${inter.variable} ${wooderson.variable}`}
+      className={`${zillaSlab.variable} ${inter.variable} ${wooderson.variable} ${dmMono.variable}`}
       {...(themeAttr ? { "data-theme": themeAttr } : {})}
     >
       <body className="flex min-h-screen flex-col" style={{ fontFamily: "var(--font-body)" }}>
@@ -118,7 +136,7 @@ export default async function RootLayout({
         {lateNight && (
           <p
             className="fixed bottom-0 left-0 right-0 text-center text-xs py-1.5 pointer-events-none z-40"
-            style={{ backgroundColor: "var(--color-ink)", color: "rgba(255,255,255,0.35)" }}
+            style={{ backgroundColor: "var(--color-ink)", color: "rgba(255,255,255,0.72)" }}
           >
             You&apos;re up late. So is the dough.
           </p>

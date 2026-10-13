@@ -47,7 +47,7 @@ export default async function FaqPage() {
             <FaqAccordion faqs={faqs} />
           ) : (
             <div
-              className="rounded-2xl py-16 text-center"
+              className="rounded py-16 text-center"
               style={{ backgroundColor: "var(--color-warm-white)" }}
             >
               <p className="text-base" style={{ color: "var(--color-muted)" }}>

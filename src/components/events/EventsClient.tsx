@@ -398,7 +398,7 @@ function ClosureNotice({ closures }: { closures: Event[] }) {
   return (
     <section
       aria-label="Upcoming closures"
-      className="mb-10 rounded-xl px-5 py-4"
+      className="mb-10 rounded px-5 py-4"
       style={{ backgroundColor: s.bg, border: "1px solid rgba(220,38,38,0.2)" }}
     >
       <h2 className="text-xs font-semibold uppercase tracking-wider" style={{ color: s.text }}>
@@ -558,7 +558,7 @@ function FeaturedEventCard({ event }: { event: Event }) {
 
   return (
     <article
-      className="relative overflow-hidden rounded-2xl p-6 sm:p-8"
+      className="relative overflow-hidden rounded p-6 sm:p-8"
       style={{
         backgroundColor: "var(--color-ink)",
         color: "white",
@@ -599,7 +599,7 @@ function EventCard({ event }: { event: Event }) {
 
   return (
     <article
-      className="relative overflow-hidden rounded-xl bg-white p-5 sm:p-6"
+      className="relative overflow-hidden rounded bg-white p-5 sm:p-6"
       style={{
         border: event.isPlaceholder ? "1px dashed rgba(0,0,0,0.2)" : "1px solid rgba(0,0,0,0.07)",
       }}

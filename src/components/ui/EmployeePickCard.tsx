@@ -44,7 +44,7 @@ export default function EmployeePickCard({ pick }: EmployeePickCardProps) {
       >
         {/* Front */}
         <div
-          className="absolute inset-0 rounded-xl p-5 flex flex-col justify-between"
+          className="absolute inset-0 rounded p-5 flex flex-col justify-between"
           style={{
             backfaceVisibility: "hidden",
             backgroundColor: "var(--color-ink)",
@@ -71,7 +71,7 @@ export default function EmployeePickCard({ pick }: EmployeePickCardProps) {
 
         {/* Back */}
         <div
-          className="absolute inset-0 rounded-xl p-5 flex flex-col justify-center"
+          className="absolute inset-0 rounded p-5 flex flex-col justify-center"
           style={{
             backfaceVisibility: "hidden",
             transform: "rotateY(180deg)",

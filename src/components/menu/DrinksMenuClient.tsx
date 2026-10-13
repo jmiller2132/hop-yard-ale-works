@@ -106,7 +106,7 @@ export default function DrinksMenuClient({
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
             {/* Spin the Tap */}
             <div
-              className="rounded-xl p-6 flex flex-col"
+              className="rounded p-6 flex flex-col"
               style={{ backgroundColor: "var(--color-ink)" }}
             >
               <p className="text-xs font-semibold uppercase tracking-[0.16em] mb-1" style={{ color: "rgba(255,255,255,0.45)" }}>
@@ -124,7 +124,7 @@ export default function DrinksMenuClient({
             {/* Quiz CTA */}
             <Link
               href="/what-to-drink/"
-              className="rounded-xl p-6 flex flex-col group hover:opacity-95 transition-opacity"
+              className="rounded p-6 flex flex-col group hover:opacity-95 transition-opacity"
               style={{ backgroundColor: "var(--color-teal)", color: "white" }}
             >
               <p className="text-xs font-semibold uppercase tracking-[0.16em] mb-1" style={{ color: "rgba(255,255,255,0.55)" }}>
@@ -232,7 +232,7 @@ export default function DrinksMenuClient({
         <div className="mt-4 grid gap-4 sm:grid-cols-2 pb-4">
           <Link
             href={foodHref}
-            className="flex flex-col rounded-xl p-6 hover:opacity-90 transition-opacity"
+            className="flex flex-col rounded p-6 hover:opacity-90 transition-opacity"
             style={{ backgroundColor: "var(--color-ink)", color: "white" }}
           >
             <span className="font-heading text-lg font-bold">Hungry?</span>
@@ -240,7 +240,7 @@ export default function DrinksMenuClient({
           </Link>
           <Link
             href={orderUrl}
-            className="flex flex-col rounded-xl p-6 hover:opacity-90 transition-opacity"
+            className="flex flex-col rounded p-6 hover:opacity-90 transition-opacity"
             style={{ backgroundColor: "var(--color-seasonal-cta)", color: "white" }}
           >
             <span className="font-heading text-lg font-bold">Order Online</span>
@@ -257,7 +257,7 @@ export default function DrinksMenuClient({
 function WineCard({ item }: { item: WineItemSeed }) {
   return (
     <div
-      className="rounded-xl p-5"
+      className="rounded p-5"
       style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.07)" }}
     >
       <div className="flex items-start justify-between gap-3">
@@ -280,7 +280,7 @@ function WineCard({ item }: { item: WineItemSeed }) {
           )}
         </div>
         <span
-          className="flex-shrink-0 font-heading text-sm font-bold"
+          className="flex-shrink-0 font-mono-brand text-sm font-bold"
           style={{ color: "var(--color-ink)" }}
         >
           {item.price}
@@ -293,7 +293,7 @@ function WineCard({ item }: { item: WineItemSeed }) {
 function DrinkCard({ item }: { item: DrinkItemSeed }) {
   return (
     <div
-      className="rounded-xl p-5"
+      className="rounded p-5"
       style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.07)" }}
     >
       <div className="flex items-start justify-between gap-3">
@@ -319,7 +319,7 @@ function DrinkCard({ item }: { item: DrinkItemSeed }) {
           )}
         </div>
         <span
-          className="flex-shrink-0 font-heading text-sm font-bold"
+          className="flex-shrink-0 font-mono-brand text-sm font-bold"
           style={{ color: "var(--color-ink)" }}
         >
           {item.price}
