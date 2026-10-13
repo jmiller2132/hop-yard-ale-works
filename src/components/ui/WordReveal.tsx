@@ -59,7 +59,6 @@ export default function WordReveal({
   }, [delay]);
 
   return (
-    // @ts-expect-error — polymorphic ref typing
     <Tag ref={ref} className={className} style={style}>
       {children}
     </Tag>
