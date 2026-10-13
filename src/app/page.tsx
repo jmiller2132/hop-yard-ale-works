@@ -330,23 +330,23 @@ export default async function HomePage() {
       </div>
 
       <section aria-label="Appleton taproom photos" style={{ backgroundColor: "#1c1c1c" }}>
-        <div className="mx-auto grid max-w-6xl gap-2 p-2 sm:grid-cols-3 sm:p-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-[2px]">
           {[
-            { src: "/look/appleton-cheers-wall.jpg", alt: "Cheers neon sign on green moss wall with booth seating at Hop Yard Ale Works Appleton", pos: "center" },
-            { src: "/look/appleton-exterior.jpg", alt: "Hop Yard Ale Works building exterior in Appleton with the rustic wood sign", pos: "center" },
-            { src: "/look/appleton-mural.jpg", alt: "Large Hop Yard Ale Works mural painted on the side of the Appleton building", pos: "center" },
-            { src: "/look/appleton-bar-interior.jpg", alt: "Bar interior at Hop Yard Ale Works Appleton with chalk beer glass art and logo floor mat", pos: "center" },
-            { src: "/look/appleton-patio-orange.jpg", alt: "Sunny outdoor patio with orange umbrellas and barrel tables at Hop Yard Ale Works Appleton", pos: "center" },
-            { src: "/look/appleton-taps-wide.jpg", alt: "Row of Hop Yard tap handles at the Appleton taproom", pos: "center" },
-          ].map(({ src, alt, pos }) => (
-            <div key={src} className="relative w-full overflow-hidden" style={{ aspectRatio: "4/3" }}>
+            { src: "/look/appleton-cheers-wall.jpg", alt: "Cheers neon sign on green moss wall with booth seating at Hop Yard Ale Works Appleton" },
+            { src: "/look/appleton-exterior.jpg", alt: "Hop Yard Ale Works building exterior in Appleton" },
+            { src: "/look/appleton-mural.jpg", alt: "Large Hop Yard Ale Works mural on the Appleton building" },
+            { src: "/look/appleton-bar-overview.jpg", alt: "Full bar at Hop Yard Ale Works Appleton" },
+            { src: "/look/appleton-patio-orange.jpg", alt: "Sunny outdoor patio with orange umbrellas at Hop Yard Ale Works Appleton" },
+            { src: "/look/appleton-taps-wide.jpg", alt: "Row of Hop Yard tap handles at the Appleton taproom" },
+          ].map(({ src, alt }) => (
+            <div key={src} className="relative overflow-hidden" style={{ aspectRatio: "4/3" }}>
               <Image
                 src={src}
                 alt={alt}
                 fill
-                sizes="(min-width: 640px) 33vw, 100vw"
+                sizes="(min-width: 640px) 33vw, 50vw"
                 quality={85}
-                className={`object-cover object-${pos}`}
+                className="object-cover object-center"
               />
             </div>
           ))}
@@ -354,13 +354,13 @@ export default async function HomePage() {
       </section>
 
       <section aria-label="Menomonee Falls taproom photos" style={{ backgroundColor: "#1c1c1c" }}>
-        <div className="mx-auto grid max-w-6xl gap-2 p-2 sm:grid-cols-3 sm:p-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-[2px]">
           {[
             { src: "/look/falls-wall.webp", alt: "Painted Hop Yard mark and barrels on the Menomonee Falls wall" },
             { src: "/look/falls-taps.webp", alt: "Tap wall in Menomonee Falls, with the hop beard on green tile" },
             { src: "/look/falls-letters.webp", alt: "Lit Hop Yard letters, benches, and barrels in Menomonee Falls" },
           ].map(({ src, alt }) => (
-            <div key={src} className="relative w-full overflow-hidden" style={{ aspectRatio: "4/3" }}>
+            <div key={src} className="relative overflow-hidden" style={{ aspectRatio: "4/3" }}>
               <Image
                 src={src}
                 alt={alt}

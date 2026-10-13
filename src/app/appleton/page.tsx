@@ -117,15 +117,16 @@ export default async function AppletonPage() {
         </div>
       </section>
 
-      <Image
-        src="/look/appleton-bar-interior.jpg"
-        alt="Bar interior at Hop Yard Ale Works Appleton — chalkboard beer glass art, barrel, and logo mat"
-        width={1200}
-        height={800}
-        sizes="100vw"
-        quality={88}
-        className="h-auto w-full"
-      />
+      <div className="relative w-full overflow-hidden" style={{ height: "clamp(260px, 42vw, 560px)" }}>
+        <Image
+          src="/look/appleton-bar-interior.jpg"
+          alt="Bar interior at Hop Yard Ale Works Appleton — chalkboard beer glass art, barrel, and logo mat"
+          fill
+          sizes="100vw"
+          quality={88}
+          className="object-cover object-center"
+        />
+      </div>
 
       {/* Hours + Address */}
       <section className="section-padding">
@@ -193,23 +194,23 @@ export default async function AppletonPage() {
 
       <EmployeePickSection locationSlug="appleton" />
 
-      {/* Photo grid */}
+      {/* Photo grid — all landscape 4:3, consistent height */}
       <section aria-label="Appleton photos" style={{ backgroundColor: "#1c1c1c" }}>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-0">
+        <div className="grid grid-cols-2 lg:grid-cols-4">
           {[
-            { src: "/look/appleton-taps-wide.jpg", alt: "Hop Yard tap handles at the Appleton bar", style: { aspectRatio: "4/3" } },
-            { src: "/look/appleton-patio-orange.jpg", alt: "Sunny outdoor patio with orange umbrellas at Hop Yard Ale Works Appleton", style: { aspectRatio: "4/3" } },
-            { src: "/look/appleton-pizza-screen.jpg", alt: "Pizza and beer with Packers on the projector screen at Hop Yard Ale Works Appleton", style: { aspectRatio: "3/4" } },
-            { src: "/look/appleton-mural.jpg", alt: "Hop Yard Ale Works mural on the Appleton building exterior", style: { aspectRatio: "4/3" } },
-          ].map(({ src, alt, style }) => (
-            <div key={src} className="relative w-full overflow-hidden" style={style}>
+            { src: "/look/appleton-taps-wide.jpg", alt: "Hop Yard tap handles at the Appleton bar", pos: "center" },
+            { src: "/look/appleton-patio-orange.jpg", alt: "Sunny outdoor patio with orange umbrellas at Hop Yard Ale Works Appleton", pos: "center" },
+            { src: "/look/appleton-bar-overview.jpg", alt: "Full bar at Hop Yard Ale Works Appleton with the hop mascot on the wall", pos: "center" },
+            { src: "/look/appleton-mural.jpg", alt: "Hop Yard Ale Works mural on the Appleton building exterior", pos: "top" },
+          ].map(({ src, alt, pos }) => (
+            <div key={src} className="relative overflow-hidden" style={{ aspectRatio: "4/3" }}>
               <Image
                 src={src}
                 alt={alt}
                 fill
-                sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                sizes="(min-width: 1024px) 25vw, 50vw"
                 quality={85}
-                className="object-cover object-center"
+                className={`object-cover object-${pos}`}
               />
             </div>
           ))}
