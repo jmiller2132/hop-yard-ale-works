@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { UNTAPPD_CONFIG } from "@/lib/untappd";
 import { LOCATIONS } from "@/lib/location-data";
 import { fetchAllTapBeers } from "@/lib/untappd-scrape";
@@ -37,7 +38,17 @@ export default async function AppletonDrinksMenuPage() {
         style={{ minHeight: "clamp(180px, 40vh, 280px)", backgroundColor: "var(--color-ink)" }}
         aria-label="Drinks Menu"
       >
-        <div className="absolute inset-0 bg-black/25" aria-hidden="true" />
+        <div className="absolute inset-0" aria-hidden="true">
+          <Image
+            src="/look/appleton-taps-wide.jpg"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center opacity-40"
+          />
+        </div>
+        <div className="absolute inset-0 bg-black/40" aria-hidden="true" />
         <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6">
           <Link
             href="/appleton/"

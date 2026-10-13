@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 import MenuItemCard from "./MenuItemCard";
@@ -249,14 +250,25 @@ export default function FoodMenuClient({
           )}
         </section>
 
+        {/* ── Photo break ──────────────────────────────────────────────────── */}
+        <div className="relative overflow-hidden rounded-xl mt-14" style={{ height: "220px" }}>
+          <Image
+            src="/look/appleton-pizza-screen.jpg"
+            alt="Pizza and beer on the bar at Hop Yard Ale Works"
+            fill
+            sizes="(min-width: 1280px) 1280px, 100vw"
+            quality={85}
+            className="object-cover object-center"
+          />
+          <div className="absolute inset-0" style={{ background: "linear-gradient(to right, rgba(0,0,0,0.55) 0%, transparent 60%)" }} />
+          <div className="absolute inset-0 flex flex-col justify-end px-8 pb-6">
+            <p className="font-display text-3xl uppercase leading-none text-white sm:text-4xl">The Basics</p>
+            <p className="mt-1 text-sm text-white/70">Steadfast menu items. Always here, always good.</p>
+          </div>
+        </div>
+
         {/* ── The Basics ─────────────────────────────────────────────────────── */}
-        <section ref={(el) => { sectionRefs.current["the-basics"] = el; }} id="the-basics" className="pt-14">
-          <h2 className="font-display text-4xl uppercase leading-[0.9] sm:text-5xl mb-1" style={{ color: "var(--color-ink)" }}>
-            The Basics
-          </h2>
-          <p className="text-sm mb-6" style={{ color: "var(--color-muted)" }}>
-            Steadfast menu items. Always here, always good.
-          </p>
+        <section ref={(el) => { sectionRefs.current["the-basics"] = el; }} id="the-basics" className="pt-8">
 
           {basicsItems.length === 0 ? (
             <EmptyPizzaState filterLabels={activeFilters} onByo={scrollToByo} />

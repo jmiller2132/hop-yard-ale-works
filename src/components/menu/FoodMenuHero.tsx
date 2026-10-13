@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function FoodMenuHero({
   backHref,
@@ -15,6 +16,18 @@ export default function FoodMenuHero({
       style={{ backgroundColor: "#E2A21A", color: "#231F20" }}
       aria-label="Food Menu"
     >
+      {/* Oven photo adds texture behind the yellow */}
+      <div className="absolute inset-0" aria-hidden="true">
+        <Image
+          src="/look/appleton-oven-fire.jpg"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+          style={{ opacity: 0.18, mixBlendMode: "multiply" }}
+        />
+      </div>
       <div className="mx-auto flex w-full max-w-7xl items-end justify-between gap-6 px-4 sm:px-6">
         <div>
           <Link
