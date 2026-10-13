@@ -10,6 +10,8 @@ import GlobalBanner from "@/components/layout/GlobalBanner";
 import ChatBot from "@/components/chat/ChatBot";
 import KonamiCode from "@/components/ui/KonamiCode";
 import TabTitleInactivity from "@/components/ui/TabTitleInactivity";
+import CustomCursor from "@/components/ui/CustomCursor";
+import ScrollProgressBar from "@/components/ui/ScrollProgressBar";
 import { sanityClient } from "@/lib/sanity/client";
 import { activeSeasonalThemeQuery, chatbotDataQuery, globalConfigQuery } from "@/lib/sanity/queries";
 import type { SeasonalTheme, GlobalConfig, HolidayOverride } from "@/types";
@@ -124,6 +126,8 @@ export default async function RootLayout({
         <ChatBot faqs={chatbotData?.faqs ?? []} holidayOverrides={chatHolidayOverrides} />
         <KonamiCode />
         <TabTitleInactivity />
+        <CustomCursor />
+        <ScrollProgressBar />
         <Analytics />
         <SpeedInsights />
       </body>

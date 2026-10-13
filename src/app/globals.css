@@ -209,6 +209,12 @@ h1, h2, h3, h4, h5, h6 {
   animation: picker-land-pop 480ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
+/* ─── Custom cursor — hide native pointer when CustomCursor is active ─── */
+html.cursor-custom,
+html.cursor-custom * {
+  cursor: none !important;
+}
+
 /* ─── Scrollbar ─── */
 ::-webkit-scrollbar {
   width: 6px;
