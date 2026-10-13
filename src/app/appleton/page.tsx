@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { sanityClient } from "@/lib/sanity/client";
 import { locationBySlugQuery, liveMusicTodayQuery } from "@/lib/sanity/queries";
@@ -49,16 +50,15 @@ export default async function AppletonPage() {
 
       {/* Hero */}
       <section
-        className="relative flex min-h-[50vh] items-end pb-10 pt-24 sm:min-h-[55vh]"
+        className="lg:grid lg:min-h-[70vh] lg:grid-cols-2"
         style={{ backgroundColor: "var(--color-ink)" }}
         aria-label="Appleton location"
       >
-        <div className="absolute inset-0 bg-black/20" aria-hidden="true" />
-        <div className="relative z-10 mx-auto max-w-7xl w-full px-4 sm:px-6">
-          <p className="text-xs font-semibold uppercase tracking-widest text-white/50 mb-2">
+        <div className="flex flex-col justify-end px-4 pb-10 pt-24 sm:px-6 lg:px-10 lg:pb-16 lg:pt-28">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-white/50">
             Hop Yard Ale Works
           </p>
-          <h1 className="font-heading text-4xl font-bold text-white sm:text-5xl">
+          <h1 className="font-display text-5xl uppercase leading-[0.9] text-white sm:text-7xl">
             Appleton
           </h1>
           <p className="mt-2 text-white/80 text-lg">The original taproom.</p>
@@ -104,7 +104,28 @@ export default async function AppletonPage() {
             </Link>
           </div>
         </div>
+        <div className="relative min-h-[320px] sm:min-h-[420px] lg:min-h-full">
+          <Image
+            src="/look/appleton-exterior.jpg"
+            alt="Hop Yard Ale Works building exterior in Appleton with the rustic wood sign"
+            fill
+            priority
+            quality={90}
+            sizes="(min-width: 1024px) 50vw, 100vw"
+            className="object-cover object-center"
+          />
+        </div>
       </section>
+
+      <Image
+        src="/look/appleton-bar-interior.jpg"
+        alt="Bar interior at Hop Yard Ale Works Appleton — chalkboard beer glass art, barrel, and logo mat"
+        width={1200}
+        height={800}
+        sizes="100vw"
+        quality={88}
+        className="h-auto w-full"
+      />
 
       {/* Hours + Address */}
       <section className="section-padding">
@@ -172,48 +193,56 @@ export default async function AppletonPage() {
 
       <EmployeePickSection locationSlug="appleton" />
 
+      {/* Photo grid */}
+      <section aria-label="Appleton photos" style={{ backgroundColor: "#1c1c1c" }}>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-0">
+          {[
+            { src: "/look/appleton-taps-wide.jpg", alt: "Hop Yard tap handles at the Appleton bar", style: { aspectRatio: "4/3" } },
+            { src: "/look/appleton-patio-orange.jpg", alt: "Sunny outdoor patio with orange umbrellas at Hop Yard Ale Works Appleton", style: { aspectRatio: "4/3" } },
+            { src: "/look/appleton-pizza-screen.jpg", alt: "Pizza and beer with Packers on the projector screen at Hop Yard Ale Works Appleton", style: { aspectRatio: "3/4" } },
+            { src: "/look/appleton-mural.jpg", alt: "Hop Yard Ale Works mural on the Appleton building exterior", style: { aspectRatio: "4/3" } },
+          ].map(({ src, alt, style }) => (
+            <div key={src} className="relative w-full overflow-hidden" style={style}>
+              <Image
+                src={src}
+                alt={alt}
+                fill
+                sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                quality={85}
+                className="object-cover object-center"
+              />
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Quick links */}
       <section className="pb-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="grid gap-4 sm:grid-cols-3">
             <Link
               href="/appleton-food-menu/"
-              className="group rounded-xl p-6 flex flex-col hover:opacity-90 transition-opacity"
-              style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.07)" }}
+              className="flex flex-col p-6 transition-opacity hover:opacity-90"
+              style={{ backgroundColor: "#E2A21A", color: "#231F20" }}
             >
-              <span className="text-2xl mb-2" aria-hidden="true">🍕</span>
-              <span className="font-heading text-base font-semibold" style={{ color: "var(--color-ink)" }}>
-                Food Menu
-              </span>
-              <span className="mt-1 text-sm" style={{ color: "var(--color-muted)" }}>
-                Specialty pies, BYO, dessert →
-              </span>
+              <span className="font-display text-3xl uppercase leading-[0.9]">Food Menu</span>
+              <span className="mt-2 text-sm">Specialty pies, BYO, dessert →</span>
             </Link>
             <Link
               href="/appleton-drinks-menu/"
-              className="group rounded-xl p-6 flex flex-col hover:opacity-90 transition-opacity"
-              style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.07)" }}
+              className="flex flex-col p-6 transition-opacity hover:opacity-90"
+              style={{ backgroundColor: "#2F6B32", color: "#F5F2EE" }}
             >
-              <span className="text-2xl mb-2" aria-hidden="true">🍺</span>
-              <span className="font-heading text-base font-semibold" style={{ color: "var(--color-ink)" }}>
-                Drinks Menu
-              </span>
-              <span className="mt-1 text-sm" style={{ color: "var(--color-muted)" }}>
-                On tap, wine, ciders, NA →
-              </span>
+              <span className="font-display text-3xl uppercase leading-[0.9]">Drinks Menu</span>
+              <span className="mt-2 text-sm">On tap, wine, ciders, NA →</span>
             </Link>
             <Link
               href="/events/"
-              className="group rounded-xl p-6 flex flex-col hover:opacity-90 transition-opacity"
-              style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.07)" }}
+              className="flex flex-col p-6 transition-opacity hover:opacity-90"
+              style={{ backgroundColor: "#E36B2C", color: "#231F20" }}
             >
-              <span className="text-2xl mb-2" aria-hidden="true">📅</span>
-              <span className="font-heading text-base font-semibold" style={{ color: "var(--color-ink)" }}>
-                Events
-              </span>
-              <span className="mt-1 text-sm" style={{ color: "var(--color-muted)" }}>
-                Live music, tap releases →
-              </span>
+              <span className="font-display text-3xl uppercase leading-[0.9]">Events</span>
+              <span className="mt-2 text-sm">Live music, tap releases →</span>
             </Link>
           </div>
         </div>

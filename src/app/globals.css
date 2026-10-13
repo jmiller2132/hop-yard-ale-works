@@ -189,6 +189,26 @@ h1, h2, h3, h4, h5, h6 {
   animation: fade-in-out 3.2s ease-in-out forwards;
 }
 
+/* Pizza picker — name snaps into the spotlight, then pops when it locks */
+@keyframes picker-name-in {
+  from { transform: translateY(22%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes picker-land-pop {
+  0% { transform: scale(0.94); }
+  45% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+.picker-name-in {
+  animation: picker-name-in 90ms linear;
+}
+
+.picker-land-pop {
+  animation: picker-land-pop 480ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
 /* ─── Scrollbar ─── */
 ::-webkit-scrollbar {
   width: 6px;

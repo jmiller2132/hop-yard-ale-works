@@ -14,17 +14,17 @@ export default function ApplyPage() {
     <div style={{ backgroundColor: "var(--color-warm-white)" }}>
       {/* Hero */}
       <section
-        className="px-4 py-20 text-center"
-        style={{ backgroundColor: "var(--color-ink)" }}
+        className="pb-12 pt-24 px-4 text-center sm:pb-16 sm:pt-36"
+        style={{ minHeight: "clamp(260px, 44vh, 400px)", backgroundColor: "var(--color-ink)", display: "flex", alignItems: "flex-end" }}
       >
-        <div className="mx-auto max-w-2xl">
+        <div className="mx-auto w-full max-w-2xl">
           <p
             className="font-heading text-sm font-semibold uppercase tracking-widest mb-3"
             style={{ color: "var(--color-green)" }}
           >
             We&apos;re Hiring
           </p>
-          <h1 className="font-heading text-4xl font-bold text-white sm:text-5xl">
+          <h1 className="font-display text-5xl sm:text-6xl uppercase leading-[0.9] text-white">
             Join Our Team
           </h1>
           <p className="mt-4 text-base sm:text-lg" style={{ color: "rgba(255,255,255,0.55)" }}>
@@ -34,7 +34,7 @@ export default function ApplyPage() {
       </section>
 
       {/* Intro copy */}
-      <section className="px-4 py-16">
+      <section className="section-padding px-4">
         <div className="mx-auto max-w-2xl">
           <div className="prose prose-neutral max-w-none" style={{ color: "var(--color-ink)" }}>
             <p className="text-lg leading-relaxed mb-5">
@@ -48,8 +48,8 @@ export default function ApplyPage() {
               an equal opportunity employer and encourage all to apply.
             </p>
             <div
-              className="rounded-xl px-6 py-5 mb-6"
-              style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.07)" }}
+              className="px-6 py-5 mb-6"
+              style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.1)", borderLeft: "4px solid var(--color-teal)" }}
             >
               <p className="font-semibold mb-2" style={{ color: "var(--color-ink)" }}>
                 It can get crazy in here.
@@ -81,8 +81,8 @@ export default function ApplyPage() {
             Apply Now
           </h2>
           <div
-            className="overflow-hidden rounded-xl"
-            style={{ border: "1px solid rgba(0,0,0,0.08)" }}
+            className="overflow-hidden"
+            style={{ border: "1px solid rgba(0,0,0,0.1)" }}
           >
             <iframe
               src={FORM_URL}

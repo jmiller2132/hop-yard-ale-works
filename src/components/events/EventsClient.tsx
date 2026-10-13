@@ -1,9 +1,96 @@
 "use client";
 
-import { useSyncExternalStore, type ReactNode } from "react";
+import { useSyncExternalStore, useState, useEffect, useCallback, type ReactNode } from "react";
 import Link from "next/link";
 import type { Event } from "@/types";
 import { downloadIcs } from "@/lib/event-calendar";
+
+// ─── RSVP (localStorage per-device "I'm going" toggle) ───────────────────────
+
+const RSVP_KEY = "hopyard_rsvp_v1";
+
+function readRsvps(): Set<string> {
+  try {
+    const raw = localStorage.getItem(RSVP_KEY);
+    return new Set(raw ? JSON.parse(raw) : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function writeRsvps(ids: Set<string>) {
+  try {
+    localStorage.setItem(RSVP_KEY, JSON.stringify([...ids]));
+  } catch {}
+}
+
+function RsvpButton({ eventId, onDark = false }: { eventId: string; onDark?: boolean }) {
+  const [going, setGoing] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    setGoing(readRsvps().has(eventId));
+  }, [eventId]);
+
+  const toggle = useCallback(() => {
+    const rsvps = readRsvps();
+    if (rsvps.has(eventId)) {
+      rsvps.delete(eventId);
+    } else {
+      rsvps.add(eventId);
+    }
+    writeRsvps(rsvps);
+    setGoing(rsvps.has(eventId));
+  }, [eventId]);
+
+  // Don't render until mounted (avoids SSR mismatch)
+  if (!mounted) return null;
+
+  if (going) {
+    return (
+      <button
+        type="button"
+        onClick={toggle}
+        className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium min-h-[36px] transition-all"
+        style={
+          onDark
+            ? { backgroundColor: "rgba(105,210,100,0.18)", color: "#a5f3a0", border: "1px solid rgba(105,210,100,0.3)" }
+            : { backgroundColor: "rgba(47,107,50,0.10)", color: "var(--color-green-text)", border: "1px solid rgba(47,107,50,0.2)" }
+        }
+        aria-pressed="true"
+        title="Click to remove"
+      >
+        <CheckIcon />
+        Going
+      </button>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium min-h-[36px] hover:opacity-80 transition-opacity"
+      style={
+        onDark
+          ? { backgroundColor: "rgba(255,255,255,0.10)", color: "white" }
+          : { backgroundColor: "rgba(0,0,0,0.05)", color: "var(--color-ink)" }
+      }
+      aria-pressed="false"
+    >
+      I&apos;m going
+    </button>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  );
+}
 
 function formatDate(dateStr: string) {
   const date = new Date(dateStr + "T12:00:00");
@@ -449,6 +536,9 @@ function ActionLinks({ event, onDark = false }: { event: Event; onDark?: boolean
         <CalendarIcon />
         Add to calendar
       </button>
+      {event.category !== "Closure" && (
+        <RsvpButton eventId={event._id} onDark={onDark} />
+      )}
     </div>
   );
 }

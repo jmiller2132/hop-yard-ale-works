@@ -184,8 +184,30 @@ export default function DrinksMenuClient({
           You read the whole thing. The bar respects that.
         </p>
 
+        {/* Not sure what to order? */}
+        <div
+          className="mt-6 mb-2 rounded-xl px-6 py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+          style={{ backgroundColor: "rgba(0,0,0,0.04)", border: "1px dashed rgba(0,0,0,0.12)" }}
+        >
+          <div>
+            <p className="font-heading text-base font-semibold" style={{ color: "var(--color-ink)" }}>
+              Not sure what to order?
+            </p>
+            <p className="text-sm mt-0.5" style={{ color: "var(--color-muted)" }}>
+              Four quick questions. We&rsquo;ll point you at something on tap right now.
+            </p>
+          </div>
+          <Link
+            href="/what-to-drink/"
+            className="flex-shrink-0 inline-flex items-center rounded-lg px-5 py-2.5 text-sm font-semibold min-h-[44px] hover:opacity-90 transition-opacity whitespace-nowrap"
+            style={{ backgroundColor: "var(--color-green)", color: "white" }}
+          >
+            Find my beer →
+          </Link>
+        </div>
+
         {/* NextStep */}
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 pb-4">
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 pb-4">
           <Link
             href={foodHref}
             className="flex flex-col rounded-xl p-6 hover:opacity-90 transition-opacity"

@@ -9,6 +9,13 @@ import { jsonLdString } from "@/lib/site";
 import OpenClosedBadgeLive from "@/components/ui/OpenClosedBadgeLive";
 import QuoteBanner from "@/components/ui/QuoteBanner";
 import TaproomPhotoGrid from "@/components/ui/TaproomPhotoGrid";
+import HeroParallaxImage from "@/components/ui/HeroParallaxImage";
+import RevealOnScroll from "@/components/ui/RevealOnScroll";
+import SpinTheTap from "@/components/ui/SpinTheTap";
+import ScrollPizzaSpin from "@/components/ui/ScrollPizzaSpin";
+import ScrollBeerFill from "@/components/ui/ScrollBeerFill";
+import { fetchAllTapBeers } from "@/lib/untappd-scrape";
+import { UNTAPPD_CONFIG } from "@/lib/untappd";
 import type { Metadata } from "next";
 import type { Location, TaproomPhoto, SeasonalTheme } from "@/types";
 
@@ -17,9 +24,9 @@ export const revalidate = 900;
 // Field colors sampled from can photos. Engine Co. was not in those photos.
 // Grounds for the homepage sections, not beer labels.
 const SECTION = {
-  brewed: { bg: "#E36B2C", fg: "#231F20" },
+  brewed: { bg: "#2F6B32", fg: "#F5F2EE" },
   pizza: { bg: "#E2A21A", fg: "#231F20" },
-  company: { bg: "#2F6B32", fg: "#F5F2EE" },
+  company: { bg: "#E36B2C", fg: "#231F20" },
   findUs: { bg: "#6E342C", fg: "#F5F2EE" },
   social: { bg: "#8C2F2A", fg: "#F5F2EE" },
 } as const;
@@ -33,10 +40,14 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const [locations, photos, activeTheme] = await Promise.all([
+  const [locations, photos, activeTheme, tapBeers] = await Promise.all([
     sanityClient.fetch<Location[]>(locationsQuery).catch(() => [] as Location[]),
     sanityClient.fetch<TaproomPhoto[]>(taproomPhotosQuery).catch(() => [] as TaproomPhoto[]),
     sanityClient.fetch<SeasonalTheme | null>(activeSeasonalThemeQuery).catch(() => null),
+    fetchAllTapBeers([
+      { breweryId: UNTAPPD_CONFIG.appleton.breweryId, menuId: UNTAPPD_CONFIG.appleton.menuId },
+      { breweryId: UNTAPPD_CONFIG["the-falls"].breweryId, menuId: UNTAPPD_CONFIG["the-falls"].menuId },
+    ]).catch(() => []),
   ]);
 
   const appleton = locationForBadge(
@@ -60,20 +71,12 @@ export default async function HomePage() {
         dangerouslySetInnerHTML={{ __html: jsonLdString(organizationJsonLd()) }}
       />
 
-      {/* Hero — temporary look pass. Can type and a finished photo set are shelved. */}
       <section
         className="relative flex min-h-[92vh] items-end overflow-hidden"
         style={{ backgroundColor: "var(--color-ink)" }}
         aria-label="Hero"
       >
-        <Image
-          src="/look/taproom.png"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-center"
-        />
+        <HeroParallaxImage />
         <div
           className="absolute inset-0"
           style={{ background: "linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.35) 42%, rgba(0,0,0,0.25) 100%)" }}
@@ -89,7 +92,7 @@ export default async function HomePage() {
             </div>
           )}
           <img
-            src="/look/stamp-white.svg"
+            src="/look/stamp-white.png"
             alt="Hop Yard Ale Works"
             width={112}
             height={112}
@@ -115,6 +118,8 @@ export default async function HomePage() {
             </p>
           )}
 
+          <SpinTheTap beers={tapBeers.length > 0 ? tapBeers : null} />
+
           <div className="mt-10 grid gap-4 sm:grid-cols-2 sm:gap-6 text-left items-stretch">
             <LocationHeroCard
               name="Appleton"
@@ -136,40 +141,56 @@ export default async function HomePage() {
 
       {/* Color fields are the sections. Copy is the existing homepage text. */}
       <section aria-label="About">
-        <div
-          className="px-6 py-16 sm:px-10 sm:py-24"
-          style={{ backgroundColor: SECTION.brewed.bg, color: SECTION.brewed.fg }}
-        >
-          <div className="mx-auto max-w-5xl">
-            <h2 className="font-display text-4xl uppercase leading-[0.9] sm:text-6xl">
-              Brewed Here
-            </h2>
-            <p className="mt-4 max-w-xl text-sm leading-relaxed sm:text-base">
-              Every beer on tap is brewed in-house at our Appleton brewhouse and served at both locations. Rotating taps, seasonal releases, and a few you&rsquo;ll keep coming back for.
-            </p>
+        <div className="grid lg:grid-cols-2">
+          <div className="relative min-h-[320px] lg:min-h-[520px]">
+            <Image
+              src="/look/appleton-tanks.webp"
+              alt="Brewing barrels in the Appleton brewhouse"
+              fill
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              className="object-cover object-[center_75%]"
+            />
+          </div>
+          <div
+            className="relative overflow-hidden flex flex-col justify-center px-6 py-16 sm:px-10 sm:py-24"
+            style={{ backgroundColor: SECTION.brewed.bg, color: SECTION.brewed.fg }}
+          >
+            <ScrollBeerFill />
+            <RevealOnScroll>
+              <h2 className="font-display text-4xl uppercase leading-[0.9] sm:text-6xl">
+                Brewed Here
+              </h2>
+              <p className="mt-4 max-w-xl text-sm leading-relaxed sm:text-base">
+                Every beer on tap is brewed in-house at our Appleton brewhouse and served at both locations. Rotating taps, seasonal releases, and a few you&rsquo;ll keep coming back for.
+              </p>
+            </RevealOnScroll>
           </div>
         </div>
 
         <div className="grid lg:grid-cols-2">
-          <div className="relative min-h-[320px] lg:min-h-[520px]">
-            <Image
-              src="/look/pizza.png"
-              alt="Wood-fired pizzas and a pint on a table in the taproom"
-              fill
-              sizes="(min-width: 1024px) 50vw, 100vw"
-              className="object-cover"
-            />
-          </div>
           <div
-            className="flex flex-col justify-center px-6 py-16 sm:px-10 sm:py-24"
+            className="relative overflow-hidden order-2 flex flex-col justify-center px-6 py-16 sm:px-10 sm:py-24 lg:order-1"
             style={{ backgroundColor: SECTION.pizza.bg, color: SECTION.pizza.fg }}
           >
-            <h2 className="font-display text-4xl uppercase leading-[0.9] sm:text-6xl">
-              Wood-Fired Pizza
-            </h2>
-            <p className="mt-4 max-w-xl text-sm leading-relaxed sm:text-base">
-              Wood-fired every order, with specialty pies and a build-your-own option for when you already know what you want.
-            </p>
+            <ScrollPizzaSpin />
+            <RevealOnScroll>
+              <h2 className="font-display text-4xl uppercase leading-[0.9] sm:text-6xl">
+                Wood-Fired Pizza
+              </h2>
+              <p className="mt-4 max-w-xl text-sm leading-relaxed sm:text-base">
+                Wood-fired every order, with specialty pies and a build-your-own option for when you already know what you want.
+              </p>
+            </RevealOnScroll>
+          </div>
+          <div className="relative order-1 min-h-[320px] lg:order-2 lg:min-h-[520px]">
+            <Image
+              src="/look/appleton-oven-fire.jpg"
+              alt="Wood-fired pizza oven with live fire at Hop Yard Ale Works in Appleton"
+              fill
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              quality={90}
+              className="object-cover"
+            />
           </div>
         </div>
 
@@ -178,27 +199,54 @@ export default async function HomePage() {
           style={{ backgroundColor: SECTION.company.bg, color: SECTION.company.fg }}
         >
           <div className="mx-auto max-w-5xl">
-            <h2 className="font-display text-4xl uppercase leading-[0.9] sm:text-6xl">
-              Good Company
-            </h2>
-            <p className="mt-4 max-w-xl text-sm leading-relaxed sm:text-base">
-              A neighborhood taproom first. We&rsquo;re here to make everyone comfortable — whether you&rsquo;re a craft beer regular or just figuring out what a hazy IPA is.
-            </p>
+            <RevealOnScroll>
+              <h2 className="font-display text-4xl uppercase leading-[0.9] sm:text-6xl">
+                Good Company
+              </h2>
+              <p className="mt-4 max-w-xl text-sm leading-relaxed sm:text-base">
+                A neighborhood taproom first. We&rsquo;re here to make everyone comfortable — whether you&rsquo;re a craft beer regular or just figuring out what a hazy IPA is.
+              </p>
+            </RevealOnScroll>
           </div>
         </div>
       </section>
 
       <QuoteBanner />
 
-      <div className="relative h-56 sm:h-80">
-        <Image
-          src="/look/mural.png"
-          alt="Painted Hop Yard Ale Works wall"
-          fill
-          sizes="100vw"
-          className="object-cover object-center"
-        />
-      </div>
+      <section aria-label="Both taprooms" style={{ backgroundColor: "#231F20" }}>
+        <div className="mx-auto grid max-w-6xl gap-2 p-2 sm:grid-cols-2 sm:p-3">
+          <Link href="/appleton/" className="group relative block h-72 overflow-hidden sm:h-[26rem]">
+            <Image
+              src="/look/appleton-exterior.jpg"
+              alt=""
+              fill
+              sizes="(min-width: 640px) 576px, 100vw"
+              quality={90}
+              className="object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-black/10" aria-hidden="true" />
+            <div className="absolute inset-x-0 bottom-0 p-5 sm:p-7">
+              <p className="font-display text-4xl uppercase leading-[0.9] text-white sm:text-6xl">Appleton</p>
+              <p className="mt-1 text-sm text-white/80">512 W Northland Ave</p>
+            </div>
+          </Link>
+          <Link href="/the-falls/" className="group relative block h-72 overflow-hidden sm:h-[26rem]">
+            <Image
+              src="/look/falls-exterior.webp"
+              alt=""
+              fill
+              sizes="(min-width: 640px) 576px, 100vw"
+              quality={90}
+              className="object-cover object-[center_24%]"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-black/10" aria-hidden="true" />
+            <div className="absolute inset-x-0 bottom-0 p-5 sm:p-7">
+              <p className="font-display text-4xl uppercase leading-[0.9] text-white sm:text-6xl">Menomonee Falls</p>
+              <p className="mt-1 text-sm text-white/80">N88W16521 Main St</p>
+            </div>
+          </Link>
+        </div>
+      </section>
 
       {/* Location cards */}
       <section
@@ -207,12 +255,14 @@ export default async function HomePage() {
         aria-label="Locations"
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <h2
-            className="mb-8 font-display text-4xl uppercase leading-[0.9] sm:text-6xl"
-            style={{ color: SECTION.findUs.fg }}
-          >
-            Find Us
-          </h2>
+          <RevealOnScroll>
+            <h2
+              className="mb-8 font-display text-4xl uppercase leading-[0.9] sm:text-6xl"
+              style={{ color: SECTION.findUs.fg }}
+            >
+              Find Us
+            </h2>
+          </RevealOnScroll>
           <div className="grid gap-6 sm:grid-cols-2">
             <LocationCard
               name="Appleton"
@@ -266,22 +316,60 @@ export default async function HomePage() {
         </section>
       )}
 
-      <div className="relative h-64 sm:h-[28rem]" style={{ backgroundColor: "#1c1c1c" }}>
+      <div style={{ backgroundColor: "#1c1c1c" }}>
         <Image
-          src="/look/cans.png"
-          alt="Driving Miss Haisy, Flight of the Nectaron, and Running Teeth First"
-          fill
-          sizes="100vw"
-          className="object-cover object-center"
+          src="/look/cans-five.jpg"
+          alt="Driving Miss Haisy, Flight of the Nectaron, Orange County Hefe, Running Teeth First, and Mossie's"
+          width={1200}
+          height={800}
+          sizes="(min-width: 1024px) 1024px, 100vw"
+          quality={90}
+          className="mx-auto h-auto w-full max-w-5xl"
         />
       </div>
 
-      {/* Temporary stand-in until the shot list is photographed */}
-      <section aria-label="Taproom photos">
-        <div className="grid sm:grid-cols-3">
-          <PhotoTile src="/look/moss-sign.png" alt="Hop Yard letters on a wood-slat wall" />
-          <PhotoTile src="/look/dining.png" alt="A full table in the taproom" />
-          <PhotoTile src="/look/pallet-sign.png" alt="Wooden Hop Yard Ale Works sign" />
+      <section aria-label="Appleton taproom photos" style={{ backgroundColor: "#1c1c1c" }}>
+        <div className="mx-auto grid max-w-6xl gap-2 p-2 sm:grid-cols-3 sm:p-3">
+          {[
+            { src: "/look/appleton-cheers-wall.jpg", alt: "Cheers neon sign on green moss wall with booth seating at Hop Yard Ale Works Appleton", pos: "center" },
+            { src: "/look/appleton-exterior.jpg", alt: "Hop Yard Ale Works building exterior in Appleton with the rustic wood sign", pos: "center" },
+            { src: "/look/appleton-mural.jpg", alt: "Large Hop Yard Ale Works mural painted on the side of the Appleton building", pos: "center" },
+            { src: "/look/appleton-bar-interior.jpg", alt: "Bar interior at Hop Yard Ale Works Appleton with chalk beer glass art and logo floor mat", pos: "center" },
+            { src: "/look/appleton-patio-orange.jpg", alt: "Sunny outdoor patio with orange umbrellas and barrel tables at Hop Yard Ale Works Appleton", pos: "center" },
+            { src: "/look/appleton-taps-wide.jpg", alt: "Row of Hop Yard tap handles at the Appleton taproom", pos: "center" },
+          ].map(({ src, alt, pos }) => (
+            <div key={src} className="relative w-full overflow-hidden" style={{ aspectRatio: "4/3" }}>
+              <Image
+                src={src}
+                alt={alt}
+                fill
+                sizes="(min-width: 640px) 33vw, 100vw"
+                quality={85}
+                className={`object-cover object-${pos}`}
+              />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section aria-label="Menomonee Falls taproom photos" style={{ backgroundColor: "#1c1c1c" }}>
+        <div className="mx-auto grid max-w-6xl gap-2 p-2 sm:grid-cols-3 sm:p-3">
+          {[
+            { src: "/look/falls-wall.webp", alt: "Painted Hop Yard mark and barrels on the Menomonee Falls wall" },
+            { src: "/look/falls-taps.webp", alt: "Tap wall in Menomonee Falls, with the hop beard on green tile" },
+            { src: "/look/falls-letters.webp", alt: "Lit Hop Yard letters, benches, and barrels in Menomonee Falls" },
+          ].map(({ src, alt }) => (
+            <div key={src} className="relative w-full overflow-hidden" style={{ aspectRatio: "4/3" }}>
+              <Image
+                src={src}
+                alt={alt}
+                fill
+                sizes="(min-width: 640px) 33vw, 100vw"
+                quality={90}
+                className="object-cover object-center"
+              />
+            </div>
+          ))}
         </div>
       </section>
 
@@ -347,27 +435,29 @@ export default async function HomePage() {
       {/* Next steps */}
       <section className="section-padding" aria-label="Next steps">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="grid gap-4 sm:grid-cols-3">
-            <NextStepCard
-              title="See the Menus"
-              description="Food, drinks, and everything in between. Updated regularly."
-              links={[{ label: "View Menus", href: "/appleton-food-menu/" }]}
-            />
-            <NextStepCard
-              title="Upcoming Events"
-              description="What's coming up at both locations."
-              links={[{ label: "See Events", href: "/events/" }]}
-            />
-            <NextStepCard
-              title="Order Online"
-              description="Pick up or delivery through Toast. Ready when you are."
-              links={[
-                { label: "Order — Appleton", href: appletonOrderUrl, external: true },
-                { label: "Order — Menomonee Falls", href: fallsOrderUrl, external: true },
-              ]}
-              highlight
-            />
-          </div>
+          <RevealOnScroll>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <NextStepCard
+                title="See the Menus"
+                description="Food, drinks, and everything in between. Updated regularly."
+                links={[{ label: "View Menus", href: "/appleton-food-menu/" }]}
+              />
+              <NextStepCard
+                title="Upcoming Events"
+                description="What's coming up at both locations."
+                links={[{ label: "See Events", href: "/events/" }]}
+              />
+              <NextStepCard
+                title="Order Online"
+                description="Pick up or delivery through Toast. Ready when you are."
+                links={[
+                  { label: "Order — Appleton", href: appletonOrderUrl, external: true },
+                  { label: "Order — Menomonee Falls", href: fallsOrderUrl, external: true },
+                ]}
+                highlight
+              />
+            </div>
+          </RevealOnScroll>
         </div>
       </section>
     </>
@@ -517,14 +607,6 @@ function LocationCard({
           Order Online
         </Link>
       </div>
-    </div>
-  );
-}
-
-function PhotoTile({ src, alt }: { src: string; alt: string }) {
-  return (
-    <div className="relative h-72 sm:h-96">
-      <Image src={src} alt={alt} fill sizes="(min-width: 640px) 33vw, 100vw" className="object-cover" />
     </div>
   );
 }

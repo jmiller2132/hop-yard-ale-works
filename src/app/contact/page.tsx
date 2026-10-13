@@ -29,14 +29,14 @@ export default function ContactPage() {
     <>
       {/* Hero */}
       <section
-        className="py-16 sm:py-20"
-        style={{ backgroundColor: "var(--color-ink)" }}
+        className="pb-12 pt-24 sm:pb-16 sm:pt-36"
+        style={{ minHeight: "clamp(260px, 44vh, 400px)", backgroundColor: "var(--color-ink)", display: "flex", alignItems: "flex-end" }}
       >
-        <div className="mx-auto max-w-3xl px-4 sm:px-6 text-center">
+        <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 text-center">
           <p className="text-sm font-medium uppercase tracking-widest mb-3" style={{ color: "var(--color-green)" }}>
             Get in touch
           </p>
-          <h1 className="font-heading text-4xl sm:text-5xl font-bold text-white mb-4">
+          <h1 className="font-display text-5xl sm:text-6xl uppercase leading-[0.9] text-white mb-4">
             Say something.
           </h1>
           <p className="text-lg" style={{ color: "rgba(255,255,255,0.65)" }}>
@@ -47,7 +47,7 @@ export default function ContactPage() {
       </section>
 
       {/* Content */}
-      <section className="py-14 sm:py-20">
+      <section className="section-padding">
         <div className="mx-auto max-w-5xl px-4 sm:px-6">
           <div className="grid lg:grid-cols-[1fr_2fr] gap-10 lg:gap-14 items-start">
             {/* Info panel */}
@@ -135,7 +135,7 @@ export default function ContactPage() {
 
       {/* Next steps */}
       <section
-        className="py-12"
+        className="section-padding"
         style={{ backgroundColor: "var(--color-warm-white)" }}
       >
         <div className="mx-auto max-w-3xl px-4 sm:px-6 text-center">
@@ -145,21 +145,21 @@ export default function ContactPage() {
           <div className="flex flex-wrap justify-center gap-3">
             <Link
               href="/appleton/"
-              className="rounded-full px-5 py-2 text-sm font-semibold transition-opacity hover:opacity-80"
+              className="rounded-md px-5 py-2.5 text-sm font-semibold min-h-[44px] inline-flex items-center transition-opacity hover:opacity-80"
               style={{ backgroundColor: "var(--color-ink)", color: "white" }}
             >
               Visit Appleton
             </Link>
             <Link
               href="/the-falls/"
-              className="rounded-full px-5 py-2 text-sm font-semibold transition-opacity hover:opacity-80"
+              className="rounded-md px-5 py-2.5 text-sm font-semibold min-h-[44px] inline-flex items-center transition-opacity hover:opacity-80"
               style={{ backgroundColor: "var(--color-ink)", color: "white" }}
             >
               Visit The Falls
             </Link>
             <Link
               href="/events/"
-              className="rounded-full px-5 py-2 text-sm font-semibold transition-opacity hover:opacity-80"
+              className="rounded-md px-5 py-2.5 text-sm font-semibold min-h-[44px] inline-flex items-center transition-opacity hover:opacity-80"
               style={{ backgroundColor: "var(--color-seasonal-cta)", color: "white" }}
             >
               See upcoming events

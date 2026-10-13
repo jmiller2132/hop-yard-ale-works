@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { sanityClient } from "@/lib/sanity/client";
 import { locationBySlugQuery } from "@/lib/sanity/queries";
@@ -39,16 +40,15 @@ export default async function TheFallsPage() {
 
       {/* Hero */}
       <section
-        className="relative flex min-h-[50vh] items-end pb-10 pt-24 sm:min-h-[55vh]"
+        className="lg:grid lg:min-h-[70vh] lg:grid-cols-2"
         style={{ backgroundColor: "var(--color-ink)" }}
         aria-label="Menomonee Falls location"
       >
-        <div className="absolute inset-0 bg-black/20" aria-hidden="true" />
-        <div className="relative z-10 mx-auto max-w-7xl w-full px-4 sm:px-6">
-          <p className="text-xs font-semibold uppercase tracking-widest text-white/50 mb-2">
+        <div className="flex flex-col justify-end px-4 pb-10 pt-24 sm:px-6 lg:px-10 lg:pb-16 lg:pt-28">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-white/50">
             Hop Yard Ale Works
           </p>
-          <h1 className="font-heading text-4xl font-bold text-white sm:text-5xl">
+          <h1 className="font-display text-5xl uppercase leading-[0.9] text-white sm:text-7xl">
             Menomonee Falls
           </h1>
           <p className="mt-2 text-white/80 text-lg">
@@ -88,7 +88,28 @@ export default async function TheFallsPage() {
             </Link>
           </div>
         </div>
+        <div className="relative aspect-[3/4] lg:aspect-auto lg:min-h-full">
+          <Image
+            src="/look/falls-exterior.webp"
+            alt="Hop Yard Ale Works sign on the brick building in Menomonee Falls"
+            fill
+            priority
+            quality={90}
+            sizes="(min-width: 1024px) 50vw, 100vw"
+            className="object-cover object-[center_42%]"
+          />
+        </div>
       </section>
+
+      <Image
+        src="/look/falls-wall.webp"
+        alt="Painted Hop Yard mark and barrels on the Menomonee Falls wall"
+        width={1024}
+        height={768}
+        sizes="100vw"
+        quality={90}
+        className="h-auto w-full"
+      />
 
       {/* Hours + Address */}
       <section className="section-padding">
@@ -221,42 +242,27 @@ export default async function TheFallsPage() {
           <div className="grid gap-4 sm:grid-cols-3">
             <Link
               href="/the-falls-food-menu/"
-              className="group rounded-xl p-6 flex flex-col hover:opacity-90 transition-opacity"
-              style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.07)" }}
+              className="flex flex-col p-6 transition-opacity hover:opacity-90"
+              style={{ backgroundColor: "#E2A21A", color: "#231F20" }}
             >
-              <span className="text-2xl mb-2" aria-hidden="true">🍕</span>
-              <span className="font-heading text-base font-semibold" style={{ color: "var(--color-ink)" }}>
-                Food Menu
-              </span>
-              <span className="mt-1 text-sm" style={{ color: "var(--color-muted)" }}>
-                Specialty pies, BYO, dessert →
-              </span>
+              <span className="font-display text-3xl uppercase leading-[0.9]">Food Menu</span>
+              <span className="mt-2 text-sm">Specialty pies, BYO, dessert →</span>
             </Link>
             <Link
               href="/the-falls-drinks-menu/"
-              className="group rounded-xl p-6 flex flex-col hover:opacity-90 transition-opacity"
-              style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.07)" }}
+              className="flex flex-col p-6 transition-opacity hover:opacity-90"
+              style={{ backgroundColor: "#2F6B32", color: "#F5F2EE" }}
             >
-              <span className="text-2xl mb-2" aria-hidden="true">🍺</span>
-              <span className="font-heading text-base font-semibold" style={{ color: "var(--color-ink)" }}>
-                Drinks Menu
-              </span>
-              <span className="mt-1 text-sm" style={{ color: "var(--color-muted)" }}>
-                On tap, wine, ciders, NA →
-              </span>
+              <span className="font-display text-3xl uppercase leading-[0.9]">Drinks Menu</span>
+              <span className="mt-2 text-sm">On tap, wine, ciders, NA →</span>
             </Link>
             <Link
               href="/events/"
-              className="group rounded-xl p-6 flex flex-col hover:opacity-90 transition-opacity"
-              style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.07)" }}
+              className="flex flex-col p-6 transition-opacity hover:opacity-90"
+              style={{ backgroundColor: "#E36B2C", color: "#231F20" }}
             >
-              <span className="text-2xl mb-2" aria-hidden="true">📅</span>
-              <span className="font-heading text-base font-semibold" style={{ color: "var(--color-ink)" }}>
-                Events
-              </span>
-              <span className="mt-1 text-sm" style={{ color: "var(--color-muted)" }}>
-                Live music, tap releases →
-              </span>
+              <span className="font-display text-3xl uppercase leading-[0.9]">Events</span>
+              <span className="mt-2 text-sm">Live music, tap releases →</span>
             </Link>
           </div>
         </div>

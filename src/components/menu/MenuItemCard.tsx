@@ -30,6 +30,7 @@ export default function MenuItemCard({ item, id, highlighted }: MenuItemCardProp
       style={{
         backgroundColor: "white",
         border: "1px solid rgba(0,0,0,0.07)",
+        borderLeft: "4px solid #E2A21A",
         ...(highlighted
           ? { ringColor: "var(--color-green)", boxShadow: "0 0 0 2px var(--color-green)" }
           : {}),

@@ -158,10 +158,16 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
           )}
           <a
             href="/pour/"
-            className="opacity-60 hover:opacity-100 transition-opacity"
-            aria-label="Play Tap Rush"
+            className="group flex items-center gap-1 text-xs transition-opacity opacity-30 hover:opacity-80"
+            title="There might be a game here"
           >
-            🍺
+            <span aria-hidden="true">🍺</span>
+            <span
+              className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+              style={{ fontStyle: "italic" }}
+            >
+              last call&hellip;
+            </span>
           </a>
         </div>
       </div>

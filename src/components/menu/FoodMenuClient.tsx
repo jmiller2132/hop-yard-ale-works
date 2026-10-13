@@ -5,6 +5,7 @@ import Link from "next/link";
 import { cn } from "@/lib/cn";
 import MenuItemCard from "./MenuItemCard";
 import MenuSectionNav from "./MenuSectionNav";
+import PizzaPickerShow from "./PizzaPickerShow";
 import type { MenuItemSeed } from "@/data/menu-appleton";
 
 const SECTIONS = [
@@ -18,17 +19,6 @@ const FILTERS = [
   { id: "vegetarian", label: "Vegetarian" },
   { id: "vegan",      label: "Vegan" },
   { id: "glutenFree", label: "Gluten Free" },
-];
-
-const REPICK_TOASTS = [
-  (name: string) => `The ${name} is still right.`,
-  (name: string) => `${name}. Final answer.`,
-  (name: string) => `We stand by ${name}.`,
-  (name: string) => `${name}. Trust us.`,
-  (_name: string) => `We could do this all day.`,
-  (name: string) => `Okay. ${name}. For real this time.`,
-  (_name: string) => `The bar has opinions too, you know.`,
-  (name: string) => `${name}. The oven agrees.`,
 ];
 
 // BYO topping data with dietary flags
@@ -88,16 +78,16 @@ export default function FoodMenuClient({
   const [activeSection, setActiveSection] = useState("our-creations");
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
-  const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [randomizerUsed, setRandomizerUsed] = useState(false);
   const [lastPickedName, setLastPickedName] = useState<string | null>(null);
+  const [picker, setPicker] = useState<{
+    pool: MenuItemSeed[];
+    avoidName: string | null;
+    repick: boolean;
+  } | null>(null);
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
   const scrollingRef = useRef(false);
-
-  const showToast = useCallback((msg: string) => {
-    setToastMsg(msg);
-    setTimeout(() => setToastMsg(null), 3500);
-  }, []);
+  const highlightTimer = useRef<number | null>(null);
 
   const handleSectionSelect = useCallback((id: string) => {
     setActiveSection(id);
@@ -147,25 +137,25 @@ export default function FoodMenuClient({
   const byoItems      = filteredItems.filter((i) => i.section === "Build Your Own");
   const allPizzaItems = [...basicsItems, ...creationsItems];
 
-  // Pizza randomizer — draws from all filtered pizza items
-  const handlePickForMe = useCallback(() => {
-    const pool = allPizzaItems.length > 1
-      ? allPizzaItems.filter((i) => i.name !== lastPickedName)
-      : allPizzaItems;
-    if (!pool.length) return;
-    const pick = pool[Math.floor(Math.random() * pool.length)];
+  const openPicker = () => {
+    const pool = [...creationsItems, ...basicsItems];
+    if (!pool.length || picker) return;
+    setPicker({ pool, avoidName: lastPickedName, repick: randomizerUsed });
+  };
+
+  const confirmPick = (pick: MenuItemSeed) => {
     const section = pick.section === "The Basics" ? "basics" : "creations";
     const itemId = `pizza-${section}-${pick.displayOrder}`;
     setHighlightedId(itemId);
     setRandomizerUsed(true);
     setLastPickedName(pick.name);
-    const toast = randomizerUsed
-      ? REPICK_TOASTS[Math.floor(Math.random() * REPICK_TOASTS.length)](pick.name)
-      : `${pick.name} has chosen you.`;
-    showToast(toast);
-    document.getElementById(itemId)?.scrollIntoView({ behavior: "smooth", block: "center" });
-    setTimeout(() => setHighlightedId(null), 3000);
-  }, [allPizzaItems, randomizerUsed, lastPickedName, showToast]);
+    setPicker(null);
+    if (highlightTimer.current) window.clearTimeout(highlightTimer.current);
+    requestAnimationFrame(() => {
+      document.getElementById(itemId)?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+    highlightTimer.current = window.setTimeout(() => setHighlightedId(null), 4500);
+  };
 
   const byoScrollId = "build-your-own";
   const scrollToByo = () => {
@@ -216,7 +206,7 @@ export default function FoodMenuClient({
         {/* ── Our Creations ──────────────────────────────────────────────────── */}
         <section ref={(el) => { sectionRefs.current["our-creations"] = el; }} id="our-creations" className="pt-10">
           <div className="flex flex-wrap items-baseline gap-3 mb-1">
-            <h2 className="font-heading text-2xl font-bold" style={{ color: "var(--color-ink)" }}>
+            <h2 className="font-display text-4xl uppercase leading-[0.9] sm:text-5xl" style={{ color: "var(--color-ink)" }}>
               Our Creations
             </h2>
             <span className="rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ backgroundColor: "var(--color-green-strong)", color: "white" }}>
@@ -245,13 +235,13 @@ export default function FoodMenuClient({
             </div>
           )}
 
-          {/* Pizza randomizer */}
           {allPizzaItems.length > 0 && (
             <p className="mt-6 text-center">
               <button
-                onClick={handlePickForMe}
-                className="text-xs underline-offset-2 hover:underline transition-colors"
-                style={{ color: "var(--color-muted)" }}
+                type="button"
+                onClick={openPicker}
+                className="inline-flex min-h-11 items-center justify-center rounded-full px-5 py-2 text-sm font-semibold transition-transform hover:scale-[1.03] active:scale-[0.98]"
+                style={{ backgroundColor: "var(--color-green)", color: "var(--color-ink)" }}
               >
                 {randomizerUsed ? "Still can't decide" : "Just pick one for me"}
               </button>
@@ -261,7 +251,7 @@ export default function FoodMenuClient({
 
         {/* ── The Basics ─────────────────────────────────────────────────────── */}
         <section ref={(el) => { sectionRefs.current["the-basics"] = el; }} id="the-basics" className="pt-14">
-          <h2 className="font-heading text-2xl font-bold mb-1" style={{ color: "var(--color-ink)" }}>
+          <h2 className="font-display text-4xl uppercase leading-[0.9] sm:text-5xl mb-1" style={{ color: "var(--color-ink)" }}>
             The Basics
           </h2>
           <p className="text-sm mb-6" style={{ color: "var(--color-muted)" }}>
@@ -286,7 +276,7 @@ export default function FoodMenuClient({
 
         {/* ── Build Your Own ─────────────────────────────────────────────────── */}
         <section ref={(el) => { sectionRefs.current["build-your-own"] = el; }} id="build-your-own" className="pt-14">
-          <h2 className="font-heading text-2xl font-bold mb-2" style={{ color: "var(--color-ink)" }}>
+          <h2 className="font-display text-4xl uppercase leading-[0.9] sm:text-5xl mb-2" style={{ color: "var(--color-ink)" }}>
             Build Your Own
           </h2>
           <p className="text-sm mb-4" style={{ color: "var(--color-muted)" }}>
@@ -337,7 +327,7 @@ export default function FoodMenuClient({
         {/* ── Snacks ───────────────────────────────────────────────────────────── */}
         {snackItems.length > 0 && (
           <section ref={(el) => { sectionRefs.current["snacks"] = el; }} id="snacks" className="pt-14">
-            <h2 className="font-heading text-2xl font-bold mb-1" style={{ color: "var(--color-ink)" }}>
+            <h2 className="font-display text-4xl uppercase leading-[0.9] sm:text-5xl mb-1" style={{ color: "var(--color-ink)" }}>
               Snacks
             </h2>
             <p className="text-sm mb-6" style={{ color: "var(--color-muted)" }}>
@@ -357,7 +347,7 @@ export default function FoodMenuClient({
         {/* ── Dessert ──────────────────────────────────────────────────────────── */}
         {dessertItems.length > 0 && (
           <section className="pt-14">
-            <h2 className="font-heading text-2xl font-bold mb-6" style={{ color: "var(--color-ink)" }}>
+            <h2 className="font-display text-4xl uppercase leading-[0.9] sm:text-5xl mb-6" style={{ color: "var(--color-ink)" }}>
               Dessert
             </h2>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -386,13 +376,14 @@ export default function FoodMenuClient({
         </div>
       </div>
 
-      {/* Toast */}
-      {toastMsg && (
-        <div className="fixed bottom-24 left-0 right-0 z-[100] pointer-events-none flex justify-center px-4">
-          <div className="px-4 py-2 rounded-full text-sm whitespace-nowrap animate-fade-in-out" style={{ backgroundColor: "var(--color-ink)", color: "var(--color-warm-white)", opacity: 0.88 }} role="status" aria-live="polite">
-            {toastMsg}
-          </div>
-        </div>
+      {picker && (
+        <PizzaPickerShow
+          pool={picker.pool}
+          avoidName={picker.avoidName}
+          repick={picker.repick}
+          onClose={() => setPicker(null)}
+          onConfirm={confirmPick}
+        />
       )}
     </>
   );

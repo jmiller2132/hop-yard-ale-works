@@ -22,14 +22,14 @@ export default function AboutPage() {
     <>
       {/* Hero */}
       <section
-        className="py-16 sm:py-24"
-        style={{ backgroundColor: "var(--color-ink)" }}
+        className="pb-12 pt-24 sm:pb-16 sm:pt-36"
+        style={{ minHeight: "clamp(260px, 44vh, 400px)", backgroundColor: "var(--color-ink)", display: "flex", alignItems: "flex-end" }}
       >
-        <div className="mx-auto max-w-3xl px-4 sm:px-6 text-center">
+        <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 text-center">
           <p className="text-sm font-medium uppercase tracking-widest mb-3" style={{ color: "var(--color-green)" }}>
             Our story
           </p>
-          <h1 className="font-heading text-4xl sm:text-5xl font-bold text-white mb-6">
+          <h1 className="font-display text-5xl sm:text-6xl uppercase leading-[0.9] text-white mb-6">
             About Hop Yard
           </h1>
           <p className="text-lg leading-relaxed" style={{ color: "rgba(255,255,255,0.65)" }}>
@@ -39,7 +39,7 @@ export default function AboutPage() {
       </section>
 
       {/* Founders */}
-      <section className="py-16 sm:py-20">
+      <section className="section-padding">
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
           <div className="grid sm:grid-cols-2 gap-10 items-center">
             <div>
@@ -59,7 +59,7 @@ export default function AboutPage() {
                 </p>
               </div>
             </div>
-            <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(0,0,0,0.07)", aspectRatio: "4/3" }}>
+            <div className="overflow-hidden" style={{ border: "1px solid rgba(0,0,0,0.1)", aspectRatio: "4/3" }}>
               <Image
                 src="/oliver-amy.jpg"
                 alt="Oliver and Amy Behm at the Hop Yard Ale Works bar"
@@ -76,7 +76,7 @@ export default function AboutPage() {
 
       {/* The experience */}
       <section
-        className="py-16 sm:py-20"
+        className="section-padding"
         style={{ backgroundColor: "var(--color-warm-white)" }}
       >
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
@@ -100,7 +100,7 @@ export default function AboutPage() {
       </section>
 
       {/* How we operate */}
-      <section className="py-16 sm:py-20">
+      <section className="section-padding">
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
           <h2 className="font-heading text-2xl sm:text-3xl font-bold mb-6" style={{ color: "var(--color-ink)" }}>
             How we operate
@@ -122,8 +122,8 @@ export default function AboutPage() {
             ].map(({ heading, body }) => (
               <div
                 key={heading}
-                className="rounded-xl p-6"
-                style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.07)" }}
+                className="p-6"
+                style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.1)" }}
               >
                 <h3 className="font-heading text-base font-bold mb-2" style={{ color: "var(--color-ink)" }}>
                   {heading}
@@ -139,7 +139,7 @@ export default function AboutPage() {
 
       {/* Community / partners */}
       <section
-        className="py-16 sm:py-20"
+        className="section-padding"
         style={{ backgroundColor: "var(--color-ink)" }}
       >
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
@@ -173,30 +173,30 @@ export default function AboutPage() {
       </section>
 
       {/* Footer CTA */}
-      <section className="py-12" style={{ backgroundColor: "var(--color-warm-white)" }}>
+      <section className="section-padding" style={{ backgroundColor: "var(--color-teal)" }}>
         <div className="mx-auto max-w-3xl px-4 sm:px-6 text-center">
-          <p className="text-sm font-medium uppercase tracking-widest mb-4" style={{ color: "var(--color-muted)" }}>
+          <p className="text-sm font-medium uppercase tracking-widest mb-4" style={{ color: "rgba(255,255,255,0.65)" }}>
             Come see it for yourself
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link
               href="/appleton/"
-              className="rounded-full px-5 py-2 text-sm font-semibold transition-opacity hover:opacity-80"
-              style={{ backgroundColor: "var(--color-ink)", color: "white" }}
+              className="rounded-md px-5 py-2.5 text-sm font-semibold min-h-[44px] inline-flex items-center transition-opacity hover:opacity-80"
+              style={{ backgroundColor: "rgba(255,255,255,0.18)", color: "white", border: "1px solid rgba(255,255,255,0.3)" }}
             >
               Appleton
             </Link>
             <Link
               href="/the-falls/"
-              className="rounded-full px-5 py-2 text-sm font-semibold transition-opacity hover:opacity-80"
-              style={{ backgroundColor: "var(--color-ink)", color: "white" }}
+              className="rounded-md px-5 py-2.5 text-sm font-semibold min-h-[44px] inline-flex items-center transition-opacity hover:opacity-80"
+              style={{ backgroundColor: "rgba(255,255,255,0.18)", color: "white", border: "1px solid rgba(255,255,255,0.3)" }}
             >
               Menomonee Falls
             </Link>
             <Link
               href="/contact/"
-              className="rounded-full px-5 py-2 text-sm font-semibold transition-opacity hover:opacity-80"
-              style={{ backgroundColor: "var(--color-seasonal-cta)", color: "white" }}
+              className="rounded-md px-5 py-2.5 text-sm font-semibold min-h-[44px] inline-flex items-center transition-opacity hover:opacity-80"
+              style={{ backgroundColor: "var(--color-green-strong)", color: "white" }}
             >
               Get in touch
             </Link>
