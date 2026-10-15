@@ -6,15 +6,38 @@ export const dynamic = "force-dynamic";
 
 const BACK_LINK_STYLE = `<style>
   #ig-back{
-    position:fixed;top:0;left:0;z-index:9999;
-    display:inline-block;padding:12px 16px;line-height:1;
-    font-family:var(--arcade, 'Courier New', monospace);font-size:.65rem;font-weight:700;
-    letter-spacing:.05em;text-transform:uppercase;text-decoration:none;
-    color:rgba(255,255,255,0.35);transition:color .15s;
+    position:fixed;
+    top:0;
+    left:0;
+    z-index:9999;
+    display:inline-block;
+    padding:12px 16px;
+    padding-top:max(12px, env(safe-area-inset-top, 0px));
+    padding-left:max(16px, env(safe-area-inset-left, 0px));
+    line-height:1;
+    font-family:var(--arcade, 'Courier New', monospace);
+    font-size:.65rem;
+    font-weight:700;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    text-decoration:none;
+    color:rgba(255,255,255,0.35);
+    transition:color .15s;
   }
   #ig-back:hover{color:var(--lime, #9be070);}
   @media (hover:none) and (pointer:coarse){
-    #ig-back{padding:14px 20px;font-size:.75rem;color:rgba(255,255,255,0.5);}
+    #ig-back{
+      padding:14px 20px;
+      padding-top:max(14px, env(safe-area-inset-top, 0px));
+      padding-left:max(20px, env(safe-area-inset-left, 0px));
+      font-size:.75rem;
+      color:rgba(255,255,255,0.5);
+      min-height:44px;
+    }
+  }
+  /* Fullscreen button lives top-right on touch; keep back clear of the game chrome */
+  @media (hover:none) and (pointer:coarse){
+    html.ig-fs #ig-back{ z-index:2147483002; }
   }
 </style>`;
 

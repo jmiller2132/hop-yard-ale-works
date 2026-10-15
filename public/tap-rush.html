@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Tap Rush">
 <title>Hop Yard Ale Works — Tap Rush</title>
 <style>
   :root{
@@ -15,6 +19,11 @@
     --ink:#141414;
     --dim:#7fa3a0;
     --arcade:'Courier New', Courier, monospace;
+    --ig-vh:100vh;
+    --ig-safe-t:env(safe-area-inset-top, 0px);
+    --ig-safe-r:env(safe-area-inset-right, 0px);
+    --ig-safe-b:env(safe-area-inset-bottom, 0px);
+    --ig-safe-l:env(safe-area-inset-left, 0px);
   }
   *{box-sizing:border-box;}
   html,body{
@@ -24,13 +33,24 @@
     color:var(--cream);
     overflow:hidden;
     height:100%;
+    height:100dvh;
+  }
+  body{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:100%;
+    min-height:100dvh;
   }
   #ig-root{
     position:relative;
-    width:min(100%, 900px, calc(100vh * 5 / 3));
-    width:min(100%, 900px, calc(100dvh * 5 / 3));
+    /* Fit both axes: usable width AND height after safe areas */
+    --ig-avail-w:calc(100vw - var(--ig-safe-l) - var(--ig-safe-r));
+    --ig-avail-h:calc(var(--ig-vh) - var(--ig-safe-t) - var(--ig-safe-b));
+    width:min(100%, 900px, calc(var(--ig-avail-h) * 5 / 3), var(--ig-avail-w));
+    max-height:min(540px, var(--ig-avail-h), calc(var(--ig-avail-w) * 3 / 5));
     aspect-ratio:900/540;
-    margin:0 auto;
+    margin:0;
     background:var(--navy);
     border:6px solid var(--green);
     box-shadow:0 0 0 3px var(--ink), inset 0 0 0 3px var(--ink);
@@ -38,6 +58,12 @@
     user-select:none;
     -webkit-user-select:none;
     touch-action:none;
+  }
+  @supports (height: 100dvh){
+    :root{ --ig-vh:100dvh; }
+  }
+  @supports (height: 100svh){
+    :root{ --ig-vh:100svh; }
   }
   #ig-canvas{
     display:block;
@@ -146,29 +172,85 @@
     .ig-rules{font-size:clamp(.5rem,2.6vw,.72rem);line-height:1.45;}
     .ig-btn{padding:.45em 1.1em;margin-top:.25em;font-size:.8rem;}
   }
-  .ig-portrait-hint{display:none;color:var(--lime);}
+  .ig-portrait-hint{display:none !important;}
   /* fullscreen (real or fill-the-screen): the game sits centered on a dark backdrop, page locked */
-  html.ig-fs, html.ig-fs body{ overflow:hidden !important; height:100% !important; overscroll-behavior:none; touch-action:none; }
+  html.ig-fs, html.ig-fs body{
+    overflow:hidden !important;
+    height:100% !important;
+    height:100dvh !important;
+    overscroll-behavior:none;
+    touch-action:none;
+  }
   html.ig-fs #ig-root{
-    position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); margin:0; z-index:2147483000;
-    box-sizing:border-box; max-width:none; border-width:3px;
-    width:min(calc(100vw - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px)), calc(100vh * 5 / 3));
-    width:min(calc(100vw - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px)), calc(100dvh * 5 / 3));
+    position:fixed;
+    left:50%;
+    top:calc(50% + (var(--ig-safe-t) - var(--ig-safe-b)) / 2);
+    transform:translate(-50%,-50%);
+    margin:0;
+    z-index:2147483000;
+    box-sizing:border-box;
+    max-width:none;
+    border-width:3px;
+    width:min(var(--ig-avail-w), calc(var(--ig-avail-h) * 5 / 3));
+    max-height:min(var(--ig-avail-h), calc(var(--ig-avail-w) * 3 / 5));
     box-shadow:0 0 0 100vmax #0b1415;
   }
-  #ig-rotate-hint{ display:none; }
+  /* Full-screen portrait gate on touch phones */
+  #ig-rotate-hint{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:2147483001;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    gap:.75rem;
+    text-align:center;
+    padding:max(24px, var(--ig-safe-t)) 12% max(24px, var(--ig-safe-b));
+    background:rgba(11,20,21,.94);
+    color:var(--lime);
+    font:900 clamp(1rem,4.5vw,1.35rem)/1.45 var(--arcade);
+    letter-spacing:.04em;
+    pointer-events:auto;
+  }
+  #ig-rotate-hint .ig-rotate-icon{
+    font-size:clamp(2.2rem,12vw,3.4rem);
+    line-height:1;
+    animation:ig-tilt 1.6s ease-in-out infinite;
+  }
+  #ig-rotate-hint .ig-rotate-sub{
+    color:var(--cream);
+    font-size:clamp(.7rem,3.2vw,.9rem);
+    font-weight:700;
+    max-width:18em;
+  }
+  @keyframes ig-tilt{
+    0%,100%{ transform:rotate(0deg); }
+    35%{ transform:rotate(90deg); }
+    65%{ transform:rotate(90deg); }
+  }
   @media (hover:none) and (pointer:coarse) and (orientation:portrait){
-    html.ig-fs #ig-rotate-hint{
-      display:block; position:fixed; left:0; right:0; bottom:16%; z-index:2147483001; text-align:center;
-      color:var(--lime); font:900 1rem/1.4 var(--arcade); padding:0 10%; pointer-events:none;
-    }
+    #ig-rotate-hint{ display:flex; }
+    #ig-title-screen .ig-picks,
+    #ig-title-screen .ig-pick-label,
+    #ig-fs-btn{ visibility:hidden; pointer-events:none; }
   }
   #ig-fs-btn{
-    position:absolute; top:8px; left:8px; z-index:6; cursor:pointer;
+    position:absolute; top:8px; right:8px; left:auto; z-index:6; cursor:pointer;
     background:rgba(16,30,32,.85); color:var(--lime); border:2px solid var(--lime);
     font:900 .72rem/1 var(--arcade); padding:.4em .7em; box-shadow:none;
   }
-  @media (hover:none) and (pointer:coarse) and (orientation:portrait){ .ig-portrait-hint{display:block;} }
+  @media (hover:none) and (pointer:coarse){
+    #ig-root{ border-width:3px; box-shadow:0 0 0 2px var(--ink), inset 0 0 0 2px var(--ink); }
+    html.ig-fs #ig-root{ border-width:2px; }
+    #ig-fs-btn{
+      top:max(8px, var(--ig-safe-t));
+      right:max(8px, var(--ig-safe-r));
+      font-size:.8rem;
+      padding:.55em .9em;
+      min-height:44px;
+    }
+  }
   #ig-root, #ig-canvas{ -webkit-touch-callout:none; -webkit-tap-highlight-color:transparent; }
   .ig-pick-label{font-weight:900;color:var(--lime);margin:.35em 0 0;font-size:clamp(.7rem,1.8vw,.95rem);}
   .ig-picks{display:flex;gap:1em;justify-content:center;}
@@ -216,7 +298,6 @@
       <b>Tap a bar</b> to jump to it &nbsp; <b>Hold the bar</b> to run along it<br>
       Catch every empty. Don&rsquo;t let anyone reach the tap.
     </p>
-    <p class="ig-rules ig-portrait-hint">Turn your phone sideways for a bigger bar.</p>
     <div class="ig-rules" id="ig-title-best"></div>
     <button id="ig-fs-btn" type="button">Fullscreen</button>
     <p class="ig-pick-label">Who&rsquo;s tending bar tonight?</p>
@@ -3300,11 +3381,33 @@
   // Fullscreen: the real Fullscreen API where the browser allows it (Android, desktop, iPad), and a
   // fill-the-screen mode everywhere else (iPhone Safari). Both lock the page from scrolling/zooming.
   var fsFallback = false, rootEl = document.getElementById('ig-root');
+  function syncViewportVar(){
+    try{
+      var vv = window.visualViewport;
+      var h = (vv && vv.height) ? vv.height : (window.innerHeight || document.documentElement.clientHeight || 0);
+      if(h > 0) document.documentElement.style.setProperty('--ig-vh', h + 'px');
+    }catch(e){}
+  }
+  syncViewportVar();
+  try{
+    window.addEventListener('resize', syncViewportVar);
+    window.addEventListener('orientationchange', function(){ setTimeout(syncViewportVar, 120); setTimeout(syncViewportVar, 400); });
+    if(window.visualViewport){
+      window.visualViewport.addEventListener('resize', syncViewportVar);
+      window.visualViewport.addEventListener('scroll', syncViewportVar);
+    }
+  }catch(e){}
+  function isPortraitTouch(){
+    try{
+      return !!(window.matchMedia && window.matchMedia('(hover:none) and (pointer:coarse) and (orientation:portrait)').matches);
+    }catch(e){ return false; }
+  }
   function isFs(){ try{ return document.documentElement.classList.contains('ig-fs'); }catch(e){ return false; } }
   function setFsClass(on){
     try{ document.documentElement.classList[on ? 'add' : 'remove']('ig-fs'); }catch(e){}
     var b = document.getElementById('ig-fs-btn'); if(b) b.textContent = on ? 'Exit fullscreen' : 'Fullscreen';
     try{ window.scrollTo(0, 0); }catch(e){}
+    syncViewportVar();
   }
   function enterFs(){
     var el = document.documentElement;
@@ -3343,6 +3446,7 @@
     rootEl.addEventListener('dblclick', function(e){ e.preventDefault(); });
   }
   function startAs(who){
+    if(isPortraitTouch()){ return; }
     bartender = who;
     try{ localStorage.setItem('hopYardTapRush.bartender', who); }catch(err){}
     if(isTouch && !isFs()) enterFs();
@@ -3382,6 +3486,10 @@
   requestAnimationFrame(loop);
 })();
 </script>
-<div id="ig-rotate-hint">&#10227; Turn your phone sideways<br>for a bigger bar</div>
+<div id="ig-rotate-hint" role="dialog" aria-live="polite" aria-label="Rotate your phone">
+  <div class="ig-rotate-icon" aria-hidden="true">&#128241;</div>
+  <div>TURN YOUR PHONE SIDEWAYS</div>
+  <div class="ig-rotate-sub">Tap Rush is a landscape bar. Rotate to play.</div>
+</div>
 </body>
 </html>
