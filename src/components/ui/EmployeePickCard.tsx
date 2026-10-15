@@ -35,16 +35,15 @@ export default function EmployeePickCard({ pick }: EmployeePickCardProps) {
       aria-label={flipped ? "Flip back" : "Learn more about this pick"}
     >
       <div
-        className="relative transition-transform duration-500"
+        className="relative grid transition-transform duration-500"
         style={{
           transformStyle: "preserve-3d",
           transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
-          minHeight: "170px",
         }}
       >
         {/* Front */}
         <div
-          className="absolute inset-0 rounded p-5 flex flex-col justify-between"
+          className="col-start-1 row-start-1 rounded p-5 flex flex-col justify-between min-h-[12.5rem]"
           style={{
             backfaceVisibility: "hidden",
             backgroundColor: "var(--color-ink)",
@@ -71,7 +70,7 @@ export default function EmployeePickCard({ pick }: EmployeePickCardProps) {
 
         {/* Back */}
         <div
-          className="absolute inset-0 rounded p-5 flex flex-col justify-center"
+          className="col-start-1 row-start-1 rounded p-5 flex flex-col justify-center min-h-[12.5rem]"
           style={{
             backfaceVisibility: "hidden",
             transform: "rotateY(180deg)",

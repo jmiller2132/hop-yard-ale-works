@@ -13,10 +13,7 @@ export default function ApplyPage() {
   return (
     <div style={{ backgroundColor: "var(--color-warm-white)" }}>
       {/* Hero */}
-      <section
-        className="pb-12 pt-24 px-4 text-center sm:pb-16 sm:pt-36"
-        style={{ minHeight: "clamp(260px, 44vh, 400px)", backgroundColor: "var(--color-ink)", display: "flex", alignItems: "flex-end" }}
-      >
+      <section className="page-hero px-4 text-center">
         <div className="mx-auto w-full max-w-2xl">
           <p
             className="font-heading text-sm font-semibold uppercase tracking-widest mb-3"
@@ -24,7 +21,7 @@ export default function ApplyPage() {
           >
             We&apos;re Hiring
           </p>
-          <h1 className="font-display text-5xl sm:text-6xl uppercase leading-[0.9] text-white">
+          <h1 className="font-display text-5xl sm:text-6xl uppercase leading-[0.95] text-white sm:leading-[0.9]">
             Join Our Team
           </h1>
           <p className="mt-4 text-base sm:text-lg" style={{ color: "rgba(255,255,255,0.55)" }}>

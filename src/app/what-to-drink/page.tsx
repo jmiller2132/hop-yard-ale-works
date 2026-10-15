@@ -21,7 +21,7 @@ export default async function WhatToDrinkPage() {
     <>
       {/* Hero */}
       <section
-        className="flex items-end pb-10 pt-24 sm:pt-32"
+        className="flex items-end pb-8 pt-10 sm:pb-10 sm:pt-32"
         style={{ backgroundColor: "var(--color-ink)" }}
         aria-label="Beer finder quiz"
       >
@@ -32,11 +32,11 @@ export default async function WhatToDrinkPage() {
           >
             4 questions
           </p>
-          <h1 className="font-display text-5xl uppercase leading-[0.88] text-white sm:text-7xl">
+          <h1 className="font-display text-5xl uppercase leading-[0.95] text-white sm:text-7xl sm:leading-[0.88]">
             What Should
             <br />I Drink?
           </h1>
-          <p className="mt-4 text-white/65 text-sm max-w-xs leading-relaxed">
+          <p className="mt-4 text-white/65 text-base max-w-xs leading-relaxed">
             Answer four quick questions and we&rsquo;ll point you at something pouring right now.
             {beers.length > 0 && (
               <span className="block mt-1 text-white/40">

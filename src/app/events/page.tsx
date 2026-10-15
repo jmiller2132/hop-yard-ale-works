@@ -85,15 +85,14 @@ export default async function EventsPage() {
 
       {/* Hero */}
       <section
-        className="relative flex items-end pb-12 pt-28 sm:pt-36 sm:pb-16"
-        style={{ minHeight: "clamp(300px, 48vh, 460px)", backgroundColor: "var(--color-ink)" }}
+        className="page-hero relative"
         aria-label="Events"
       >
         <div className="relative z-10 mx-auto w-full max-w-5xl px-4 sm:px-6">
           <p className="mb-3 text-xs font-semibold uppercase tracking-widest" style={{ color: "var(--color-green)" }}>
             Appleton &amp; Menomonee Falls
           </p>
-          <h1 className="font-display text-5xl sm:text-7xl uppercase leading-[0.9] text-white">Events</h1>
+          <h1 className="font-display text-6xl sm:text-7xl uppercase leading-[0.95] text-white sm:leading-[0.9]">Events</h1>
           <p className="mt-4 text-white/70 text-base max-w-xl">
             Live music, tap releases, and everything else coming up at both locations.
           </p>

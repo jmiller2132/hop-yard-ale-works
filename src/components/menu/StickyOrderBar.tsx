@@ -18,12 +18,18 @@ export default function StickyOrderBar({ href, locationName }: StickyOrderBarPro
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    document.documentElement.classList.toggle("has-sticky-order-bar", visible);
+    return () => document.documentElement.classList.remove("has-sticky-order-bar");
+  }, [visible]);
+
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-50 p-3 md:hidden transition-transform duration-300"
+      className="fixed bottom-0 left-0 right-0 z-50 px-3 pt-3 md:hidden transition-transform duration-300"
       style={{
         backgroundColor: "var(--color-warm-white)",
         borderTop: "1px solid rgba(0,0,0,0.08)",
+        paddingBottom: "max(0.75rem, env(safe-area-inset-bottom, 0px))",
         transform: visible ? "translateY(0)" : "translateY(100%)",
       }}
     >

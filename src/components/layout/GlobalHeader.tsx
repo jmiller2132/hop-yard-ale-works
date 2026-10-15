@@ -165,6 +165,13 @@ export default function GlobalHeader({ activeTheme }: GlobalHeaderProps) {
     { label: "Visit", href: navLocation.paths.home },
   ];
 
+  const moreLinks = [
+    { label: "About", href: "/about/" },
+    { label: "FAQ", href: "/faq/" },
+    { label: "Contact", href: "/contact/" },
+    { label: "Jobs", href: "/apply/" },
+  ];
+
   const switcher = currentLocation
     ? {
         current: LOCATIONS[currentLocation].navLabel,
@@ -221,9 +228,9 @@ export default function GlobalHeader({ activeTheme }: GlobalHeaderProps) {
               alt="Hop Yard Ale Works"
               width={740}
               height={372}
-              sizes="280px"
-              className="w-auto object-contain"
-              style={{ mixBlendMode: "multiply", maxHeight: "56px", maxWidth: "280px" }}
+              sizes="(max-width: 640px) 160px, 280px"
+              className="h-auto w-auto max-h-12 max-w-[10rem] object-contain sm:max-h-14 sm:max-w-[280px]"
+              style={{ mixBlendMode: "multiply" }}
               priority
             />
           </Link>
@@ -294,6 +301,7 @@ export default function GlobalHeader({ activeTheme }: GlobalHeaderProps) {
         open={menuOpen}
         onClose={closeMenu}
         navLinks={navLinks}
+        moreLinks={moreLinks}
         switcher={switcher}
         currentLocation={currentLocation}
         isActive={isActive}
@@ -460,6 +468,7 @@ function MobileMenu({
   open,
   onClose,
   navLinks,
+  moreLinks,
   switcher,
   currentLocation,
   isActive,
@@ -467,6 +476,7 @@ function MobileMenu({
   open: boolean;
   onClose: () => void;
   navLinks: { label: string; href: string }[];
+  moreLinks: { label: string; href: string }[];
   switcher: { current: string; other: string; otherHref: string } | null;
   currentLocation: LocationSlug | null;
   isActive: (href: string) => boolean;
@@ -511,7 +521,7 @@ function MobileMenu({
         )}
         style={{ backgroundColor: "var(--color-warm-white)" }}
       >
-        <div className="flex h-full flex-col overflow-y-auto pb-6 pt-16">
+        <div className="flex h-full flex-col overflow-y-auto pt-16 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
           {/* Close button */}
           <button
             ref={closeButtonRef}
@@ -572,7 +582,7 @@ function MobileMenu({
           </div>
 
           {/* Nav links */}
-          <nav className="flex-1 px-6 pt-6" aria-label="Mobile navigation">
+          <nav className="px-6 pt-6" aria-label="Mobile navigation">
             <ul className="space-y-1">
               {navLinks.map((link) => (
                 <li key={link.label}>
@@ -595,8 +605,34 @@ function MobileMenu({
             </ul>
           </nav>
 
+          <div className="mt-4 border-t px-6 pt-4" style={{ borderColor: "var(--color-muted)" + "33" }}>
+            <p className="mb-1 text-xs font-medium uppercase tracking-wider" style={{ color: "var(--color-muted)" }}>
+              More
+            </p>
+            <ul>
+              {moreLinks.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
+                    onClick={onClose}
+                    aria-current={isActive(link.href) ? "page" : undefined}
+                    className={cn(
+                      "flex items-center py-2.5 text-base font-medium transition-colors min-h-[44px]",
+                      isActive(link.href)
+                        ? "text-[var(--color-seasonal-cta)]"
+                        : "text-[var(--color-ink)]"
+                    )}
+                    style={{ WebkitTapHighlightColor: "transparent" }}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
           {/* Order Online CTA */}
-          <div className="space-y-2 px-6 pt-4">
+          <div className="mt-6 space-y-2 px-6">
             {orderLocations.map((slug) => (
               <a
                 key={slug}
@@ -621,7 +657,10 @@ function EasterEggToast({ message }: { message: string | null }) {
   if (!message) return null;
 
   return (
-    <div className="fixed bottom-32 md:bottom-24 left-0 right-0 z-[100] pointer-events-none flex justify-center px-4">
+    <div
+      className="fixed left-0 right-0 z-[100] pointer-events-none flex justify-center px-4"
+      style={{ bottom: "calc(var(--fab-bottom) + 3.5rem)" }}
+    >
       <div
         className="px-4 py-2 rounded-full text-sm text-center max-w-[calc(100vw-2rem)] animate-fade-in-out"
         style={{ backgroundColor: "var(--color-ink)", color: "var(--color-warm-white)", opacity: 0.88 }}

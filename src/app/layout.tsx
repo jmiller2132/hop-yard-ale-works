@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Zilla_Slab, Inter, DM_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/react";
@@ -11,6 +11,7 @@ import ChatBot from "@/components/chat/ChatBot";
 import KonamiCode from "@/components/ui/KonamiCode";
 import TabTitleInactivity from "@/components/ui/TabTitleInactivity";
 import ScrollProgressBar from "@/components/ui/ScrollProgressBar";
+import BackToTop from "@/components/ui/BackToTop";
 import { sanityClient } from "@/lib/sanity/client";
 import { activeSeasonalThemeQuery, chatbotDataQuery, globalConfigQuery } from "@/lib/sanity/queries";
 import type { SeasonalTheme, GlobalConfig, HolidayOverride } from "@/types";
@@ -56,6 +57,13 @@ const dmMono = DM_Mono({
   variable: "--font-dm-mono",
   display: "swap",
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#ede8df",
+};
 
 export const metadata: Metadata = {
   title: {
@@ -144,6 +152,7 @@ export default async function RootLayout({
         <KonamiCode />
         <TabTitleInactivity />
         <ScrollProgressBar />
+        <BackToTop />
         <Analytics />
         <SpeedInsights />
       </body>

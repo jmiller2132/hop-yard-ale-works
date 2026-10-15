@@ -34,8 +34,8 @@ export default async function TheFallsDrinksMenuPage() {
   return (
     <>
       <section
-        className="relative flex items-end pb-8 pt-20 sm:pt-24"
-        style={{ minHeight: "clamp(180px, 40vh, 280px)", backgroundColor: "var(--color-ink)" }}
+        className="relative flex items-end pb-6 pt-10 sm:pb-8 sm:pt-24"
+        style={{ minHeight: "clamp(140px, 28vh, 280px)", backgroundColor: "var(--color-ink)" }}
         aria-label="Drinks Menu"
       >
         <div className="absolute inset-0" aria-hidden="true">
@@ -60,7 +60,7 @@ export default async function TheFallsDrinksMenuPage() {
             </svg>
             The Falls
           </Link>
-          <h1 className="font-heading text-4xl font-bold text-white sm:text-5xl">
+          <h1 className="font-display text-5xl uppercase leading-[0.95] text-white sm:text-6xl sm:leading-[0.9]">
             Drinks
           </h1>
           <p className="mt-1 text-white/60 text-sm font-medium uppercase tracking-wider">Menomonee Falls</p>

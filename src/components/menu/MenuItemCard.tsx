@@ -41,7 +41,7 @@ export default function MenuItemCard({ item, id, highlighted }: MenuItemCardProp
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <h3
-              className="font-heading text-base font-semibold leading-tight"
+              className="font-heading text-lg font-semibold leading-tight sm:text-base"
               style={{ color: "var(--color-ink)" }}
             >
               {item.name}
@@ -66,7 +66,7 @@ export default function MenuItemCard({ item, id, highlighted }: MenuItemCardProp
 
           {item.description && (
             <p
-              className="mt-1.5 text-sm leading-relaxed"
+              className="mt-1.5 text-base leading-relaxed sm:text-sm"
               style={{ color: "var(--color-muted)" }}
             >
               {item.description}

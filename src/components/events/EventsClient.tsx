@@ -338,7 +338,7 @@ function LocationToggle({
             role="radio"
             aria-checked={isActive}
             onClick={() => onSelect(loc.slug)}
-            className="flex flex-1 items-center justify-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium min-h-[36px] transition-colors sm:flex-none"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-full px-2.5 py-2 text-sm font-medium min-h-[44px] whitespace-nowrap transition-colors sm:flex-none sm:gap-2 sm:px-4"
             style={{
               backgroundColor: isActive ? "white" : "transparent",
               color: isActive ? "var(--color-ink)" : "var(--color-muted)",
@@ -348,7 +348,14 @@ function LocationToggle({
             {loc.slug !== "all" && (
               <span className="h-2 w-2 rounded-full" style={{ backgroundColor: loc.color }} aria-hidden="true" />
             )}
-            {loc.label}
+            {loc.slug === "all" ? (
+              <>
+                <span className="sm:hidden">Both</span>
+                <span className="hidden sm:inline">{loc.label}</span>
+              </>
+            ) : (
+              loc.label
+            )}
           </button>
         );
       })}
@@ -379,7 +386,7 @@ function CategoryChips({
             key={opt}
             aria-pressed={isActive}
             onClick={() => onSelect(opt)}
-            className="flex-shrink-0 whitespace-nowrap rounded-full px-3 py-1 text-sm font-medium transition-colors min-h-[32px]"
+            className="flex-shrink-0 whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium transition-colors min-h-[44px]"
             style={{
               backgroundColor: isActive ? s.activeBg : s.bg,
               color: isActive ? s.activeText : s.text,

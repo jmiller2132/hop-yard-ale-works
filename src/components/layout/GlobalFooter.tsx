@@ -148,7 +148,7 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
       {/* Bottom bar — extra bottom padding keeps the fixed chat button and
           late-night strip from covering it */}
       <div
-        className="border-t px-4 pt-4 pb-32 sm:px-6 md:pb-24"
+        className="border-t px-4 pt-4 pb-[calc(var(--fab-bottom)+4.25rem)] sm:px-6 md:pb-12"
         style={{ borderColor: "rgba(255,255,255,0.1)" }}
       >
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 text-xs sm:flex-row">
@@ -158,12 +158,12 @@ export default function GlobalFooter({ config }: GlobalFooterProps) {
           )}
           <a
             href="/pour/"
-            className="group flex items-center gap-1 text-xs transition-opacity opacity-30 hover:opacity-80"
+            className="group relative flex items-center justify-center text-xs transition-opacity opacity-30 hover:opacity-80"
             title="There might be a game here"
           >
             <span aria-hidden="true">🍺</span>
             <span
-              className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+              className="pointer-events-none absolute left-full ml-1 hidden whitespace-nowrap opacity-0 group-hover:opacity-100 sm:inline transition-opacity duration-200"
               style={{ fontStyle: "italic" }}
             >
               last call&hellip;

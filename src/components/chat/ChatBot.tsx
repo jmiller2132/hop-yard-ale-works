@@ -34,6 +34,7 @@ export default function ChatBot({ faqs, holidayOverrides }: ChatBotProps) {
   const [messages, setMessages] = useState<Message[]>([WELCOME]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [fabHidden, setFabHidden] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -43,6 +44,26 @@ export default function ChatBot({ faqs, holidayOverrides }: ChatBotProps) {
 
   useEffect(() => {
     if (isOpen) inputRef.current?.focus();
+  }, [isOpen]);
+
+  useEffect(() => {
+    const isField = (el: EventTarget | null) => {
+      if (!(el instanceof HTMLElement)) return false;
+      const tag = el.tagName;
+      return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
+    };
+    const onFocusIn = (e: FocusEvent) => {
+      if (isField(e.target)) setFabHidden(true);
+    };
+    const onFocusOut = (e: FocusEvent) => {
+      if (isField(e.target) && !isOpen) setFabHidden(false);
+    };
+    document.addEventListener("focusin", onFocusIn);
+    document.addEventListener("focusout", onFocusOut);
+    return () => {
+      document.removeEventListener("focusin", onFocusIn);
+      document.removeEventListener("focusout", onFocusOut);
+    };
   }, [isOpen]);
 
   const sendMessage = useCallback(() => {
@@ -82,8 +103,13 @@ export default function ChatBot({ faqs, holidayOverrides }: ChatBotProps) {
       {/* Chat window — sits above sticky order bar on mobile */}
       {isOpen && (
         <div
-          className="fixed bottom-[5.5rem] md:bottom-20 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] max-w-sm rounded-2xl overflow-hidden shadow-2xl flex flex-col"
-          style={{ height: "min(520px, 80vh)", backgroundColor: "white", border: "1px solid rgba(0,0,0,0.1)" }}
+          className="fixed right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] max-w-sm rounded-2xl overflow-hidden shadow-2xl flex flex-col"
+          style={{
+            bottom: "calc(var(--fab-bottom) + 4.25rem)",
+            height: "min(520px, calc(100dvh - var(--fab-bottom) - 6.5rem))",
+            backgroundColor: "white",
+            border: "1px solid rgba(0,0,0,0.1)",
+          }}
           role="dialog"
           aria-label="Hop Yard chat assistant"
         >
@@ -98,7 +124,7 @@ export default function ChatBot({ faqs, holidayOverrides }: ChatBotProps) {
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="flex h-7 w-7 items-center justify-center rounded-full text-white text-sm hover:opacity-70 transition-opacity"
+              className="flex h-11 w-11 items-center justify-center rounded-full text-white text-sm hover:opacity-70 transition-opacity"
               style={{ backgroundColor: "rgba(255,255,255,0.12)" }}
               aria-label="Close chat"
             >
@@ -174,7 +200,7 @@ export default function ChatBot({ faqs, holidayOverrides }: ChatBotProps) {
             <button
               onClick={sendMessage}
               disabled={!input.trim()}
-              className="flex-shrink-0 flex h-9 w-9 items-center justify-center rounded-full transition-opacity disabled:opacity-40"
+              className="flex-shrink-0 flex h-11 w-11 items-center justify-center rounded-full transition-opacity disabled:opacity-40"
               style={{ backgroundColor: "var(--color-seasonal-cta)", color: "white" }}
               aria-label="Send"
             >
@@ -187,15 +213,20 @@ export default function ChatBot({ faqs, holidayOverrides }: ChatBotProps) {
       {/* Floating bubble — sits above sticky order bar on mobile */}
       <button
         onClick={() => setIsOpen((o) => !o)}
-        className="chat-fab fixed bottom-[4.5rem] md:bottom-4 right-4 sm:right-6 z-50 flex h-13 w-13 items-center justify-center rounded-full shadow-lg transition-[transform,opacity] hover:scale-105 active:scale-95"
+        className="chat-fab fixed right-4 sm:right-6 z-50 flex items-center justify-center rounded-full shadow-lg transition-[transform,opacity] hover:scale-105 active:scale-95"
         style={{
+          bottom: "var(--fab-bottom)",
           backgroundColor: "var(--color-ink)",
           color: "white",
-          width: "52px",
-          height: "52px",
+          width: "48px",
+          height: "48px",
           border: "2px solid rgba(255,255,255,0.25)",
+          opacity: fabHidden && !isOpen ? 0 : 1,
+          pointerEvents: fabHidden && !isOpen ? "none" : "auto",
+          transform: fabHidden && !isOpen ? "translateY(8px)" : "translateY(0)",
         }}
         aria-label={isOpen ? "Close chat" : "Open chat assistant"}
+        aria-hidden={fabHidden && !isOpen}
       >
         {isOpen ? (
           <span className="text-lg leading-none">✕</span>

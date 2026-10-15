@@ -16,6 +16,7 @@ import ScrollBeerFill from "@/components/ui/ScrollBeerFill";
 import WordReveal from "@/components/ui/WordReveal";
 import TiltCard from "@/components/ui/TiltCard";
 import FloatingBubbles from "@/components/ui/FloatingBubbles";
+import ShareNightButtons from "@/components/ui/ShareNightButtons";
 import type { Metadata } from "next";
 import type { Location, TaproomPhoto, SeasonalTheme } from "@/types";
 
@@ -72,7 +73,7 @@ export default async function HomePage() {
       />
 
       <section
-        className="relative flex min-h-[92vh] items-end overflow-hidden"
+        className="relative flex items-start overflow-hidden md:min-h-[92vh] md:items-end"
         style={{ backgroundColor: "var(--color-ink)" }}
         aria-label="Hero"
       >
@@ -83,9 +84,9 @@ export default async function HomePage() {
           aria-hidden="true"
         />
 
-        <div className="relative z-10 mx-auto w-full max-w-7xl px-4 pt-28 pb-10 text-white sm:px-6 sm:pb-14">
+        <div className="relative z-10 mx-auto w-full max-w-7xl px-4 pt-8 pb-6 text-white sm:px-6 sm:pt-28 sm:pb-14">
           {activeTheme?.badgeText && (
-            <div className="mb-5 inline-flex items-center gap-2 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em]"
+            <div className="mb-4 inline-flex items-center gap-2 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em]"
               style={{ backgroundColor: "var(--color-seasonal-cta)", color: "white" }}
             >
               {activeTheme.badgeText}
@@ -96,10 +97,10 @@ export default async function HomePage() {
             alt="Hop Yard Ale Works"
             width={112}
             height={112}
-            className="h-24 w-24 sm:h-28 sm:w-28"
+            className="h-16 w-16 sm:h-28 sm:w-28"
           />
           <h1
-            className="mt-6 max-w-4xl font-display text-5xl uppercase leading-[0.88] tracking-tight sm:text-7xl lg:text-8xl"
+            className="mt-4 max-w-4xl font-display text-5xl uppercase leading-[0.95] sm:mt-6 sm:text-7xl sm:leading-[0.88] sm:tracking-tight lg:text-8xl"
             style={{ color: "var(--color-warm-white)" }}
           >
             Great Beer.
@@ -108,7 +109,7 @@ export default async function HomePage() {
             <br />
             Great Company.
           </h1>
-          <p className="mt-5 text-sm uppercase tracking-[0.18em] text-white/75">
+          <p className="mt-4 text-base text-white/85 sm:mt-5 sm:text-sm sm:uppercase sm:tracking-[0.18em] sm:text-white/75">
             Two Wisconsin taprooms. One community.
           </p>
 
@@ -118,7 +119,7 @@ export default async function HomePage() {
             </p>
           )}
 
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 sm:gap-6 text-left items-stretch">
+          <div className="mt-6 grid grid-cols-2 gap-2 text-left items-stretch sm:mt-10 sm:gap-6">
             <LocationHeroCard
               name="Appleton"
               tagline="The original taproom & brewhouse."
@@ -128,6 +129,7 @@ export default async function HomePage() {
             />
             <LocationHeroCard
               name="Menomonee Falls"
+              mobileName="The Falls"
               tagline="Craft beer and wood-fired pizza in the heart of the Falls."
               locationHours={theFalls}
               href="/the-falls/"
@@ -150,18 +152,18 @@ export default async function HomePage() {
             />
           </div>
           <div
-            className="relative overflow-hidden flex flex-col justify-center px-6 py-16 sm:px-10 sm:py-24"
+            className="relative overflow-hidden flex flex-col justify-center px-5 py-12 sm:px-10 sm:py-24"
             style={{ backgroundColor: SECTION.brewed.bg, color: SECTION.brewed.fg }}
           >
             <ScrollBeerFill />
             <WordReveal
               as="h2"
-              className="font-display text-4xl uppercase leading-[0.9] sm:text-6xl"
+              className="font-display text-5xl uppercase leading-[0.95] sm:text-6xl sm:leading-[0.9]"
             >
               Brewed Here
             </WordReveal>
             <RevealOnScroll delay={220}>
-              <p className="mt-4 max-w-xl text-sm leading-relaxed sm:text-base">
+              <p className="mt-4 max-w-xl text-base leading-relaxed">
                 Every beer on tap is brewed in-house at our Appleton brewhouse and served at both locations. Rotating taps, seasonal releases, and a few you&rsquo;ll keep coming back for.
               </p>
             </RevealOnScroll>
@@ -170,18 +172,18 @@ export default async function HomePage() {
 
         <div className="grid lg:grid-cols-2">
           <div
-            className="relative overflow-hidden order-2 flex flex-col justify-center px-6 py-16 sm:px-10 sm:py-24 lg:order-1"
+            className="relative overflow-hidden order-2 flex flex-col justify-center px-5 py-12 sm:px-10 sm:py-24 lg:order-1"
             style={{ backgroundColor: SECTION.pizza.bg, color: SECTION.pizza.fg }}
           >
             <ScrollPizzaSpin />
             <WordReveal
               as="h2"
-              className="font-display text-4xl uppercase leading-[0.9] sm:text-6xl"
+              className="font-display text-5xl uppercase leading-[0.95] sm:text-6xl sm:leading-[0.9]"
             >
               Wood-Fired Pizza
             </WordReveal>
             <RevealOnScroll delay={280}>
-              <p className="mt-4 max-w-xl text-sm leading-relaxed sm:text-base">
+              <p className="mt-4 max-w-xl text-base leading-relaxed">
                 Wood-fired every order, with specialty pies and a build-your-own option for when you already know what you want.
               </p>
             </RevealOnScroll>
@@ -210,19 +212,19 @@ export default async function HomePage() {
             />
           </div>
           <div
-            className="relative overflow-hidden flex flex-col justify-center px-6 py-16 sm:px-10 sm:py-24"
+            className="relative overflow-hidden flex flex-col justify-center px-5 py-12 sm:px-10 sm:py-24"
             style={{ backgroundColor: SECTION.company.bg, color: SECTION.company.fg }}
           >
             <FloatingBubbles />
             <div className="relative z-10">
               <WordReveal
                 as="h2"
-                className="font-display text-4xl uppercase leading-[0.9] sm:text-6xl"
+                className="font-display text-5xl uppercase leading-[0.95] sm:text-6xl sm:leading-[0.9]"
               >
                 Good Company
               </WordReveal>
               <RevealOnScroll delay={210}>
-                <p className="mt-4 max-w-xl text-sm leading-relaxed sm:text-base">
+                <p className="mt-4 max-w-xl text-base leading-relaxed">
                   A neighborhood taproom first. We&rsquo;re here to make everyone comfortable — whether you&rsquo;re a craft beer regular or just figuring out what a hazy IPA is.
                 </p>
               </RevealOnScroll>
@@ -246,7 +248,7 @@ export default async function HomePage() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-black/10" aria-hidden="true" />
             <div className="absolute inset-x-0 bottom-0 p-5 sm:p-7">
-              <p className="font-display text-4xl uppercase leading-[0.9] text-white sm:text-6xl">Appleton</p>
+              <p className="font-display text-5xl uppercase leading-[0.95] text-white sm:text-6xl sm:leading-[0.9]">Appleton</p>
               <p className="mt-1 text-sm text-white/80">512 W Northland Ave</p>
             </div>
           </Link>
@@ -261,7 +263,7 @@ export default async function HomePage() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-black/10" aria-hidden="true" />
             <div className="absolute inset-x-0 bottom-0 p-5 sm:p-7">
-              <p className="font-display text-4xl uppercase leading-[0.9] text-white sm:text-6xl">Menomonee Falls</p>
+              <p className="font-display text-4xl uppercase leading-[0.95] text-white sm:text-6xl sm:leading-[0.9]">Menomonee Falls</p>
               <p className="mt-1 text-sm text-white/80">N88W16521 Main St</p>
             </div>
           </Link>
@@ -277,7 +279,7 @@ export default async function HomePage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <WordReveal
             as="h2"
-            className="mb-8 font-display text-4xl uppercase leading-[0.9] sm:text-6xl"
+            className="mb-8 font-display text-5xl uppercase leading-[0.95] sm:text-6xl sm:leading-[0.9]"
             style={{ color: SECTION.findUs.fg }}
           >
             Find Us
@@ -400,53 +402,16 @@ export default async function HomePage() {
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="flex flex-col items-center text-center">
-            <h2 className="font-display text-4xl uppercase leading-[0.9] sm:text-6xl">
+            <h2 className="font-display text-5xl uppercase leading-[0.95] sm:text-6xl sm:leading-[0.9]">
               Show Us Your Night
             </h2>
-            <p className="mt-3 max-w-lg text-sm text-white/80">
+            <p className="mt-3 max-w-lg text-base text-white/80">
               The first slice, the birthday round, the crew that finally made it out —
               tag{" "}
               <span className="font-semibold text-white">#HopYardAleWorks</span>{" "}
               and we&rsquo;ll find it.
             </p>
-            <div className="mt-6 flex flex-wrap justify-center gap-4">
-              <a
-                href="https://www.instagram.com/hopyardaleworks/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-md px-5 py-2.5 text-sm font-semibold min-h-[44px]"
-                style={{ backgroundColor: "rgba(255,255,255,0.15)", color: "white", border: "1px solid rgba(255,255,255,0.3)" }}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                </svg>
-                Instagram
-              </a>
-              <a
-                href="https://www.facebook.com/hopyardaleworks/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-md px-5 py-2.5 text-sm font-semibold min-h-[44px]"
-                style={{ backgroundColor: "rgba(255,255,255,0.15)", color: "white", border: "1px solid rgba(255,255,255,0.3)" }}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                </svg>
-                Facebook
-              </a>
-              {/* TODO: swap to a dedicated photos@ address when created */}
-              <a
-                href="mailto:hopyardaleworks@gmail.com?subject=Taproom Photo"
-                className="inline-flex items-center gap-2 rounded-md px-5 py-2.5 text-sm font-semibold min-h-[44px]"
-                style={{ backgroundColor: "rgba(255,255,255,0.15)", color: "white", border: "1px solid rgba(255,255,255,0.3)" }}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <rect x="2" y="4" width="20" height="16" rx="2"/>
-                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-                </svg>
-                Send Us a Photo
-              </a>
-            </div>
+            <ShareNightButtons />
           </div>
         </div>
       </section>
@@ -485,12 +450,14 @@ export default async function HomePage() {
 
 function LocationHeroCard({
   name,
+  mobileName,
   tagline,
   locationHours,
   href,
   orderHref,
 }: {
   name: string;
+  mobileName?: string;
   tagline: string;
   locationHours: { hours?: import("@/types").DayHours[]; sundayHours?: { open: string; close: string; isClosed: boolean }; holidayOverrides?: import("@/types").HolidayOverride[] } | null;
   href: string;
@@ -498,23 +465,32 @@ function LocationHeroCard({
 }) {
   return (
     <div
-      className="flex h-full flex-col p-6"
+      className="flex h-full flex-col p-3 sm:p-6"
       style={{
         backgroundColor: "rgba(20,16,14,0.72)",
         border: "1px solid rgba(255,255,255,0.28)",
       }}
     >
-      <h2 className="font-display text-xl text-white">{name}</h2>
-      <p className="font-tag mt-1 text-sm text-white/75">{tagline}</p>
+      <h2 className="font-heading text-base font-bold uppercase tracking-wide text-white sm:text-lg">
+        {mobileName ? (
+          <>
+            <span className="sm:hidden">{mobileName}</span>
+            <span className="hidden sm:inline">{name}</span>
+          </>
+        ) : (
+          name
+        )}
+      </h2>
+      <p className="font-tag mt-1 hidden text-sm text-white/75 sm:block">{tagline}</p>
       {locationHours?.hours && (
-        <div className="mt-3">
+        <div className="mt-2 sm:mt-3">
           <OpenClosedBadgeLive location={locationHours} />
         </div>
       )}
-      <div className="mt-auto pt-4 flex flex-wrap gap-2">
+      <div className="mt-auto flex flex-col gap-2 pt-3 sm:flex-row sm:flex-wrap sm:pt-4">
         <Link
           href={href}
-          className="rounded-md px-4 py-2 text-sm font-semibold text-white min-h-[44px] flex items-center"
+          className="flex min-h-[44px] items-center justify-center rounded-md px-3 py-2 text-sm font-semibold text-white sm:px-4"
           style={{
             backgroundColor: "rgba(255,255,255,0.15)",
             border: "1px solid rgba(255,255,255,0.3)",
@@ -526,10 +502,11 @@ function LocationHeroCard({
           href={orderHref}
           target="_blank"
           rel="noopener noreferrer"
-          className="rounded-md px-4 py-2 text-sm font-semibold min-h-[44px] flex items-center"
+          className="flex min-h-[44px] items-center justify-center rounded-md px-3 py-2 text-sm font-semibold sm:px-4"
           style={{ backgroundColor: "var(--color-seasonal-cta)", color: "white" }}
         >
-          Order Online
+          <span className="sm:hidden">Order</span>
+          <span className="hidden sm:inline">Order Online</span>
         </Link>
       </div>
     </div>
@@ -570,10 +547,10 @@ function LocationCard({
       >
             {name}
           </h3>
-          <p className="mt-1 text-sm" style={{ color: "var(--color-muted)" }}>
+          <p className="mt-1 text-base sm:text-sm" style={{ color: "var(--color-muted)" }}>
             {address}
           </p>
-          <p className="mt-1 text-sm" style={{ color: "var(--color-ink)" }}>
+          <p className="mt-1 text-base sm:text-sm" style={{ color: "var(--color-ink)" }}>
             {hoursNote}
           </p>
         </div>

@@ -10,9 +10,9 @@ import PizzaPickerShow from "./PizzaPickerShow";
 import type { MenuItemSeed } from "@/data/menu-appleton";
 
 const SECTIONS = [
-  { id: "our-creations",  label: "Our Creations" },
-  { id: "the-basics",    label: "The Basics" },
-  { id: "build-your-own", label: "Build Your Own" },
+  { id: "our-creations",  label: "Our Creations", shortLabel: "Creations" },
+  { id: "the-basics",    label: "The Basics", shortLabel: "Basics" },
+  { id: "build-your-own", label: "Build Your Own", shortLabel: "BYO" },
   { id: "snacks",        label: "Snacks" },
 ];
 
@@ -179,7 +179,7 @@ export default function FoodMenuClient({
                 key={f.id}
                 onClick={() => toggleFilter(f.id)}
                 className={cn(
-                  "rounded-full border px-3 py-1 text-xs font-medium transition-colors duration-200 min-h-[32px]",
+                  "rounded-full border px-3 py-1.5 text-sm font-medium transition-colors duration-200 min-h-[44px]",
                   active ? "border-transparent text-white" : "border-current hover:opacity-80"
                 )}
                 style={{
@@ -207,7 +207,7 @@ export default function FoodMenuClient({
         {/* ── Our Creations ──────────────────────────────────────────────────── */}
         <section ref={(el) => { sectionRefs.current["our-creations"] = el; }} id="our-creations" className="pt-10">
           <div className="flex flex-wrap items-baseline gap-3 mb-1">
-            <h2 className="font-display text-4xl uppercase leading-[0.9] sm:text-5xl" style={{ color: "var(--color-ink)" }}>
+            <h2 className="font-display text-5xl uppercase leading-[0.95] sm:text-5xl sm:leading-[0.9]" style={{ color: "var(--color-ink)" }}>
               Our Creations
             </h2>
             <span className="rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ backgroundColor: "var(--color-green-strong)", color: "white" }}>
@@ -288,7 +288,7 @@ export default function FoodMenuClient({
 
         {/* ── Build Your Own ─────────────────────────────────────────────────── */}
         <section ref={(el) => { sectionRefs.current["build-your-own"] = el; }} id="build-your-own" className="pt-14">
-          <h2 className="font-display text-4xl uppercase leading-[0.9] sm:text-5xl mb-2" style={{ color: "var(--color-ink)" }}>
+          <h2 className="font-display text-5xl uppercase leading-[0.95] sm:text-5xl sm:leading-[0.9] mb-2" style={{ color: "var(--color-ink)" }}>
             Build Your Own
           </h2>
           <p className="text-sm mb-4" style={{ color: "var(--color-muted)" }}>
@@ -339,7 +339,7 @@ export default function FoodMenuClient({
         {/* ── Snacks ───────────────────────────────────────────────────────────── */}
         {snackItems.length > 0 && (
           <section ref={(el) => { sectionRefs.current["snacks"] = el; }} id="snacks" className="pt-14">
-            <h2 className="font-display text-4xl uppercase leading-[0.9] sm:text-5xl mb-1" style={{ color: "var(--color-ink)" }}>
+            <h2 className="font-display text-5xl uppercase leading-[0.95] sm:text-5xl sm:leading-[0.9] mb-1" style={{ color: "var(--color-ink)" }}>
               Snacks
             </h2>
             <p className="text-sm mb-6" style={{ color: "var(--color-muted)" }}>
@@ -359,7 +359,7 @@ export default function FoodMenuClient({
         {/* ── Dessert ──────────────────────────────────────────────────────────── */}
         {dessertItems.length > 0 && (
           <section className="pt-14">
-            <h2 className="font-display text-4xl uppercase leading-[0.9] sm:text-5xl mb-6" style={{ color: "var(--color-ink)" }}>
+            <h2 className="font-display text-5xl uppercase leading-[0.95] sm:text-5xl sm:leading-[0.9] mb-6" style={{ color: "var(--color-ink)" }}>
               Dessert
             </h2>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

@@ -6,6 +6,7 @@ import { cn } from "@/lib/cn";
 interface Section {
   id: string;
   label: string;
+  shortLabel?: string;
 }
 
 interface MenuSectionNavProps {
@@ -37,7 +38,7 @@ export default function MenuSectionNav({ sections, activeId, onSelect }: MenuSec
   return (
     <nav
       aria-label="Menu sections"
-      className="sticky top-20 z-40 border-b"
+      className="sticky top-20 z-40 border-b md:top-[7.75rem]"
       style={{
         backgroundColor: "var(--color-warm-white)",
         borderColor: "rgba(0,0,0,0.08)",
@@ -56,14 +57,15 @@ export default function MenuSectionNav({ sections, activeId, onSelect }: MenuSec
               ref={isActive ? activeRef : null}
               onClick={() => onSelect(section.id)}
               className={cn(
-                "flex-shrink-0 px-5 py-4 text-base transition-colors duration-200 border-b-[3px] -mb-px min-h-[48px]",
+                "flex-shrink-0 whitespace-nowrap px-3 py-3.5 text-sm transition-colors duration-200 border-b-[3px] -mb-px min-h-[48px] sm:px-5 sm:text-base",
                 isActive
                   ? "border-[var(--color-seasonal-cta)] text-[var(--color-ink)] font-bold"
                   : "border-transparent text-[var(--color-muted)] font-medium hover:text-[var(--color-ink)]"
               )}
               style={{ WebkitTapHighlightColor: "transparent" }}
             >
-              {section.label}
+              <span className="sm:hidden">{section.shortLabel ?? section.label}</span>
+              <span className="hidden sm:inline">{section.label}</span>
             </button>
           );
         })}

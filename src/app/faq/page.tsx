@@ -23,15 +23,12 @@ export default async function FaqPage() {
   return (
     <>
       {/* Hero */}
-      <section
-        className="pb-12 pt-24 sm:pb-16 sm:pt-36"
-        style={{ minHeight: "clamp(260px, 44vh, 400px)", backgroundColor: "var(--color-ink)", display: "flex", alignItems: "flex-end" }}
-      >
+      <section className="page-hero">
         <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 text-center">
           <p className="text-sm font-medium uppercase tracking-widest mb-3" style={{ color: "var(--color-green)" }}>
             Got questions?
           </p>
-          <h1 className="font-display text-5xl sm:text-6xl uppercase leading-[0.9] text-white mb-4">
+          <h1 className="font-display text-5xl sm:text-6xl uppercase leading-[0.95] text-white mb-4 sm:leading-[0.9]">
             We've got answers.
           </h1>
           <p className="text-lg" style={{ color: "rgba(255,255,255,0.6)" }}>

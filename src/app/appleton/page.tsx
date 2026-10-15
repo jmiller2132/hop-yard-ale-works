@@ -54,11 +54,11 @@ export default async function AppletonPage() {
         style={{ backgroundColor: "var(--color-ink)" }}
         aria-label="Appleton location"
       >
-        <div className="flex flex-col justify-end px-4 pb-10 pt-24 sm:px-6 lg:px-10 lg:pb-16 lg:pt-28">
+        <div className="flex flex-col justify-end px-4 pb-8 pt-8 sm:px-6 sm:pt-16 lg:px-10 lg:pb-16 lg:pt-28">
           <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-white/50">
             Hop Yard Ale Works
           </p>
-          <h1 className="font-display text-5xl uppercase leading-[0.9] text-white sm:text-7xl">
+          <h1 className="font-display text-6xl uppercase leading-[0.95] text-white sm:text-7xl sm:leading-[0.9]">
             Appleton
           </h1>
           <p className="mt-2 text-white/80 text-lg">The original taproom.</p>
@@ -117,7 +117,7 @@ export default async function AppletonPage() {
         </div>
       </section>
 
-      <div className="relative w-full overflow-hidden" style={{ height: "clamp(260px, 42vw, 560px)" }}>
+      <div className="relative w-full overflow-hidden" style={{ height: "clamp(160px, 32vw, 560px)" }}>
         <Image
           src="/look/appleton-bar-interior.jpg"
           alt="Bar interior at Hop Yard Ale Works Appleton — chalkboard beer glass art, barrel, and logo mat"
@@ -139,7 +139,7 @@ export default async function AppletonPage() {
                 Hours
               </h2>
               <HoursTable rows={hoursRows("appleton")} />
-              <p className="mt-3 text-sm" style={{ color: "var(--color-muted)" }}>
+              <p className="mt-3 text-base leading-relaxed sm:text-sm" style={{ color: "var(--color-muted)" }}>
                 {INFO.kitchenNote} Hours subject to change on holidays.
               </p>
               <WeatherNudge locationSlug="appleton" drinksHref="/appleton-drinks-menu/" />
@@ -150,7 +150,7 @@ export default async function AppletonPage() {
               <h2 className="font-heading text-xl font-bold mb-4" style={{ color: "var(--color-ink)" }}>
                 Find Us
               </h2>
-              <address className="not-italic text-sm leading-relaxed" style={{ color: "var(--color-ink)" }}>
+              <address className="not-italic text-base leading-relaxed sm:text-sm" style={{ color: "var(--color-ink)" }}>
                 {addressLines("appleton")[0]}<br />
                 {addressLines("appleton")[1]}
               </address>
@@ -175,7 +175,7 @@ export default async function AppletonPage() {
               <h2 className="font-heading text-xl font-bold mb-4" style={{ color: "var(--color-ink)" }}>
                 What to Expect
               </h2>
-              <div className="space-y-2 text-sm leading-relaxed" style={{ color: "var(--color-ink)" }}>
+              <div className="space-y-2 text-base leading-relaxed sm:text-sm" style={{ color: "var(--color-ink)" }}>
                 <p>
                   A neighborhood taproom with a working brewhouse in the back. All the beer
                   served at both locations is brewed here. Come to drink it fresh.

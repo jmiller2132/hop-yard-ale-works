@@ -13,8 +13,8 @@ import type { TapBeer } from "@/lib/untappd-scrape";
 const SECTIONS = [
   { id: "on-tap", label: "On Tap" },
   { id: "wine", label: "Wine" },
-  { id: "ciders-seltzers", label: "Ciders & Seltzers" },
-  { id: "non-alcoholic", label: "Non-Alcoholic" },
+  { id: "ciders-seltzers", label: "Ciders & Seltzers", shortLabel: "Ciders" },
+  { id: "non-alcoholic", label: "Non-Alcoholic", shortLabel: "NA" },
 ];
 
 
@@ -153,7 +153,7 @@ export default function DrinksMenuClient({
           className="pt-12"
         >
           <h2
-            className="font-heading text-2xl font-bold mb-1"
+            className="font-heading text-3xl font-bold mb-1 sm:text-2xl"
             style={{ color: "var(--color-ink)" }}
           >
             Wine
@@ -189,7 +189,7 @@ export default function DrinksMenuClient({
           className="pt-12"
         >
           <h2
-            className="font-heading text-2xl font-bold mb-6"
+            className="font-heading text-3xl font-bold mb-6 sm:text-2xl"
             style={{ color: "var(--color-ink)" }}
           >
             Ciders & Seltzers
@@ -208,7 +208,7 @@ export default function DrinksMenuClient({
           className="pt-12"
         >
           <h2
-            className="font-heading text-2xl font-bold mb-6"
+            className="font-heading text-3xl font-bold mb-6 sm:text-2xl"
             style={{ color: "var(--color-ink)" }}
           >
             Non-Alcoholic
@@ -263,7 +263,7 @@ function WineCard({ item }: { item: WineItemSeed }) {
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <h4
-            className="font-heading text-sm font-semibold"
+            className="font-heading text-base font-semibold sm:text-sm"
             style={{ color: "var(--color-ink)" }}
           >
             {item.name}
@@ -299,7 +299,7 @@ function DrinkCard({ item }: { item: DrinkItemSeed }) {
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <h4
-            className="font-heading text-sm font-semibold"
+            className="font-heading text-base font-semibold sm:text-sm"
             style={{ color: "var(--color-ink)" }}
           >
             {item.name}

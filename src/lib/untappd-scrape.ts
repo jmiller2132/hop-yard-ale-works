@@ -67,6 +67,14 @@ const STYLE_RULES: [string, StyleKey][] = [
   ["Red Ale", "AMBER"],
   ["Brown Ale", "AMBER"],
   ["Scottish Ale", "AMBER"],
+  ["Märzen", "AMBER"],
+  ["Pale Ale - English", "AMBER"],
+  // Lager / crisp additions
+  ["Pilsner", "LAGER"],
+  ["Kölsch", "LAGER"],
+  // Extra hazy/fruited
+  ["Pale Ale - New England", "HAZY"],
+  ["Pale Ale - Hazy", "HAZY"],
 ];
 
 function mapStyle(style: string): StyleKey | null {
@@ -113,7 +121,8 @@ export async function fetchTapList(
       .replace(/\\\//g, "/");
 
     // Split on menu item boundaries. Each beer is inside a "menu-item clearfix" div.
-    const blocks = html.split('class="menu-item clearfix"').slice(1);
+    // Untappd prepends extra classes (e.g. "item-bg-color") so match on the suffix only.
+    const blocks = html.split('menu-item clearfix"').slice(1);
     const beers: TapBeer[] = [];
 
     for (const block of blocks) {

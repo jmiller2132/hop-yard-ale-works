@@ -44,11 +44,11 @@ export default async function TheFallsPage() {
         style={{ backgroundColor: "var(--color-ink)" }}
         aria-label="Menomonee Falls location"
       >
-        <div className="flex flex-col justify-end px-4 pb-10 pt-24 sm:px-6 lg:px-10 lg:pb-16 lg:pt-28">
+        <div className="flex flex-col justify-end px-4 pb-8 pt-8 sm:px-6 sm:pt-16 lg:px-10 lg:pb-16 lg:pt-28">
           <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-white/50">
             Hop Yard Ale Works
           </p>
-          <h1 className="font-display text-5xl uppercase leading-[0.9] text-white sm:text-7xl">
+          <h1 className="font-display text-5xl uppercase leading-[0.95] text-white sm:text-7xl sm:leading-[0.9]">
             Menomonee Falls
           </h1>
           <p className="mt-2 text-white/80 text-lg">
@@ -101,7 +101,7 @@ export default async function TheFallsPage() {
         </div>
       </section>
 
-      <div className="relative w-full overflow-hidden" style={{ height: "clamp(220px, 38vw, 520px)" }}>
+      <div className="relative w-full overflow-hidden" style={{ height: "clamp(160px, 32vw, 520px)" }}>
         <Image
           src="/look/falls-wall.webp"
           alt="Painted Hop Yard mark and barrels on the Menomonee Falls wall"
@@ -123,7 +123,7 @@ export default async function TheFallsPage() {
                 Hours
               </h2>
               <HoursTable rows={hoursRows("the-falls")} />
-              <p className="mt-3 text-sm" style={{ color: "var(--color-muted)" }}>
+              <p className="mt-3 text-base leading-relaxed sm:text-sm" style={{ color: "var(--color-muted)" }}>
                 {INFO.kitchenNote} Hours subject to change on holidays.
               </p>
               <WeatherNudge locationSlug="the-falls" drinksHref="/the-falls-drinks-menu/" />
@@ -134,7 +134,7 @@ export default async function TheFallsPage() {
               <h2 className="font-heading text-xl font-bold mb-4" style={{ color: "var(--color-ink)" }}>
                 Find Us
               </h2>
-              <address className="not-italic text-sm leading-relaxed" style={{ color: "var(--color-ink)" }}>
+              <address className="not-italic text-base leading-relaxed sm:text-sm" style={{ color: "var(--color-ink)" }}>
                 {addressLines("the-falls")[0]}<br />
                 {addressLines("the-falls")[1]}
               </address>
@@ -159,7 +159,7 @@ export default async function TheFallsPage() {
               <h2 className="font-heading text-xl font-bold mb-4" style={{ color: "var(--color-ink)" }}>
                 What to Expect
               </h2>
-              <div className="space-y-2 text-sm leading-relaxed" style={{ color: "var(--color-ink)" }}>
+              <div className="space-y-2 text-base leading-relaxed sm:text-sm" style={{ color: "var(--color-ink)" }}>
                 <p>
                   A relaxed taproom in the heart of Menomonee Falls. Come for a pint and
                   some wood-fired pizza — evenings Tuesday through Thursday, all day Friday and Saturday, and Sunday until 4.

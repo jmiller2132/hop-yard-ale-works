@@ -59,7 +59,7 @@ export default function LocationContextBar() {
 
   return (
     <div
-      className="sticky top-16 z-30 border-b"
+      className="relative z-30 border-b md:sticky md:top-20"
       style={{ backgroundColor: "var(--color-ink)", borderColor: "rgba(255,255,255,0.1)" }}
     >
       <div className="mx-auto flex max-w-7xl items-center gap-0 px-4 sm:px-6" style={{ minHeight: "44px" }}>
@@ -84,7 +84,7 @@ export default function LocationContextBar() {
         <div className="flex items-center gap-1 px-3">
           <Link
             href={ctx.foodPath}
-            className="rounded px-3 py-1 text-xs font-semibold transition-colors"
+            className="rounded px-3 py-2 text-sm font-semibold transition-colors min-h-[36px] inline-flex items-center"
             style={{
               backgroundColor: ctx.currentMenu === "food" ? "rgba(255,255,255,0.15)" : "transparent",
               color: ctx.currentMenu === "food" ? "white" : "rgba(255,255,255,0.5)",
@@ -94,7 +94,7 @@ export default function LocationContextBar() {
           </Link>
           <Link
             href={ctx.drinksPath}
-            className="rounded px-3 py-1 text-xs font-semibold transition-colors"
+            className="rounded px-3 py-2 text-sm font-semibold transition-colors min-h-[36px] inline-flex items-center"
             style={{
               backgroundColor: ctx.currentMenu === "drinks" ? "rgba(255,255,255,0.15)" : "transparent",
               color: ctx.currentMenu === "drinks" ? "white" : "rgba(255,255,255,0.5)",

@@ -12,7 +12,7 @@ export default function FoodMenuHero({
 }) {
   return (
     <section
-      className="relative overflow-hidden pb-8 pt-24 sm:pb-10 sm:pt-28"
+      className="relative overflow-hidden pb-6 pt-10 sm:pb-10 sm:pt-28"
       style={{ backgroundColor: "#E2A21A", color: "#231F20" }}
       aria-label="Food Menu"
     >
@@ -39,7 +39,7 @@ export default function FoodMenuHero({
             </svg>
             {backLabel}
           </Link>
-          <h1 className="font-display text-5xl uppercase leading-[0.88] sm:text-7xl">
+          <h1 className="font-display text-5xl uppercase leading-[0.95] sm:text-7xl sm:leading-[0.88]">
             Food Menu
           </h1>
           <p className="mt-2 text-sm font-semibold uppercase tracking-wider">{place}</p>

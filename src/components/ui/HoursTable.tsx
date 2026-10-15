@@ -25,27 +25,20 @@ export default function HoursTable({ rows }: HoursTableProps) {
   }, []);
 
   return (
-    <table className="w-full text-sm border-separate" style={{ borderSpacing: "0 2px" }}>
+    <table className="w-full border-collapse text-base sm:text-sm">
       <tbody>
         {rows.map(({ day, hours, closed }) => {
           const isToday = todayName === day;
+          const todayBg = isToday ? { backgroundColor: "var(--color-green-strong)" } : undefined;
           return (
-            <tr
-              key={day}
-              className="rounded-lg"
-          style={
-            isToday
-              ? {
-                  backgroundColor: "var(--color-green-strong)",
-                  color: "white",
-                  borderRadius: "6px",
-                }
-              : {}
-          }
-            >
+            <tr key={day}>
               <td
-                className="py-1.5 pl-2.5 pr-4 rounded-l-lg font-medium"
-                style={{ color: isToday ? "white" : "var(--color-ink)" }}
+                className="py-2 pl-2.5 pr-4 font-medium"
+                style={{
+                  ...todayBg,
+                  color: isToday ? "white" : "var(--color-ink)",
+                  borderRadius: isToday ? "6px 0 0 6px" : undefined,
+                }}
               >
                 {day}
                 {isToday && (
@@ -53,8 +46,12 @@ export default function HoursTable({ rows }: HoursTableProps) {
                 )}
               </td>
               <td
-                className="py-1.5 pr-2.5 rounded-r-lg"
-                style={{ color: isToday ? "rgba(255,255,255,0.9)" : closed ? "var(--color-muted)" : "var(--color-ink)" }}
+                className="py-2 pr-2.5"
+                style={{
+                  ...todayBg,
+                  color: isToday ? "rgba(255,255,255,0.9)" : closed ? "var(--color-muted)" : "var(--color-ink)",
+                  borderRadius: isToday ? "0 6px 6px 0" : undefined,
+                }}
               >
                 {hours}
               </td>
