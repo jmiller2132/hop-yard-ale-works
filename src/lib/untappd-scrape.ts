@@ -13,6 +13,10 @@ export interface TapBeer {
   styleKey: StyleKey | null;
   untappdUrl: string;
   isHopYardBeer: boolean;
+  /** Brewery-written description from the Untappd embed, if present. */
+  description: string | null;
+  /** ABV string e.g. "7.4% ABV", if present. */
+  abv: string | null;
 }
 
 export type StyleKey = "HAZY" | "WCIPA" | "STOUT" | "WHEAT" | "LAGER" | "SOUR" | "AMBER";
@@ -140,12 +144,29 @@ export async function fetchTapList(
       const styleMatch = /class="item-category">([^<]+)<\/span>/.exec(block);
       const style = styleMatch ? decodeHtml(styleMatch[1].trim()) : "";
 
+      // Description is inside class="item-description" > <p>
+      let description: string | null = null;
+      const descDivMatch = /class="item-description[^"]*"[^>]*>([\s\S]*?)<\/div>/.exec(block);
+      if (descDivMatch) {
+        const pMatch = /<p[^>]*>([\s\S]*?)<\/p>/.exec(descDivMatch[1]);
+        if (pMatch) {
+          const raw = pMatch[1].replace(/<[^>]+>/g, "").trim();
+          description = raw.length > 0 ? decodeHtml(raw) : null;
+        }
+      }
+
+      // ABV e.g. "7.4% ABV"
+      const abvMatch = /class="item-abv[^"]*">([^<]+)</.exec(block);
+      const abv = abvMatch ? abvMatch[1].trim() : null;
+
       beers.push({
         name,
         style,
         styleKey: mapStyle(style),
         untappdUrl,
         isHopYardBeer: untappdUrl.includes("hop-yard-ale-works"),
+        description,
+        abv,
       });
     }
 

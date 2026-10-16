@@ -379,38 +379,47 @@ export default function BeerQuiz({ beers }: BeerQuizProps) {
 
               {hasLive ? (
                 <>
-                  {/* Show ALL matching beers for this style */}
-                  <div className="mb-2 divide-y divide-white/10">
+                  {/* Show ALL matching beers — with their own Untappd description if available */}
+                  <div className="divide-y divide-white/10">
                     {primaryBeers.map((beer, i) => (
-                      <div key={beer.name} className={i > 0 ? "pt-4 mt-4" : ""}>
+                      <div key={beer.name} className={i > 0 ? "pt-5 mt-5" : ""}>
                         <h2
                           className="font-display text-4xl sm:text-5xl uppercase leading-[0.9]"
                           style={{ color: "white" }}
                         >
                           {beer.name}
                         </h2>
-                        <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>
-                          {beer.style}
+                        <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.45)" }}>
+                          {beer.style}{beer.abv ? ` · ${beer.abv}` : ""}
                         </p>
+                        {beer.description && (
+                          <p className="text-sm leading-relaxed mt-3" style={{ color: "rgba(255,255,255,0.75)" }}>
+                            {beer.description}
+                          </p>
+                        )}
                       </div>
                     ))}
                   </div>
+                  {/* Only show generic style blurb if none of the beers had a description */}
+                  {primaryBeers.every((b) => !b.description) && (
+                    <p className="text-sm leading-relaxed mt-5" style={{ color: "rgba(255,255,255,0.75)" }}>
+                      {r.description}
+                    </p>
+                  )}
                 </>
               ) : (
-                <h2
-                  className="font-display text-4xl sm:text-5xl uppercase leading-[0.9] mb-2"
-                  style={{ color: "white" }}
-                >
-                  {r.title}
-                </h2>
+                <>
+                  <h2
+                    className="font-display text-4xl sm:text-5xl uppercase leading-[0.9] mb-2"
+                    style={{ color: "white" }}
+                  >
+                    {r.title}
+                  </h2>
+                  <p className="text-sm leading-relaxed mt-4" style={{ color: "rgba(255,255,255,0.75)" }}>
+                    {r.description}
+                  </p>
+                </>
               )}
-
-              <p
-                className="text-sm leading-relaxed mt-4"
-                style={{ color: "rgba(255,255,255,0.75)" }}
-              >
-                {r.description}
-              </p>
             </div>
 
             {/* ── Runners-up ── */}
@@ -452,7 +461,7 @@ export default function BeerQuiz({ beers }: BeerQuizProps) {
                         )}
 
                         <p className="text-xs leading-relaxed mt-2" style={{ color: "var(--color-muted)" }}>
-                          {rr.short}
+                          {matchedBeer?.description ?? rr.short}
                         </p>
                       </div>
                     );
