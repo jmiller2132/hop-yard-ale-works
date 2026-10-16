@@ -20,12 +20,12 @@ export default async function PhotosPage() {
   return (
     <>
       {/* Hero */}
-      <section className="page-hero py-10 sm:py-20">
+      <section className="page-hero">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 text-center">
           <p className="text-sm font-medium uppercase tracking-widest mb-3" style={{ color: "var(--color-green)" }}>
             From the taproom
           </p>
-          <h1 className="font-display text-5xl sm:text-6xl uppercase leading-[0.95] text-white mb-4">
+          <h1 className="font-display text-5xl sm:text-7xl uppercase leading-[0.9] text-white mb-4">
             Real people. Real pints.
           </h1>
           <p className="text-lg" style={{ color: "rgba(255,255,255,0.6)" }}>

@@ -21,8 +21,7 @@ export default async function WhatToDrinkPage() {
     <>
       {/* Hero */}
       <section
-        className="flex items-end pb-8 pt-10 sm:pb-10 sm:pt-32"
-        style={{ backgroundColor: "var(--color-ink)" }}
+        className="page-hero"
         aria-label="Beer finder quiz"
       >
         <div className="mx-auto w-full max-w-xl px-4 sm:px-6">
@@ -32,7 +31,7 @@ export default async function WhatToDrinkPage() {
           >
             4 questions
           </p>
-          <h1 className="font-display text-5xl uppercase leading-[0.95] text-white sm:text-7xl sm:leading-[0.88]">
+          <h1 className="font-display text-5xl sm:text-7xl uppercase leading-[0.9] text-white">
             What Should
             <br />I Drink?
           </h1>

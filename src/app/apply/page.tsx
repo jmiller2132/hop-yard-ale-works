@@ -21,7 +21,7 @@ export default function ApplyPage() {
           >
             We&apos;re Hiring
           </p>
-          <h1 className="font-display text-5xl sm:text-6xl uppercase leading-[0.95] text-white sm:leading-[0.9]">
+          <h1 className="font-display text-5xl sm:text-7xl uppercase leading-[0.9] text-white">
             Join Our Team
           </h1>
           <p className="mt-4 text-base sm:text-lg" style={{ color: "rgba(255,255,255,0.55)" }}>

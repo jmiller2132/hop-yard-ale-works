@@ -92,7 +92,7 @@ export default async function EventsPage() {
           <p className="mb-3 text-xs font-semibold uppercase tracking-widest" style={{ color: "var(--color-green)" }}>
             Appleton &amp; Menomonee Falls
           </p>
-          <h1 className="font-display text-6xl sm:text-7xl uppercase leading-[0.95] text-white sm:leading-[0.9]">Events</h1>
+          <h1 className="font-display text-5xl sm:text-7xl uppercase leading-[0.9] text-white">Events</h1>
           <p className="mt-4 text-white/70 text-base max-w-xl">
             Live music, tap releases, and everything else coming up at both locations.
           </p>

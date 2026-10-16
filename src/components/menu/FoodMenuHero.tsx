@@ -12,8 +12,8 @@ export default function FoodMenuHero({
 }) {
   return (
     <section
-      className="relative overflow-hidden pb-6 pt-10 sm:pb-10 sm:pt-28"
-      style={{ backgroundColor: "#E2A21A", color: "#231F20" }}
+      className="relative overflow-hidden flex items-end pb-6 pt-28 sm:pb-10 sm:pt-36"
+      style={{ minHeight: "220px", backgroundColor: "#E2A21A", color: "#231F20" }}
       aria-label="Food Menu"
     >
       {/* Oven photo adds texture behind the yellow */}
@@ -39,7 +39,7 @@ export default function FoodMenuHero({
             </svg>
             {backLabel}
           </Link>
-          <h1 className="font-display text-5xl uppercase leading-[0.95] sm:text-7xl sm:leading-[0.88]">
+          <h1 className="font-display text-5xl sm:text-7xl uppercase leading-[0.9]">
             Food Menu
           </h1>
           <p className="mt-2 text-sm font-semibold uppercase tracking-wider">{place}</p>

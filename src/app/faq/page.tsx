@@ -28,7 +28,7 @@ export default async function FaqPage() {
           <p className="text-sm font-medium uppercase tracking-widest mb-3" style={{ color: "var(--color-green)" }}>
             Got questions?
           </p>
-          <h1 className="font-display text-5xl sm:text-6xl uppercase leading-[0.95] text-white mb-4 sm:leading-[0.9]">
+          <h1 className="font-display text-5xl sm:text-7xl uppercase leading-[0.9] text-white mb-4">
             We've got answers.
           </h1>
           <p className="text-lg" style={{ color: "rgba(255,255,255,0.6)" }}>

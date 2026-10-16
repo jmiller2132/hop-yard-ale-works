@@ -26,7 +26,7 @@ export default function AboutPage() {
           <p className="text-sm font-medium uppercase tracking-widest mb-3" style={{ color: "var(--color-green)" }}>
             Our story
           </p>
-          <h1 className="font-display text-5xl sm:text-6xl uppercase leading-[0.95] text-white mb-6 sm:leading-[0.9]">
+          <h1 className="font-display text-5xl sm:text-7xl uppercase leading-[0.9] text-white mb-6">
             About Hop Yard
           </h1>
           <p className="text-lg leading-relaxed" style={{ color: "rgba(255,255,255,0.65)" }}>
@@ -106,7 +106,7 @@ export default function AboutPage() {
             {[
               {
                 heading: "Order at the bar",
-                body: "We don't have servers. Place pizza and beer orders at the bar — look for the Order Here sign. Beer we hand to you right there. Pizza gets a number, then we run it out to your table.",
+                body: "No table service here — grab a seat, then order pizza and beer at the bar. Look for the Order Here sign. We'll hand your beer over right there. Pizza gets a number, and we run it out to your table when it's ready.",
               },
               {
                 heading: "More than just beer",

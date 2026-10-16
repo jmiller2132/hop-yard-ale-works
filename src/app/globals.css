@@ -199,18 +199,19 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-/* Inner-page dark heroes: compact on phones, tall on desktop */
+/* Inner-page dark heroes: consistent height across all pages */
 .page-hero {
   display: flex;
   align-items: flex-end;
-  padding-top: 2.5rem;
-  padding-bottom: 2rem;
+  min-height: 220px;
+  padding-top: 7rem;   /* clears the 5rem sticky header + breathing room */
+  padding-bottom: 2.5rem;
   background-color: var(--color-ink);
 }
 
 @media (min-width: 640px) {
   .page-hero {
-    min-height: clamp(260px, 44vh, 400px);
+    min-height: clamp(300px, 44vh, 420px);
     padding-top: 9rem;
     padding-bottom: 4rem;
   }

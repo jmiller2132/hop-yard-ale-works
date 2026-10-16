@@ -48,7 +48,7 @@ export default async function TheFallsPage() {
           <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-white/50">
             Hop Yard Ale Works
           </p>
-          <h1 className="font-display text-5xl uppercase leading-[0.95] text-white sm:text-7xl sm:leading-[0.9]">
+          <h1 className="font-display text-5xl sm:text-7xl uppercase leading-[0.9] text-white">
             Menomonee Falls
           </h1>
           <p className="mt-2 text-white/80 text-lg">

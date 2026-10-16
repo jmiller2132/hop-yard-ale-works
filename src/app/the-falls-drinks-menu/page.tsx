@@ -34,8 +34,7 @@ export default async function TheFallsDrinksMenuPage() {
   return (
     <>
       <section
-        className="relative flex items-end pb-6 pt-10 sm:pb-8 sm:pt-24"
-        style={{ minHeight: "clamp(140px, 28vh, 280px)", backgroundColor: "var(--color-ink)" }}
+        className="page-hero relative"
         aria-label="Drinks Menu"
       >
         <div className="absolute inset-0" aria-hidden="true">
@@ -60,7 +59,7 @@ export default async function TheFallsDrinksMenuPage() {
             </svg>
             The Falls
           </Link>
-          <h1 className="font-display text-5xl uppercase leading-[0.95] text-white sm:text-6xl sm:leading-[0.9]">
+          <h1 className="font-display text-5xl sm:text-7xl uppercase leading-[0.9] text-white">
             Drinks
           </h1>
           <p className="mt-1 text-white/60 text-sm font-medium uppercase tracking-wider">Menomonee Falls</p>

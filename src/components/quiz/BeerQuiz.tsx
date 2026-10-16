@@ -4,10 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 import type { TapBeer } from "@/lib/untappd-scrape";
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 type StyleKey = "HAZY" | "WCIPA" | "STOUT" | "WHEAT" | "LAGER" | "SOUR" | "AMBER";
 type Scores = Partial<Record<StyleKey, number>>;
+
+// ─── Questions ────────────────────────────────────────────────────────────────
+// 5 questions, higher point values (up to 5) for clearer separation between styles.
 
 const QUESTIONS = [
   {
@@ -16,51 +19,51 @@ const QUESTIONS = [
     emoji: "🍺",
     options: [
       {
-        id: "easy",
-        label: "Light and easy — nothing too heavy",
-        scores: { WHEAT: 2, LAGER: 2, AMBER: 1 } as Scores,
+        id: "light",
+        label: "Light and easy — nothing too intense",
+        scores: { WHEAT: 3, LAGER: 3, AMBER: 1 } as Scores,
       },
       {
         id: "bold",
-        label: "Bold and intense — I want to taste it",
-        scores: { STOUT: 3, AMBER: 1 } as Scores,
+        label: "Bold and full — I want to really taste it",
+        scores: { STOUT: 4, AMBER: 2 } as Scores,
       },
       {
         id: "adventurous",
-        label: "Adventurous — surprise me",
-        scores: { SOUR: 3, HAZY: 1 } as Scores,
+        label: "Adventurous — bring me something different",
+        scores: { SOUR: 4, HAZY: 2 } as Scores,
       },
       {
         id: "hoppy",
-        label: "Hoppy — that's always been my thing",
-        scores: { HAZY: 2, WCIPA: 2 } as Scores,
+        label: "Hoppy — it's always been my thing",
+        scores: { HAZY: 3, WCIPA: 3 } as Scores,
       },
     ],
   },
   {
     id: "flavor",
-    text: "Pick the flavor that sounds good right now.",
+    text: "What flavor actually sounds good right now?",
     emoji: "👅",
     options: [
       {
         id: "citrus",
-        label: "Citrusy / tropical / juicy",
-        scores: { HAZY: 3, WCIPA: 1 } as Scores,
+        label: "Tropical / citrusy / juicy",
+        scores: { HAZY: 5, WCIPA: 1, SOUR: 1 } as Scores,
       },
       {
         id: "roasty",
         label: "Roasty / coffee / chocolate",
-        scores: { STOUT: 3, AMBER: 1 } as Scores,
+        scores: { STOUT: 5, AMBER: 2 } as Scores,
       },
       {
         id: "crisp",
-        label: "Crisp / clean / refreshing",
-        scores: { LAGER: 3, WHEAT: 1 } as Scores,
+        label: "Crisp / clean / doesn't get in the way",
+        scores: { LAGER: 5, WHEAT: 2 } as Scores,
       },
       {
         id: "tart",
-        label: "Tart / fruity / a little funky",
-        scores: { SOUR: 3 } as Scores,
+        label: "Tart / bright / a little funky",
+        scores: { SOUR: 5, HAZY: 1 } as Scores,
       },
     ],
   },
@@ -71,61 +74,91 @@ const QUESTIONS = [
     options: [
       {
         id: "none",
-        label: "Not my thing — keep it smooth",
-        scores: { WHEAT: 2, LAGER: 2, STOUT: 1 } as Scores,
+        label: "Keep it away — smooth all the way",
+        scores: { WHEAT: 4, LAGER: 3, STOUT: 1 } as Scores,
       },
       {
         id: "little",
-        label: "A little goes a long way",
-        scores: { AMBER: 2, HAZY: 1 } as Scores,
+        label: "Subtle — in the background",
+        scores: { AMBER: 4, HAZY: 2, WHEAT: 1 } as Scores,
       },
       {
-        id: "medium",
-        label: "Balanced — I like it in check",
-        scores: { HAZY: 2, AMBER: 1, LAGER: 1 } as Scores,
+        id: "balanced",
+        label: "Balanced — present but not punishing",
+        scores: { HAZY: 4, AMBER: 2, LAGER: 1 } as Scores,
       },
       {
         id: "high",
-        label: "Bring it on. The more the better.",
-        scores: { WCIPA: 3, HAZY: 1 } as Scores,
+        label: "More the better — I want to feel it",
+        scores: { WCIPA: 6, HAZY: 2 } as Scores,
       },
     ],
   },
   {
-    id: "food",
-    text: "What are you eating with it?",
-    emoji: "🍕",
+    id: "experience",
+    text: "Where are you on the craft beer journey?",
+    emoji: "🗺️",
     options: [
       {
+        id: "new",
+        label: "Relatively new — I want something approachable",
+        scores: { LAGER: 3, WHEAT: 3, AMBER: 1 } as Scores,
+      },
+      {
+        id: "comfortable",
+        label: "Comfortable — I know a few styles I like",
+        scores: { AMBER: 3, HAZY: 2, LAGER: 1 } as Scores,
+      },
+      {
+        id: "ipa",
+        label: "I drink mostly IPAs — that's my lane",
+        scores: { HAZY: 3, WCIPA: 3 } as Scores,
+      },
+      {
+        id: "seeker",
+        label: "I always order the weirdest thing on the board",
+        scores: { SOUR: 4, STOUT: 2 } as Scores,
+      },
+    ],
+  },
+  {
+    id: "occasion",
+    text: "What's the situation tonight?",
+    emoji: "🌙",
+    options: [
+      {
+        id: "first",
+        label: "First beer — want something easy to start with",
+        scores: { LAGER: 4, WHEAT: 3 } as Scores,
+      },
+      {
+        id: "settling",
+        label: "Settling in for a few — no rush",
+        scores: { AMBER: 3, HAZY: 2, SOUR: 1 } as Scores,
+      },
+      {
         id: "pizza",
-        label: "Wood-fired pizza — it's the obvious move",
-        scores: { HAZY: 1, AMBER: 1, LAGER: 1 } as Scores,
+        label: "Having it with pizza or food",
+        scores: { AMBER: 3, HAZY: 2, LAGER: 1 } as Scores,
       },
       {
-        id: "nothing",
-        label: "Nothing — just the beer",
-        scores: { LAGER: 2, SOUR: 1 } as Scores,
-      },
-      {
-        id: "light",
-        label: "Something light or a salad",
-        scores: { WHEAT: 2, LAGER: 1, SOUR: 1 } as Scores,
-      },
-      {
-        id: "hearty",
-        label: "Something rich and hearty",
-        scores: { STOUT: 2, AMBER: 1 } as Scores,
+        id: "memorable",
+        label: "I want the one worth talking about tomorrow",
+        scores: { STOUT: 3, SOUR: 3, HAZY: 1 } as Scores,
       },
     ],
   },
 ] as const;
+
+// ─── Result copy ──────────────────────────────────────────────────────────────
 
 const RESULTS: Record<
   StyleKey,
   {
     title: string;
     emoji: string;
-    description: string;
+    description: string;          // 2–3 sentences for primary result
+    short: string;                // 1 sentence for runner-up cards
     menuNote: string;
   }
 > = {
@@ -133,56 +166,65 @@ const RESULTS: Record<
     title: "Hazy IPA",
     emoji: "🍊",
     description:
-      "Juicy, tropical, soft. Hazy IPAs are the crowd-pleaser that actual hop-heads also love. Low bitterness, big aroma — the kind of beer that goes down too easy.",
-    menuNote: "We keep at least one hazy on at all times. Check the tap list.",
+      "Juicy, tropical, low bitterness — the crowd-pleaser that actual hop-heads also love. Soft mouthfeel, big aroma, and the kind of beer that disappears before you expected it to. If someone at the table says they don't like IPAs, hand them one of these.",
+    short: "Juicy, tropical, easy on the bitterness.",
+    menuNote: "We keep at least one hazy on at all times.",
   },
   WCIPA: {
     title: "West Coast IPA",
     emoji: "🌲",
     description:
-      "Crisp, dry, with a real bitter finish. This is the IPA that started the whole conversation. Clean malt backbone, dank hop character. No frills.",
+      "Crisp, dry, with a real bitter finish that lingers. This is the IPA that started the whole conversation — clean malt backbone, dank hop character, no frills. You know what you want and it's this.",
+    short: "Crisp, bitter, dank. The classic.",
     menuNote: "Check the current tap list for our IPA lineup.",
   },
   STOUT: {
     title: "Stout or Porter",
     emoji: "☕",
     description:
-      "Dark, roasty, maybe a hint of chocolate or coffee — but not heavy. A well-made stout is incredibly drinkable. You're not here to mess around.",
+      "Dark, roasty, maybe a hint of chocolate or coffee — but not heavy. A well-made stout is way more drinkable than people expect. You're here to taste something, not just drink something.",
+    short: "Dark, roasty, chocolate and coffee notes.",
     menuNote: "We usually have a dark beer pouring. See what's on tap.",
   },
   WHEAT: {
     title: "Wheat Ale",
     emoji: "🌾",
     description:
-      "Cloudy, soft, a little citrusy — easy to drink and criminally underrated. The kind of pint that disappears before you realize it. No complaints.",
-    menuNote: "See what's pouring — we love keeping a wheat or session beer on.",
+      "Cloudy, soft, easy — sometimes a little citrusy, sometimes a hint of banana or clove. Criminally underrated. The kind of pint that disappears before you realize it and you don't feel bad about it.",
+    short: "Soft, easy, slightly hazy and citrusy.",
+    menuNote: "We love keeping a wheat or session beer on tap.",
   },
   LAGER: {
     title: "Lager or Pilsner",
     emoji: "🫧",
     description:
-      "Clean, cold, crisp. A well-made lager is harder to pull off than people think, which is exactly why we enjoy the challenge. You know good beer without needing it to be complicated.",
+      "Clean, cold, crisp. A well-made lager is actually harder to pull off than most craft styles, which is exactly why it's worth ordering when a brewery does it right. You know good beer without needing it to be complicated.",
+    short: "Clean, cold, crisp. Harder to make than it looks.",
     menuNote: "Check the tap list for what's cold and pouring.",
   },
   SOUR: {
     title: "Sour or Fruited Ale",
     emoji: "🍋",
     description:
-      "Tart, bright, sometimes a little funky. You're the person who orders the weird one on the menu and loves it every time. People at your table are always asking for a sip.",
-    menuNote: "Check the rotating tap list for current sours and fruited beers.",
+      "Tart, bright, sometimes funky — and always more drinkable than it sounds. You're the person who orders the weird one and loves it every time. The table is going to ask for a sip.",
+    short: "Tart, bright, funky. Always more drinkable than it sounds.",
+    menuNote: "Check the rotating tap list for current sours.",
   },
   AMBER: {
     title: "Amber or Red Ale",
     emoji: "🍂",
     description:
-      "Malty without being heavy. A little caramel, a touch of hops, well-balanced all the way through. People who order these are always right.",
-    menuNote: "We keep a malt-forward option on rotation — see what's pouring.",
+      "Malty without being heavy, a touch of caramel, balanced hops — the Goldilocks beer. Not too light, not too dark, never a bad call. People who order ambers are quietly always right.",
+    short: "Malty, caramel-forward, balanced. Never a bad call.",
+    menuNote: "We keep a malt-forward option on rotation.",
   },
 };
 
 // ─── Scoring ──────────────────────────────────────────────────────────────────
 
-function calculateResult(answers: Scores[]): StyleKey {
+type RankedResult = { key: StyleKey; score: number };
+
+function rankResults(answers: Scores[]): RankedResult[] {
   const totals: Record<StyleKey, number> = {
     HAZY: 0, WCIPA: 0, STOUT: 0, WHEAT: 0, LAGER: 0, SOUR: 0, AMBER: 0,
   };
@@ -191,36 +233,35 @@ function calculateResult(answers: Scores[]): StyleKey {
       totals[k] = (totals[k] ?? 0) + v;
     }
   }
-  return (Object.entries(totals) as [StyleKey, number][]).reduce((best, cur) =>
-    cur[1] > totals[best] ? cur[0] : best,
-    "HAZY" as StyleKey
-  );
+  return (Object.entries(totals) as [StyleKey, number][])
+    .sort((a, b) => b[1] - a[1])
+    .filter(([, score]) => score > 0)
+    .map(([key, score]) => ({ key: key as StyleKey, score }));
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
 interface BeerQuizProps {
-  /** Live tap beers from Untappd. When present, result shows a specific beer. */
   beers?: TapBeer[] | null;
 }
 
 export default function BeerQuiz({ beers }: BeerQuizProps) {
-  const [step, setStep] = useState(0); // 0…QUESTIONS.length = answering; length = result
+  const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Scores[]>([]);
-  const [chosen, setChosen] = useState<string | null>(null); // currently highlighted option
-  const [result, setResult] = useState<StyleKey | null>(null);
+  const [chosen, setChosen] = useState<string | null>(null);
+  const [ranked, setRanked] = useState<RankedResult[]>([]);
 
   const totalSteps = QUESTIONS.length;
   const isResult = step === totalSteps;
   const q = QUESTIONS[step] as (typeof QUESTIONS)[number] | undefined;
 
   function pick(scores: Scores, id: string) {
-    if (chosen) return; // prevent double-tap
+    if (chosen) return;
     setChosen(id);
     const next = [...answers, scores];
     setTimeout(() => {
       if (next.length === totalSteps) {
-        setResult(calculateResult(next));
+        setRanked(rankResults(next));
         setStep(totalSteps);
       } else {
         setAnswers(next);
@@ -234,31 +275,41 @@ export default function BeerQuiz({ beers }: BeerQuizProps) {
     setStep(0);
     setAnswers([]);
     setChosen(null);
-    setResult(null);
+    setRanked([]);
   }
+
+  // Helpers for result screen
+  const primary = ranked[0] ?? null;
+  const runners = ranked.slice(1, 3);
+
+  // All live beers matching a given style key
+  const beersFor = (key: StyleKey): TapBeer[] =>
+    (beers ?? []).filter((b) => b.styleKey === key);
 
   return (
     <div className="mx-auto max-w-xl px-4 py-10 sm:py-14">
-      {/* Progress bar */}
+
+      {/* Progress dots */}
       {!isResult && (
-        <div className="mb-8">
-          <div
-            className="h-1 w-full rounded-full overflow-hidden"
-            style={{ backgroundColor: "rgba(0,0,0,0.08)" }}
-            role="progressbar"
-            aria-valuenow={step}
-            aria-valuemax={totalSteps}
-          >
+        <div className="mb-8 flex items-center gap-2">
+          {QUESTIONS.map((_, i) => (
             <div
-              className="h-full rounded-full transition-all duration-500"
+              key={i}
+              className="rounded-full transition-all duration-300"
               style={{
-                width: `${(step / totalSteps) * 100}%`,
-                backgroundColor: "var(--color-green)",
+                width: i === step ? 24 : 8,
+                height: 8,
+                backgroundColor:
+                  i < step
+                    ? "var(--color-green)"
+                    : i === step
+                      ? "var(--color-ink)"
+                      : "rgba(0,0,0,0.12)",
               }}
             />
-          </div>
-          <p className="mt-2 text-right text-xs" style={{ color: "var(--color-muted)" }}>
-            {step} of {totalSteps}
+          ))}
+          <p className="ml-2 text-xs" style={{ color: "var(--color-muted)" }}>
+            {step + 1} of {totalSteps}
           </p>
         </div>
       )}
@@ -282,20 +333,17 @@ export default function BeerQuiz({ beers }: BeerQuizProps) {
                   key={opt.id}
                   onClick={() => pick(opt.scores, opt.id)}
                   disabled={!!chosen}
-                  className="w-full text-left px-5 py-4 rounded font-medium text-sm leading-snug transition-all duration-150 min-h-[52px]"
+                  className="w-full text-left px-5 py-4 rounded font-medium text-sm leading-snug min-h-[52px]"
                   style={{
-                    backgroundColor: isSelected
-                      ? "var(--color-green)"
-                      : "white",
+                    backgroundColor: isSelected ? "var(--color-ink)" : "white",
                     color: isSelected ? "white" : "var(--color-ink)",
                     border: isSelected
-                      ? "2px solid var(--color-green)"
+                      ? "2px solid var(--color-ink)"
                       : "2px solid rgba(0,0,0,0.10)",
                     transform: isSelected ? "scale(1.01)" : "scale(1)",
-                    boxShadow: isSelected
-                      ? "0 4px 16px rgba(47,107,50,0.18)"
-                      : "none",
+                    boxShadow: isSelected ? "0 4px 20px rgba(0,0,0,0.12)" : "none",
                     cursor: chosen ? "default" : "pointer",
+                    transition: "all 0.15s ease",
                   }}
                 >
                   {opt.label}
@@ -307,87 +355,138 @@ export default function BeerQuiz({ beers }: BeerQuizProps) {
       )}
 
       {/* Result */}
-      {isResult && result && (() => {
-        const matchedBeer = beers?.find((b) => b.styleKey === result) ?? null;
-        const r = RESULTS[result];
-        return (
-          <section aria-live="polite" className="text-center">
-            <p className="text-6xl mb-4" aria-hidden="true">{r.emoji}</p>
+      {isResult && primary && (() => {
+        const r = RESULTS[primary.key];
+        const primaryBeers = beersFor(primary.key);
+        const hasLive = primaryBeers.length > 0;
 
-            {matchedBeer ? (
-              <>
-                <p
-                  className="text-xs font-semibold uppercase tracking-widest mb-2"
-                  style={{ color: "var(--color-muted)" }}
-                >
-                  On tap right now
-                </p>
+        return (
+          <section aria-live="polite">
+
+            {/* ── Primary result ── */}
+            <div
+              className="rounded-2xl p-7 mb-4"
+              style={{ backgroundColor: "var(--color-ink)", color: "white" }}
+            >
+              <p
+                className="text-xs font-semibold uppercase tracking-[0.16em] mb-4"
+                style={{ color: "rgba(255,255,255,0.45)" }}
+              >
+                {hasLive ? "On tap right now" : "Your style"}
+              </p>
+
+              <p className="text-5xl mb-3" aria-hidden="true">{r.emoji}</p>
+
+              {hasLive ? (
+                <>
+                  {/* Show up to 2 matching beers */}
+                  <div className="mb-2">
+                    {primaryBeers.slice(0, 2).map((beer, i) => (
+                      <div key={beer.name} className={i > 0 ? "mt-2" : ""}>
+                        <h2
+                          className="font-display text-4xl sm:text-5xl uppercase leading-[0.9]"
+                          style={{ color: "white" }}
+                        >
+                          {beer.name}
+                        </h2>
+                        <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>
+                          {beer.style}
+                        </p>
+                      </div>
+                    ))}
+                    {primaryBeers.length > 2 && (
+                      <p className="text-sm mt-2" style={{ color: "rgba(255,255,255,0.45)" }}>
+                        +{primaryBeers.length - 2} more {r.title.toLowerCase()} on tap
+                      </p>
+                    )}
+                  </div>
+                </>
+              ) : (
                 <h2
-                  className="font-display text-5xl sm:text-6xl uppercase leading-[0.9] mb-2"
-                  style={{ color: "var(--color-ink)" }}
-                >
-                  {matchedBeer.name}
-                </h2>
-                <p
-                  className="text-sm mb-5"
-                  style={{ color: "var(--color-muted)" }}
-                >
-                  {matchedBeer.style}
-                </p>
-                <p
-                  className="text-base leading-relaxed mb-4 mx-auto max-w-sm"
-                  style={{ color: "var(--color-ink)", opacity: 0.8 }}
-                >
-                  {r.description}
-                </p>
-              </>
-            ) : (
-              <>
-                <p
-                  className="text-xs font-semibold uppercase tracking-widest mb-2"
-                  style={{ color: "var(--color-muted)" }}
-                >
-                  Your style
-                </p>
-                <h2
-                  className="font-display text-5xl sm:text-6xl uppercase leading-[0.9] mb-6"
-                  style={{ color: "var(--color-ink)" }}
+                  className="font-display text-4xl sm:text-5xl uppercase leading-[0.9] mb-2"
+                  style={{ color: "white" }}
                 >
                   {r.title}
                 </h2>
+              )}
+
+              <p
+                className="text-sm leading-relaxed mt-4"
+                style={{ color: "rgba(255,255,255,0.75)" }}
+              >
+                {r.description}
+              </p>
+            </div>
+
+            {/* ── Runners-up ── */}
+            {runners.length > 0 && (
+              <>
                 <p
-                  className="text-base leading-relaxed mb-4 mx-auto max-w-sm"
-                  style={{ color: "var(--color-ink)", opacity: 0.8 }}
+                  className="text-xs font-semibold uppercase tracking-[0.14em] mb-3 mt-6"
+                  style={{ color: "var(--color-muted)" }}
                 >
-                  {r.description}
+                  Also worth trying
                 </p>
+                <div className={`grid gap-3 ${runners.length > 1 ? "sm:grid-cols-2" : ""}`}>
+                  {runners.map(({ key }) => {
+                    const rr = RESULTS[key];
+                    const runnerBeers = beersFor(key);
+                    const matchedBeer = runnerBeers[0] ?? null;
+                    return (
+                      <div
+                        key={key}
+                        className="rounded-xl p-5"
+                        style={{
+                          backgroundColor: "white",
+                          border: "1px solid rgba(0,0,0,0.10)",
+                        }}
+                      >
+                        <p className="text-2xl mb-2" aria-hidden="true">{rr.emoji}</p>
+                        {matchedBeer ? (
+                          <>
+                            <p className="font-display text-xl uppercase leading-tight" style={{ color: "var(--color-ink)" }}>
+                              {matchedBeer.name}
+                            </p>
+                            <p className="text-xs mt-0.5 mb-2" style={{ color: "var(--color-muted)" }}>
+                              {matchedBeer.style}
+                            </p>
+                          </>
+                        ) : (
+                          <p className="font-display text-xl uppercase leading-tight mb-2" style={{ color: "var(--color-ink)" }}>
+                            {rr.title}
+                          </p>
+                        )}
+                        <p className="text-xs leading-relaxed" style={{ color: "var(--color-muted)" }}>
+                          {rr.short}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
               </>
             )}
 
-            <p className="text-sm italic mb-8" style={{ color: "var(--color-muted)" }}>
-              {matchedBeer ? "Check the full tap list for what else is pouring." : r.menuNote}
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            {/* ── CTAs ── */}
+            <div className="mt-8 flex flex-col sm:flex-row gap-3">
               <Link
                 href="/appleton-drinks-menu/"
                 className="inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold min-h-[48px] hover:opacity-90 transition-opacity"
                 style={{ backgroundColor: "var(--color-seasonal-cta)", color: "white" }}
               >
-                See Appleton Tap List
+                Appleton Tap List
               </Link>
               <Link
                 href="/the-falls-drinks-menu/"
                 className="inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold min-h-[48px] hover:opacity-90 transition-opacity"
                 style={{ backgroundColor: "var(--color-ink)", color: "white" }}
               >
-                See Falls Tap List
+                Falls Tap List
               </Link>
             </div>
 
             <button
               onClick={restart}
-              className="mt-6 text-sm underline underline-offset-4 hover:opacity-70 transition-opacity"
+              className="mt-5 text-sm underline underline-offset-4 hover:opacity-70 transition-opacity"
               style={{ color: "var(--color-muted)" }}
             >
               Try again

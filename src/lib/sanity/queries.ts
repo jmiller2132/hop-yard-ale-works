@@ -127,7 +127,7 @@ export const taproomPhotosByLocationQuery = groq`
 `;
 
 export const faqsByCategoryQuery = groq`
-  *[_type == "faq" && category in $categories] | order(category asc) {
+  *[_type == "faq" && category in $categories && defined(_type)] | order(category asc) {
     _id,
     question,
     answer,
