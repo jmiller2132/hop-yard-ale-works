@@ -106,7 +106,7 @@ export default function AboutPage() {
             {[
               {
                 heading: "Order at the bar",
-                body: "We don't have servers or take reservations. Walk up to the bar — look for the Order Here sign — and we'll take care of you.",
+                body: "We don't have servers. Place pizza and beer orders at the bar — look for the Order Here sign. Beer we hand to you right there. Pizza gets a number, then we run it out to your table.",
               },
               {
                 heading: "More than just beer",

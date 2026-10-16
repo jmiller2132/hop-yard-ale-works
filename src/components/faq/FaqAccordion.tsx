@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
+import Link from "next/link";
 import type { FAQ } from "@/types";
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -103,7 +104,7 @@ export default function FaqAccordion({ faqs }: FaqAccordionProps) {
                       className="px-5 py-4 text-sm leading-relaxed whitespace-pre-line"
                       style={{ backgroundColor: "var(--color-warm-white)", color: "var(--color-muted)" }}
                     >
-                      {faq.answer}
+                      <FaqAnswer text={faq.answer} />
                     </div>
                   </div>
                 );
@@ -114,6 +115,75 @@ export default function FaqAccordion({ faqs }: FaqAccordionProps) {
       </div>
     </div>
   );
+}
+
+const LINK_CLASS = "font-medium underline underline-offset-2";
+const LINK_STYLE = { color: "var(--color-green-text)" } as const;
+
+const PHRASE_LINKS: { pattern: RegExp; href: string }[] = [
+  { pattern: /Appleton drinks menu/i, href: "/appleton-drinks-menu/" },
+  { pattern: /Menomonee Falls drinks menu/i, href: "/the-falls-drinks-menu/" },
+  { pattern: /Events page/i, href: "/events/" },
+  { pattern: /Contact form/i, href: "/contact/" },
+  { pattern: /Instagram/i, href: "https://www.instagram.com/hopyardaleworks/" },
+  { pattern: /Facebook/i, href: "https://www.facebook.com/hopyardaleworks/" },
+];
+
+function FaqAnswer({ text }: { text: string }) {
+  const nodes: ReactNode[] = [];
+  let remaining = text;
+  let key = 0;
+
+  while (remaining.length > 0) {
+    const emailMatch = remaining.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+    const phraseMatches = PHRASE_LINKS.map((p) => {
+      const m = remaining.match(p.pattern);
+      return m && m.index != null ? { ...p, match: m[0], index: m.index } : null;
+    }).filter((x): x is NonNullable<typeof x> => x !== null);
+
+    const candidates: { index: number; length: number; node: ReactNode }[] = [];
+    if (emailMatch && emailMatch.index != null) {
+      const email = emailMatch[0];
+      candidates.push({
+        index: emailMatch.index,
+        length: email.length,
+        node: (
+          <a key={key++} href={`mailto:${email}`} className={LINK_CLASS} style={LINK_STYLE}>
+            {email}
+          </a>
+        ),
+      });
+    }
+    for (const p of phraseMatches) {
+      const external = p.href.startsWith("http");
+      candidates.push({
+        index: p.index,
+        length: p.match.length,
+        node: external ? (
+          <a key={key++} href={p.href} target="_blank" rel="noopener noreferrer" className={LINK_CLASS} style={LINK_STYLE}>
+            {p.match}
+          </a>
+        ) : (
+          <Link key={key++} href={p.href} className={LINK_CLASS} style={LINK_STYLE}>
+            {p.match}
+          </Link>
+        ),
+      });
+    }
+
+    if (candidates.length === 0) {
+      nodes.push(remaining);
+      break;
+    }
+
+    candidates.sort((a, b) => a.index - b.index || b.length - a.length);
+    const next = candidates[0];
+    if (next.index > 0) nodes.push(remaining.slice(0, next.index));
+    nodes.push(next.node);
+    remaining = remaining.slice(next.index + next.length);
+  }
+
+  return <>{nodes}</>;
 }
 
 function FilterPill({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {

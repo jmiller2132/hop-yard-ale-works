@@ -254,7 +254,6 @@ const INTENTS: Intent[] = [
   unposted("smoking", ["smoke", "smoking", "vape", "vaping", "cigar"]),
   unposted("outside-cake", ["cake", "cupcake"]),
 
-  faqIntent("id-policy", "faq-visit-18", ["drinking age", "minimum age", "how old", "underage", "under 21", "card me", "do you card", "carded", "identification", re(/\b21\b/), re(/\bids?\b/)]),
   faqIntent("beer-to-go", "faq-drinks-07", ["growler", "crowler", "4 pack", "four pack", "6 pack", "six pack", "cans", "cans to go", "buy cans", "beer to go", "take home"]),
   faqIntent("gift-cards", "faq-general-01", ["gift card", "gift certificate", "giftcard"]),
   faqIntent("accessibility", "faq-visit-11", ["wheelchair", "accessib", "handicap", "ramp", "elevator", "stairs", re(/\bada\b/)]),
@@ -285,7 +284,7 @@ const INTENTS: Intent[] = [
   faqIntent("atmosphere", "faq-visit-16", ["loud", "noisy", "quiet", "busy", "crowded"]),
 
   faqIntent("holidays", "faq-hours-02", ["holiday", "thanksgiving", "christmas", "xmas", "new year", "easter", "fourth of july", "4th of july", "july 4", "memorial day", "labor day"], {
-    links: () => [EVENTS_LINK],
+    links: () => [EVENTS_LINK, ...SOCIAL],
   }),
   faqIntent("order-at-bar", "faq-visit-05", ["order at the bar", "order at the counter", "at the bar", "where do i order", "table service", "counter service", "server", "waiter", "waitress"]),
   faqIntent("outside-food", "faq-visit-08", ["outside food", "outside drink", "outside beverage", "bring food", "bring in food", "bring my own", "bring our own", "bring snacks", "own food", "own drinks", "byob"]),
@@ -296,7 +295,6 @@ const INTENTS: Intent[] = [
   ], {
     links: (q) => locationLinks(q.location, "food", "Food menu"),
   }),
-  faqIntent("scratch", "faq-food-02", ["scratch", "homemade", "home made", "house made", "made in house", "made fresh", "fresh dough", "own dough", "make dough", "make your dough", "make the dough", "dough made"]),
   faqIntent("local", "faq-food-06", ["local", "sourced", "ingredient", "farm"]),
   {
     id: "gf-drinks",
@@ -356,7 +354,13 @@ const INTENTS: Intent[] = [
     re(/\brent(al|als|ing)?\b/),
     re(/\b(table|party|group) (for|of) \d{2,}\b/, 3),
     re(/\b\d{2,} (people|guests|persons)\b/, 3),
-  ], { links: () => [CONTACT_LINK] }),
+  ], {
+    links: () => [
+      CONTACT_LINK,
+      { label: "Appleton email", href: "mailto:hopyardaleworks@gmail.com" },
+      { label: "The Falls email", href: "mailto:hopyardthefalls@gmail.com" },
+    ],
+  }),
   faqIntent("parking", "faq-visit-07", ["park"], {
     links: (q) => directionsReply(q).links ?? [],
   }),

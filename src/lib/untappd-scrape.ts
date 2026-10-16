@@ -157,9 +157,30 @@ export async function fetchTapList(
 
 // ─── Merged helper ────────────────────────────────────────────────────────────
 
+// Styles that are clearly not spinnable beers (sodas, pure NA, hard seltzer)
+const NON_BEER_STYLES = [
+  "soda",
+  "non-alcoholic",
+  "hard seltzer",
+  "kombucha",
+  "juice",
+  "water",
+  "lemonade",
+  "tea",
+];
+
+function isSpinnableBeer(style: string): boolean {
+  const lower = style.toLowerCase();
+  return !NON_BEER_STYLES.some((term) => lower.includes(term));
+}
+
 /**
- * Fetch both locations, merge, and de-duplicate by name.
- * Returns only Hop Yard's own beers (no guest taps), with a style mapping.
+ * Fetch one or more locations, merge, and de-duplicate by name.
+ *
+ * Returns all Hop Yard's own beers (no guest taps).
+ * - Sodas and pure NA drinks are excluded so the spinner stays beer-focused.
+ * - styleKey may be null for unusual styles (chili beer, etc.) — callers that
+ *   need a style match should filter on styleKey themselves.
  */
 export async function fetchAllTapBeers(
   configs: { breweryId: number; menuId: number }[]
@@ -179,6 +200,6 @@ export async function fetchAllTapBeers(
     }
   }
 
-  // Return HYW beers only, with a known style
-  return deduped.filter((b) => b.isHopYardBeer && b.styleKey !== null);
+  // HYW beers only, excluding obvious non-beer styles
+  return deduped.filter((b) => b.isHopYardBeer && isSpinnableBeer(b.style));
 }
