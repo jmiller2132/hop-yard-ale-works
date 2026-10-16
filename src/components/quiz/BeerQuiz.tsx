@@ -379,10 +379,10 @@ export default function BeerQuiz({ beers }: BeerQuizProps) {
 
               {hasLive ? (
                 <>
-                  {/* Show up to 2 matching beers */}
-                  <div className="mb-2">
-                    {primaryBeers.slice(0, 2).map((beer, i) => (
-                      <div key={beer.name} className={i > 0 ? "mt-2" : ""}>
+                  {/* Show ALL matching beers for this style */}
+                  <div className="mb-2 divide-y divide-white/10">
+                    {primaryBeers.map((beer, i) => (
+                      <div key={beer.name} className={i > 0 ? "pt-4 mt-4" : ""}>
                         <h2
                           className="font-display text-4xl sm:text-5xl uppercase leading-[0.9]"
                           style={{ color: "white" }}
@@ -394,11 +394,6 @@ export default function BeerQuiz({ beers }: BeerQuizProps) {
                         </p>
                       </div>
                     ))}
-                    {primaryBeers.length > 2 && (
-                      <p className="text-sm mt-2" style={{ color: "rgba(255,255,255,0.45)" }}>
-                        +{primaryBeers.length - 2} more {r.title.toLowerCase()} on tap
-                      </p>
-                    )}
                   </div>
                 </>
               ) : (
@@ -442,21 +437,21 @@ export default function BeerQuiz({ beers }: BeerQuizProps) {
                         }}
                       >
                         <p className="text-2xl mb-2" aria-hidden="true">{rr.emoji}</p>
-                        {matchedBeer ? (
-                          <>
-                            <p className="font-display text-xl uppercase leading-tight" style={{ color: "var(--color-ink)" }}>
-                              {matchedBeer.name}
-                            </p>
-                            <p className="text-xs mt-0.5 mb-2" style={{ color: "var(--color-muted)" }}>
-                              {matchedBeer.style}
-                            </p>
-                          </>
-                        ) : (
-                          <p className="font-display text-xl uppercase leading-tight mb-2" style={{ color: "var(--color-ink)" }}>
-                            {rr.title}
+
+                        {/* Style category always shown */}
+                        <p className="font-display text-lg uppercase leading-tight" style={{ color: "var(--color-ink)" }}>
+                          {rr.title}
+                        </p>
+
+                        {/* If a beer is on tap, show it under the style name */}
+                        {matchedBeer && (
+                          <p className="text-sm font-semibold mt-1" style={{ color: "var(--color-teal)" }}>
+                            On tap: {matchedBeer.name}
+                            {beersFor(key).length > 1 && ` +${beersFor(key).length - 1} more`}
                           </p>
                         )}
-                        <p className="text-xs leading-relaxed" style={{ color: "var(--color-muted)" }}>
+
+                        <p className="text-xs leading-relaxed mt-2" style={{ color: "var(--color-muted)" }}>
                           {rr.short}
                         </p>
                       </div>
