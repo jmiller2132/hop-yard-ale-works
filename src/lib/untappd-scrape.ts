@@ -108,8 +108,16 @@ export async function fetchTapList(
     const res = await fetch(
       `https://business.untappd.com/locations/${breweryId}/themes/${menuId}/js`,
       {
-        next: { revalidate: 1800 }, // 30-minute ISR cache
-        headers: { "User-Agent": "Mozilla/5.0" },
+        // Don't use Next.js data cache — the page-level `revalidate` controls
+        // how often the scrape runs. Using the data cache caused stale empty
+        // results to persist even after code fixes.
+        cache: "no-store",
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+          "Accept-Language": "en-US,en;q=0.5",
+        },
       }
     );
     if (!res.ok) return [];
