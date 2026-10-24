@@ -113,7 +113,7 @@ export default async function TheFallsPage() {
       </div>
 
       {/* Hours + Address */}
-      <section className="section-padding">
+      <section id="hours" className="section-padding">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
 

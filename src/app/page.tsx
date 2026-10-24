@@ -73,7 +73,7 @@ export default async function HomePage() {
       />
 
       <section
-        className="relative flex items-start overflow-hidden md:min-h-[92vh] md:items-end"
+        className="relative flex items-start overflow-hidden md:min-h-[75vh] md:items-end"
         style={{ backgroundColor: "var(--color-ink)" }}
         aria-label="Hero"
       >
@@ -347,6 +347,15 @@ export default async function HomePage() {
           quality={90}
           className="mx-auto h-auto w-full max-w-5xl"
         />
+        {/* To-go cans callout */}
+        <div className="flex items-center justify-center gap-3 px-4 py-5 text-center">
+          <span
+            className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.14em]"
+            style={{ backgroundColor: "var(--color-gold)", color: "var(--color-ink)" }}
+          >
+            🥫 To-Go Cans Available — Take Your Favorites Home
+          </span>
+        </div>
       </div>
 
       <section aria-label="Appleton taproom photos" style={{ backgroundColor: "var(--color-ink)" }}>
@@ -487,6 +496,7 @@ function LocationHeroCard({
           <OpenClosedBadgeLive location={locationHours} />
         </div>
       )}
+      <p className="mt-2 hidden text-xs text-white/50 sm:block">🥫 To-go cans available</p>
       <div className="mt-auto flex flex-col gap-2 pt-3 sm:flex-row sm:flex-wrap sm:pt-4">
         <Link
           href={href}
@@ -534,6 +544,7 @@ function LocationCard({
   locationHref: string;
   mapsHref: string;
 }) {
+  const hoursHref = `${locationHref}#hours`;
   return (
     <div
       className="p-6"
@@ -541,18 +552,26 @@ function LocationCard({
     >
       <div className="flex items-start justify-between gap-4">
         <div>
-      <h3
-        className="font-display text-xl"
-        style={{ color: "var(--color-ink)" }}
-      >
+          <h3
+            className="font-display text-xl"
+            style={{ color: "var(--color-ink)" }}
+          >
             {name}
           </h3>
           <p className="mt-1 text-base sm:text-sm" style={{ color: "var(--color-muted)" }}>
             {address}
           </p>
-          <p className="mt-1 text-base sm:text-sm" style={{ color: "var(--color-ink)" }}>
+          {/* Hours summary with link to full hours */}
+          <p className="mt-2 text-base sm:text-sm" style={{ color: "var(--color-ink)" }}>
             {hoursNote}
           </p>
+          <Link
+            href={hoursHref}
+            className="mt-0.5 inline-block text-xs font-medium underline underline-offset-2 hover:opacity-70 transition-opacity"
+            style={{ color: "var(--color-teal)" }}
+          >
+            Full hours →
+          </Link>
         </div>
         <Link
           href={locationHref}
@@ -569,7 +588,11 @@ function LocationCard({
         </div>
       )}
 
-      <div className="mt-5 flex flex-wrap gap-2">
+      <p className="mt-3 text-xs font-medium" style={{ color: "var(--color-muted)" }}>
+        🥫 To-go cans available
+      </p>
+
+      <div className="mt-4 flex flex-wrap gap-2">
         <Link
           href={foodHref}
           className="rounded-md border px-3 py-2 text-sm font-medium min-h-[44px] flex items-center hover:bg-gray-50 transition-colors"

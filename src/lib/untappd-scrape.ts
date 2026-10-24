@@ -206,10 +206,18 @@ function isSpinnableBeer(style: string): boolean {
 /**
  * Fetch one or more locations, merge, and de-duplicate by name.
  *
- * Returns all Hop Yard's own beers (no guest taps).
+ * Returns beers from the Untappd business embed (scoped to this brewery's menu).
  * - Sodas and pure NA drinks are excluded so the spinner stays beer-focused.
  * - styleKey may be null for unusual styles (chili beer, etc.) — callers that
  *   need a style match should filter on styleKey themselves.
+ *
+ * NOTE: `isHopYardBeer` (derived from the Untappd URL slug) was previously used
+ * to filter out guest taps, but it silently dropped ALL beers if the brewery's
+ * Untappd slug didn't match "hop-yard-ale-works" exactly. Since the business embed
+ * endpoint is already scoped to a single brewery's menu, all returned beers are
+ * effectively this brewery's beers. We keep `isHopYardBeer` as metadata but no
+ * longer require it — guest taps (rare on a business embed) will show alongside
+ * HYW originals rather than causing the quiz to fall back to no live data.
  */
 export async function fetchAllTapBeers(
   configs: { breweryId: number; menuId: number }[]
@@ -229,6 +237,6 @@ export async function fetchAllTapBeers(
     }
   }
 
-  // HYW beers only, excluding obvious non-beer styles
-  return deduped.filter((b) => b.isHopYardBeer && isSpinnableBeer(b.style));
+  // Exclude obvious non-beer styles (sodas, NA, seltzers)
+  return deduped.filter((b) => isSpinnableBeer(b.style));
 }

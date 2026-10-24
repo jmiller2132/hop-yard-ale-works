@@ -314,9 +314,9 @@ export default function BeerQuiz({ beers }: BeerQuizProps) {
         </div>
       )}
 
-      {/* Question */}
+      {/* Question — no key= here; removing it prevents browser scroll-into-view on step change */}
       {!isResult && q && (
-        <section key={step} aria-live="polite">
+        <section aria-live="polite">
           <p className="mb-3 text-4xl" aria-hidden="true">{q.emoji}</p>
           <h2
             className="font-display text-3xl sm:text-4xl uppercase leading-tight mb-8"
