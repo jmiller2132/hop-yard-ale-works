@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import BeerQuiz from "@/components/quiz/BeerQuiz";
-import { fetchAllTapBeers } from "@/lib/untappd-scrape";
+import { fetchTapList } from "@/lib/untappd-scrape";
 import { UNTAPPD_CONFIG } from "@/lib/untappd";
 
 export const revalidate = 1800; // match Untappd cache
@@ -12,10 +12,18 @@ export const metadata: Metadata = {
 };
 
 export default async function WhatToDrinkPage() {
-  const beers = await fetchAllTapBeers([
-    { breweryId: UNTAPPD_CONFIG.appleton.breweryId, menuId: UNTAPPD_CONFIG.appleton.menuId },
-    { breweryId: UNTAPPD_CONFIG["the-falls"].breweryId, menuId: UNTAPPD_CONFIG["the-falls"].menuId },
-  ]).catch(() => []);
+  const [appletonBeers, fallsBeers] = await Promise.all([
+    fetchTapList(
+      UNTAPPD_CONFIG.appleton.breweryId,
+      UNTAPPD_CONFIG.appleton.menuId
+    ).catch(() => []),
+    fetchTapList(
+      UNTAPPD_CONFIG["the-falls"].breweryId,
+      UNTAPPD_CONFIG["the-falls"].menuId
+    ).catch(() => []),
+  ]);
+
+  const totalCount = new Set([...appletonBeers, ...fallsBeers].map((b) => b.name)).size;
 
   return (
     <>
@@ -37,17 +45,21 @@ export default async function WhatToDrinkPage() {
           </h1>
           <p className="mt-4 text-white/65 text-base max-w-xs leading-relaxed">
             Answer five quick questions and we&rsquo;ll point you at something pouring right now.
-            {beers.length > 0 && (
+            {totalCount > 0 && (
               <span className="block mt-1 text-white/40">
-                {beers.length} Hop Yard beers on tap right now.
+                {totalCount} Hop Yard beers on tap right now.
               </span>
             )}
           </p>
         </div>
       </section>
 
-      {/* Quiz */}
-      <BeerQuiz beers={beers.length > 0 ? beers : null} />
+      {/* Quiz — passes each location's beers separately so the client can
+          pick the right set based on which taproom the user last visited */}
+      <BeerQuiz
+        appletonBeers={appletonBeers.length > 0 ? appletonBeers : null}
+        fallsBeers={fallsBeers.length > 0 ? fallsBeers : null}
+      />
     </>
   );
 }

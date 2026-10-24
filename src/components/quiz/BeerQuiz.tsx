@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import type { TapBeer } from "@/lib/untappd-scrape";
+import { LOCATION_STORAGE_KEY } from "@/lib/location-data";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -242,14 +243,38 @@ function rankResults(answers: Scores[]): RankedResult[] {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 interface BeerQuizProps {
+  /** Beers currently on tap at Appleton. Pass null if unavailable. */
+  appletonBeers?: TapBeer[] | null;
+  /** Beers currently on tap at The Falls. Pass null if unavailable. */
+  fallsBeers?: TapBeer[] | null;
+  /** @deprecated — pass appletonBeers / fallsBeers instead */
   beers?: TapBeer[] | null;
 }
 
-export default function BeerQuiz({ beers }: BeerQuizProps) {
+export default function BeerQuiz({ appletonBeers, fallsBeers, beers }: BeerQuizProps) {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Scores[]>([]);
   const [chosen, setChosen] = useState<string | null>(null);
   const [ranked, setRanked] = useState<RankedResult[]>([]);
+
+  // Resolve which tap list to use based on the location the user last visited.
+  // Falls back to the combined list if no location is stored, or to the legacy
+  // flat `beers` prop for any callers that haven't been updated yet.
+  const [activeTapList, setActiveTapList] = useState<TapBeer[]>(beers ?? []);
+  useEffect(() => {
+    const stored = localStorage.getItem(LOCATION_STORAGE_KEY);
+    if (stored === "appleton" && appletonBeers) {
+      setActiveTapList(appletonBeers);
+    } else if (stored === "the-falls" && fallsBeers) {
+      setActiveTapList(fallsBeers);
+    } else {
+      // No location preference stored — merge both lists, dedupe by name
+      const combined = [...(appletonBeers ?? []), ...(fallsBeers ?? [])];
+      const seen = new Set<string>();
+      const deduped = combined.filter((b) => (seen.has(b.name) ? false : (seen.add(b.name), true)));
+      setActiveTapList(beers ?? deduped);
+    }
+  }, [appletonBeers, fallsBeers, beers]);
 
   const totalSteps = QUESTIONS.length;
   const isResult = step === totalSteps;
@@ -282,9 +307,9 @@ export default function BeerQuiz({ beers }: BeerQuizProps) {
   const primary = ranked[0] ?? null;
   const runners = ranked.slice(1, 3);
 
-  // All live beers matching a given style key
+  // All live beers matching a given style key, from the location-aware tap list
   const beersFor = (key: StyleKey): TapBeer[] =>
-    (beers ?? []).filter((b) => b.styleKey === key);
+    activeTapList.filter((b) => b.styleKey === key);
 
   return (
     <div className="mx-auto max-w-xl px-4 py-10 sm:py-14">
