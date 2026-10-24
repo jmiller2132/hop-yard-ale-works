@@ -124,6 +124,7 @@ export default async function HomePage() {
               name="Appleton"
               tagline="The original taproom & brewhouse."
               locationHours={appleton}
+              hoursNote={hoursSummaryText("appleton")}
               href="/appleton/"
               orderHref={appletonOrderUrl}
             />
@@ -132,6 +133,7 @@ export default async function HomePage() {
               mobileName="The Falls"
               tagline="Craft beer and wood-fired pizza in the heart of the Falls."
               locationHours={theFalls}
+              hoursNote={hoursSummaryText("the-falls")}
               href="/the-falls/"
               orderHref={fallsOrderUrl}
             />
@@ -462,6 +464,7 @@ function LocationHeroCard({
   mobileName,
   tagline,
   locationHours,
+  hoursNote,
   href,
   orderHref,
 }: {
@@ -469,9 +472,11 @@ function LocationHeroCard({
   mobileName?: string;
   tagline: string;
   locationHours: { hours?: import("@/types").DayHours[]; sundayHours?: { open: string; close: string; isClosed: boolean }; holidayOverrides?: import("@/types").HolidayOverride[] } | null;
+  hoursNote: string;
   href: string;
   orderHref: string;
 }) {
+  const hoursHref = `${href}#hours`;
   return (
     <div
       className="flex h-full flex-col p-3 sm:p-6"
@@ -496,7 +501,14 @@ function LocationHeroCard({
           <OpenClosedBadgeLive location={locationHours} />
         </div>
       )}
-      <p className="mt-2 hidden text-xs text-white/50 sm:block">🥫 To-go cans available</p>
+      {/* Hours summary + deep-link to full hours */}
+      <p className="mt-2 text-xs leading-snug text-white/60">{hoursNote}</p>
+      <Link
+        href={hoursHref}
+        className="mt-0.5 text-xs font-medium underline underline-offset-2 text-white/50 hover:text-white/80 transition-colors"
+      >
+        Full hours →
+      </Link>
       <div className="mt-auto flex flex-col gap-2 pt-3 sm:flex-row sm:flex-wrap sm:pt-4">
         <Link
           href={href}
