@@ -10,6 +10,8 @@ const PATHS = [
   "/the-falls-food-menu/",
   "/the-falls-drinks-menu/",
   "/events/",
+  "/what-to-drink/",
+  "/photos/",
   "/about/",
   "/faq/",
   "/contact/",

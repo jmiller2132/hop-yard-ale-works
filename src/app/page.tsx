@@ -42,6 +42,9 @@ export const metadata: Metadata = {
   },
   description:
     "Two Wisconsin taprooms — Appleton and Menomonee Falls — brewing craft beer and serving wood-fired pizza. See hours, menus, and order online.",
+  // The root layout's relative "./" canonical resolves to /index/ on the home page.
+  alternates: { canonical: "/" },
+  openGraph: { url: "/" },
 };
 
 export default async function HomePage() {

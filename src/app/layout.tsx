@@ -131,6 +131,13 @@ export default async function RootLayout({
       {...(themeAttr ? { "data-theme": themeAttr } : {})}
     >
       <body className="flex min-h-screen flex-col" style={{ fontFamily: "var(--font-body)" }}>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:px-4 focus:py-2 focus:text-sm focus:font-semibold"
+          style={{ backgroundColor: "var(--color-ink)", color: "#fff" }}
+        >
+          Skip to main content
+        </a>
         {activeTheme?.bannerMessage && (
           <GlobalBanner
             message={activeTheme.bannerMessage}
@@ -138,7 +145,7 @@ export default async function RootLayout({
           />
         )}
         <GlobalHeader activeTheme={activeTheme} />
-        <main className="flex-1">{children}</main>
+        <main id="main-content" className="flex-1">{children}</main>
         <GlobalFooter config={globalConfig} />
         {lateNight && (
           <p

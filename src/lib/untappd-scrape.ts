@@ -108,10 +108,11 @@ export async function fetchTapList(
     const res = await fetch(
       `https://business.untappd.com/locations/${breweryId}/themes/${menuId}/js`,
       {
-        // Don't use Next.js data cache — the page-level `revalidate` controls
-        // how often the scrape runs. Using the data cache caused stale empty
-        // results to persist even after code fixes.
-        cache: "no-store",
+        // `cache: "no-store"` here opts every page that calls this into fully
+        // dynamic rendering (page-level `revalidate` is ignored, so each visit
+        // re-scrapes Untappd). Cache for 15 minutes instead; a bad/empty
+        // response heals at the next revalidation.
+        next: { revalidate: 900 },
         headers: {
           "User-Agent":
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
