@@ -4,6 +4,8 @@ import { sanityClient } from "@/lib/sanity/client";
 import { faqsByCategoryQuery } from "@/lib/sanity/queries";
 import type { FAQ } from "@/types";
 import FaqAccordion from "@/components/faq/FaqAccordion";
+import { faqPageJsonLd } from "@/lib/structured-data";
+import { jsonLdString } from "@/lib/site";
 
 export const revalidate = 3600;
 
@@ -22,6 +24,12 @@ export default async function FaqPage() {
 
   return (
     <>
+      {faqs.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLdString(faqPageJsonLd(faqs)) }}
+        />
+      )}
       {/* Hero */}
       <section className="page-hero">
         <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 text-center">

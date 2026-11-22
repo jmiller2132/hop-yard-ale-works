@@ -7,7 +7,7 @@ import "./globals.css";
 import GlobalHeader from "@/components/layout/GlobalHeader";
 import GlobalFooter from "@/components/layout/GlobalFooter";
 import GlobalBanner from "@/components/layout/GlobalBanner";
-import ChatBot from "@/components/chat/ChatBot";
+import ChatBot from "@/components/chat/ChatBotLazy";
 import KonamiCode from "@/components/ui/KonamiCode";
 import TabTitleInactivity from "@/components/ui/TabTitleInactivity";
 import ScrollProgressBar from "@/components/ui/ScrollProgressBar";
