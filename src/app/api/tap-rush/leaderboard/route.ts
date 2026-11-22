@@ -7,6 +7,8 @@ import {
   submitScore,
 } from "@/lib/tap-rush-leaderboard";
 
+import { clientIp, rateLimit } from "@/lib/rate-limit";
+
 export const dynamic = "force-dynamic";
 
 const NO_STORE = { "Cache-Control": "no-store" };
@@ -26,6 +28,14 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  // Each accepted score writes to Sanity; stop one client from hammering it.
+  if (!rateLimit(`tap-rush:${clientIp(request.headers)}`, { limit: 6, windowMs: 60_000 })) {
+    return Response.json(
+      { error: "Too many submissions, try again in a minute" },
+      { status: 429, headers: { ...NO_STORE, "Retry-After": "60" } },
+    );
+  }
+
   let body: { month?: unknown; name?: unknown; score?: unknown };
   try {
     body = await request.json();

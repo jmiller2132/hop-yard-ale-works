@@ -36,7 +36,7 @@ export default function ContactPage() {
           </h1>
           <p className="text-lg" style={{ color: "rgba(255,255,255,0.65)" }}>
             Questions, private events, partnerships — or just want to say hey.
-            We don't have phones, but we do check email.
+            We don&apos;t have phones, but we do check email.
           </p>
         </div>
       </section>
@@ -118,7 +118,7 @@ export default function ContactPage() {
               <p className="text-xs" style={{ color: "var(--color-muted)" }}>
                 For private events and large groups, select that topic in the form
                 and give us a bit of detail — date, group size, and which location
-                you're thinking.
+                you&apos;re thinking.
               </p>
             </div>
 
@@ -137,7 +137,7 @@ export default function ContactPage() {
       >
         <div className="mx-auto max-w-3xl px-4 sm:px-6 text-center">
           <p className="text-sm font-medium uppercase tracking-widest mb-3" style={{ color: "var(--color-muted)" }}>
-            While you're here
+            While you&apos;re here
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link

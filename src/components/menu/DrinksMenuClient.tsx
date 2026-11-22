@@ -76,7 +76,6 @@ export default function DrinksMenuClient({
 
   // Group wine by section
   const wineSections = Array.from(new Set(wineItems.map((i) => i.section)));
-  const ciderSections = Array.from(new Set(ciderItems.map((i) => i.section)));
 
   return (
     <>

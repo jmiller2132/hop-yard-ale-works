@@ -29,7 +29,7 @@ export default async function FaqPage() {
             Got questions?
           </p>
           <h1 className="font-display text-5xl sm:text-7xl uppercase leading-[0.9] text-white mb-4">
-            We've got answers.
+            We&apos;ve got answers.
           </h1>
           <p className="text-lg" style={{ color: "rgba(255,255,255,0.6)" }}>
             Everything you need to know before (and after) your visit.
@@ -65,7 +65,7 @@ export default async function FaqPage() {
             Still not finding what you need?
           </p>
           <p className="text-sm mb-5" style={{ color: "rgba(255,255,255,0.75)" }}>
-            We don't have phones, but we do respond to messages.
+            We don&apos;t have phones, but we do respond to messages.
           </p>
           <Link
             href="/contact/"

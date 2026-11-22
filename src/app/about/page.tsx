@@ -85,11 +85,11 @@ export default function AboutPage() {
           </p>
           <div className="space-y-4 text-base leading-relaxed" style={{ color: "var(--color-muted)" }}>
             <p>
-              Come as you are. Stay as long as you'd like. Grab a seat at the bar and chat with
+              Come as you are. Stay as long as you&apos;d like. Grab a seat at the bar and chat with
               someone nearby, or lose yourself in a book and let the afternoon disappear.
             </p>
             <p>
-              Above all, let us know how we can make your visit better — we're here to craft the
+              Above all, let us know how we can make your visit better — we&apos;re here to craft the
               right experience for you.
             </p>
           </div>

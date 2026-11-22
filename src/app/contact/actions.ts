@@ -1,6 +1,8 @@
 "use server";
 
 import { Resend } from "resend";
+import { headers } from "next/headers";
+import { clientIp, rateLimit } from "@/lib/rate-limit";
 
 export type ContactFormState =
   | { status: "idle" }
@@ -46,6 +48,15 @@ export async function submitContact(
   // Honeypot: real visitors never see or fill this field.
   if ((formData.get("company") as string | null)?.trim()) {
     return { status: "success" };
+  }
+
+  // Limit sends per visitor so the form can't be used to burn the Resend quota.
+  const ip = clientIp(await headers());
+  if (!rateLimit(`contact:${ip}`, { limit: 3, windowMs: 10 * 60_000 })) {
+    return {
+      status: "error",
+      message: "You've sent a few messages already. Please try again in a few minutes.",
+    };
   }
 
   const name = ((formData.get("name") as string | null) ?? "").replace(/[\r\n]+/g, " ").trim();
